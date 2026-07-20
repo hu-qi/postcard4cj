@@ -47,4 +47,17 @@ public class PostcardCompoundCodecTest {
         @Assert(decoder.readUInt16(),128u16)
         @Assert(decoder.remaining(),0)
     }
+
+    @TestCase
+    public func untrustedMapLengthDoesNotPreallocateWireCount(): Unit {
+        let encoder = PostcardEncoder()
+        encoder.writeSequenceLength(1_000_000_000i64)
+        let decoder = PostcardDecoder(encoder.toArray())
+        @AssertThrows[Exception](
+            decoder.readMapEntries<UInt8,UInt8>(
+                {=> decoder.readUInt8()},
+                {=> decoder.readUInt8()}
+            )
+        )
+    }
 }
