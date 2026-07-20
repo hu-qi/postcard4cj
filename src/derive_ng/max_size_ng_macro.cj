@@ -146,16 +146,33 @@ extend${genericParameters} ${concreteType} <: PostcardMaxSize${genericConstraint
 }
 
 private func generateNgMaxEnum(input: Tokens, declaration: EnumDecl): Tokens {
-    if (declaration.isGenericDecl || declaration.ellipsis.value == "...") {
+    var genericParameters = ""
+    var genericConstraints = ""
+    if (declaration.isGenericDecl) {
+        if (declaration.genericConstraint.size > 0) {
+            diagReport(
+                DiagReportLevel.ERROR,
+                input,
+                "@PostcardMaxSizeNg generic enums with existing where constraints are not supported yet",
+                "Move maximum-size bounds to a manual extension or remove the existing constraints."
+            )
+            return input
+        }
+        let names = ngMaxGenericParameterList(declaration)
+        genericParameters = "<${names}>"
+        genericConstraints = " where ${ngMaxGenericBounds(declaration)}"
+    }
+    if (declaration.ellipsis.value == "...") {
         diagReport(
             DiagReportLevel.ERROR,
             input,
-            "@PostcardMaxSizeNg requires a non-generic exhaustive enum",
-            "Use a non-generic payload wrapper or implement PostcardMaxSize manually."
+            "@PostcardMaxSizeNg cannot bound a non-exhaustive enum",
+            "Remove the ellipsis constructor or implement PostcardMaxSize manually."
         )
         return input
     }
     let typeName = declaration.identifier.value
+    let concreteType = "${typeName}${genericParameters}"
     let discriminant = ngMaxDiscriminantBytes(declaration.constructors.size)
     var body = "        var maximumPayload = 0i64\n"
     var index = 0i64
@@ -169,7 +186,7 @@ private func generateNgMaxEnum(input: Tokens, declaration: EnumDecl): Tokens {
         index++
     }
     let generated = """
-extend ${typeName} <: PostcardMaxSize {
+extend${genericParameters} ${concreteType} <: PostcardMaxSize${genericConstraints} {
     public static func postcardMaxSize(): Int64 {
 ${body}        return ${discriminant}i64 + maximumPayload
     }
