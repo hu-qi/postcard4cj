@@ -95,7 +95,7 @@ See [`MIGRATION.md`](MIGRATION.md) for the detailed coverage matrix and [`API_CO
 - `@PostcardSchema` and `@PostcardMaxSize`
 - `@PostcardSchemaNg` and `@PostcardMaxSizeNg`
 - struct and enum declaration-order semantics
-- all four macro families support generic structs without pre-existing `where` constraints
+- all five macro entry points support one or more generic struct parameters without pre-existing `where` constraints
 - generic enums, constrained generic declarations, and rename attributes remain under audit
 
 ## Verification
@@ -107,13 +107,13 @@ cjpm build -V
 cjpm test -V
 ```
 
-Compatibility vectors for records, telemetry, COBS, CRC32C, compound values, 128-bit integers, generated structs, generated enums, generic generated structs, and framed remainder helpers are maintained as Cangjie tests.
+Compatibility vectors for records, telemetry, COBS, CRC32C, compound values, 128-bit integers, generated structs, generated enums, single- and multi-parameter generic structs, and framed remainder helpers are maintained as Cangjie tests.
 
 Latest pure Cangjie validation:
 
 - pure-source policy: passed
 - `cjpm build -V`: passed
-- `cjpm test -V`: **168 passed, 0 failed, 0 skipped, 0 errors**
+- `cjpm test -V`: **173 passed, 0 failed, 0 skipped, 0 errors**
 
 ## Remaining compatibility work
 
