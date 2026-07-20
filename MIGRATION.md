@@ -22,8 +22,8 @@ CI enforces this invariant before compiling the Cangjie workspace.
 |---|---|---|
 | `postcard-core` | `postcard4cj.core` | Implemented: framework-independent primitives, varints, discriminants, lengths, owned/temp-read substitutions, errors, positions and remainder |
 | `postcard` | `postcard4cj`, `postcard4cj.serde_model`, `postcard4cj.flavors`, `postcard4cj.accumulator`, `postcard4cj.fixint`, `postcard4cj.io`, `postcard4cj.max_size` | Implemented: data model, helpers, fixed/growable/Extend/stream flavors, COBS, CRC32C, accumulator, fixint, size and IO |
-| `postcard-derive` | `postcard4cj.postcard_macro` | Implemented for non-generic declarations and generic structs without existing `where` constraints; generic enums, constraint merging and rename attributes remain under audit |
-| `postcard-derive-ng` | `postcard4cj.derive_ng` | Schema/MaxSize implemented for non-generic declarations and generic structs without existing `where` constraints |
+| `postcard-derive` | `postcard4cj.postcard_macro` | Implemented for non-generic declarations and generic structs with one or more parameters without existing `where` constraints; generic enums, constraint merging and rename attributes remain under audit |
+| `postcard-derive-ng` | `postcard4cj.derive_ng` | Schema/MaxSize implemented for non-generic declarations and generic structs with one or more parameters without existing `where` constraints |
 | `postcard-schema` | `postcard4cj.schema` | Implemented: schema graph, wire codec, formatting, recursive discovery and stable keys |
 | `postcard-schema-ng` | `postcard4cj.schema_ng` | Implemented with an independent NG interface over the validated runtime-owned graph |
 | `postcard-dyn` | `postcard4cj.dynamic` | Implemented: lossless schema-directed values and JSON-compatible conversion |
@@ -112,7 +112,7 @@ Implemented:
 - fixed-width LE/BE integer field codecs
 - serialized-size calculation
 - primitive and composite maximum-size formulas
-- `@PostcardMaxSize` / `@PostcardMaxSizeNg`, including unconstrained generic structs
+- `@PostcardMaxSize` / `@PostcardMaxSizeNg`, including generic structs with one or more parameters
 - legacy and modern stream IO helpers
 - fixed-capacity byte-vector adapter
 
@@ -124,7 +124,7 @@ Implemented:
 - stable type/path keys using FNV-1a markers compatible with the upstream algorithm
 - runtime-owned recursive schema graph
 - schema formatting and recursive used-type discovery
-- macro-generated schemas for non-generic declarations and unconstrained generic structs
+- macro-generated schemas for non-generic declarations and generic structs with one or more parameters
 - schema-directed lossless dynamic values
 - Postcard encode/decode for dynamic values
 - JSON-compatible conversion
@@ -154,12 +154,12 @@ Compatibility is checked entirely in Cangjie using fixed Golden Vectors and nega
 - CRC32C framing and remainder
 - 128-bit boundaries
 - enum declaration order
-- generic Codec, Schema and MaxSize struct generation in legacy and NG namespaces
+- single- and multi-parameter generic Codec, Schema and MaxSize struct generation in legacy and NG namespaces
 - malformed Bool, Option, UTF-8, Rune, Varint, COBS and CRC inputs
 - truncated input
 - malicious sequence/map lengths without untrusted preallocation
 
-Latest validation: **168 passed, 0 failed, 0 skipped, 0 errors**.
+Latest validation: **173 passed, 0 failed, 0 skipped, 0 errors**.
 
 ## Remaining work before a release-ready claim
 
