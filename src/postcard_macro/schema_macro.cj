@@ -169,14 +169,21 @@ ${fields}
 }
 
 private func generateEnumSchema(input: Tokens, declaration: EnumDecl): Tokens {
+    var genericParameters = ""
+    var genericConstraints = ""
     if (declaration.isGenericDecl) {
-        diagReport(
-            DiagReportLevel.ERROR,
-            input,
-            "@PostcardSchema generic enums are not supported yet",
-            "Use a non-generic payload wrapper or implement PostcardSchema manually."
-        )
-        return input
+        if (declaration.genericConstraint.size > 0) {
+            diagReport(
+                DiagReportLevel.ERROR,
+                input,
+                "@PostcardSchema generic enums with existing where constraints are not supported yet",
+                "Move schema bounds to a manual extension or remove the existing constraints."
+            )
+            return input
+        }
+        let names = schemaGenericParameterList(declaration)
+        genericParameters = "<${names}>"
+        genericConstraints = " where ${schemaGenericBounds(declaration)}"
     }
     if (declaration.ellipsis.value == "...") {
         diagReport(
@@ -189,6 +196,7 @@ private func generateEnumSchema(input: Tokens, declaration: EnumDecl): Tokens {
     }
 
     let typeName = declaration.identifier.value
+    let concreteType = "${typeName}${genericParameters}"
     var variants = ""
     var variantIndex = 0i64
 
@@ -218,7 +226,7 @@ private func generateEnumSchema(input: Tokens, declaration: EnumDecl): Tokens {
     }
 
     let generated = """
-extend ${typeName} <: PostcardSchema<${typeName}> {
+extend${genericParameters} ${concreteType} <: PostcardSchema<${concreteType}>${genericConstraints} {
     public static func schema(): NamedType {
         return enumSchema("${typeName}", [
 ${variants}
