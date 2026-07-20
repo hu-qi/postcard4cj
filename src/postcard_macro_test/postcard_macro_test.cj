@@ -75,6 +75,13 @@ public struct GenericPair<T, U> {
     }
 }
 
+@Postcard
+public enum GenericCommand<T, U> {
+    | Idle
+    | One(T)
+    | Pair(T, U)
+}
+
 @Test
 public class PostcardMacroTest {
     @TestCase
@@ -142,5 +149,27 @@ public class PostcardMacroTest {
         @Assert(decoded.second.delta, -1i32)
         @Assert(decoded.second.note, None)
         @Assert(decoded.second.values, [1u16])
+    }
+
+    @TestCase
+    public func generatedGenericEnumUsesDeclarationOrderAndBounds(): Unit {
+        let value: GenericCommand<GenericLeaf, MacroRecord> = GenericCommand.Pair(
+            GenericLeaf(128u16),
+            MacroRecord(42u32, -1i32, None, [1u16])
+        )
+        let expected: Array<UInt8> = [
+            0x02u8,
+            0x80u8, 0x01u8,
+            0x2au8, 0x01u8, 0x00u8, 0x01u8, 0x01u8
+        ]
+        @Assert(toBytes<GenericCommand<GenericLeaf, MacroRecord>>(value), expected)
+        let decoded = fromBytes<GenericCommand<GenericLeaf, MacroRecord>>(expected)
+        match (decoded) {
+            case GenericCommand.Pair(first, second) =>
+                @Assert(first.code, 128u16)
+                @Assert(second.id, 42u32)
+                @Assert(second.delta, -1i32)
+            case _ => throw IllegalStateException("Decoded the wrong GenericCommand variant")
+        }
     }
 }
