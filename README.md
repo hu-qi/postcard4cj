@@ -32,30 +32,23 @@ Completion means providing Cangjie-native equivalents for the complete workspace
 
 See [`MIGRATION.md`](MIGRATION.md) for the coverage matrix and acceptance criteria.
 
-## Phase 1 foundation
+## Development branch
 
-The current implementation provides:
+Full implementation work is submitted to:
 
-- primitive Postcard 1.x wire encoding/decoding
-- Rust-compatible 128-bit integers through `BigInt`
-- fixed and growable output buffers
-- typed encode/decode interfaces
-- COBS and CRC32C helpers
-- a basic non-generic struct/enum `@Postcard` macro
-- Rust `postcard = 1.1.3` Golden Vector tests
-
-This is retained as the foundation for the full port. It is not the complete upstream implementation.
-
-## Verification
-
-```bash
-cjpm build -V
-cjpm test -V
-
-cd interop/rust-oracle
-cargo test
-cargo run
+```text
+feat/full-postcard-port
 ```
+
+The current wire-compatible prototype is retained there as the Phase 1 foundation. It must not be interpreted as completion of the full port.
+
+## Verification targets
+
+- Cangjie 1.1.3 on Ubuntu 22.04
+- byte-for-byte interoperability against Rust `postcard = 1.1.3`
+- upstream-compatible negative/error vectors
+- workspace-wide Cangjie build and tests
+- stream, fixed-buffer, COBS, CRC32C, schema, dynamic-value, and macro integration tests
 
 ## License
 
