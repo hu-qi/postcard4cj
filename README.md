@@ -57,7 +57,7 @@ See [`MIGRATION.md`](MIGRATION.md) for the current coverage matrix and acceptanc
   - basic `@Postcard` struct/enum macro
   - Rust `postcard = 1.1.3` Golden Vector oracle
 
-## Development branch
+## Development branch and PR
 
 Full implementation work is submitted to:
 
@@ -65,7 +65,9 @@ Full implementation work is submitted to:
 feat/full-postcard-port
 ```
 
-The corresponding pull request remains Draft until the complete migration matrix passes.
+Draft pull request: [#1 feat: port complete Postcard workspace to Cangjie](https://github.com/hu-qi/postcard4cj/pull/1)
+
+The pull request remains Draft until the complete migration matrix passes.
 
 ## Verification
 
