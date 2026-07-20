@@ -100,15 +100,15 @@ postcard4cj is implemented entirely in Cangjie. This document maps upstream conc
 | `fixint::le/be` wrappers | `postcard4cj.fixint` LE/BE functions | Implemented |
 | `experimental::serialized_size` | `serializedSize` | Implemented |
 | `experimental::max_size::MaxSize` | `PostcardMaxSize` | Implemented |
-| derive `MaxSize` | `@PostcardMaxSize` | Implemented for bounded non-generic declarations and unconstrained generic structs |
+| derive `MaxSize` | `@PostcardMaxSize` | Implemented for bounded non-generic declarations and generic structs with one or more parameters when no existing `where` clause is present |
 
 ## `postcard-derive`
 
 | Upstream derive capability | Cangjie mapping | Status |
 |---|---|---|
-| MaxSize derive | `@PostcardMaxSize` | Implemented for bounded non-generic declarations and generic structs without existing `where` constraints |
-| Schema derive | `@PostcardSchema` | Implemented for non-generic declarations and generic structs without existing `where` constraints |
-| codec derive | `@Postcard` | Implemented for non-generic declarations and generic structs without existing `where` constraints |
+| MaxSize derive | `@PostcardMaxSize` | Implemented for bounded non-generic declarations and generic structs with one or more parameters without existing `where` constraints |
+| Schema derive | `@PostcardSchema` | Implemented for non-generic declarations and generic structs with one or more parameters without existing `where` constraints |
+| codec derive | `@Postcard` | Implemented for non-generic declarations and generic structs with one or more parameters without existing `where` constraints |
 | rename attributes | Manual Schema or codec declaration | Pending macro attribute implementation |
 | constrained generic declarations | Manual implementation | Pending constraint-merging support |
 | generic enums | Non-generic payload wrapper or manual implementation | Pending generic enum support |
@@ -135,8 +135,8 @@ postcard4cj is implemented entirely in Cangjie. This document maps upstream conc
 | Upstream concept | Cangjie mapping | Status |
 |---|---|---|
 | NG Schema trait | `PostcardSchemaNg<T>` | Implemented |
-| NG Schema derive | `@PostcardSchemaNg` | Implemented for non-generic declarations and unconstrained generic structs |
-| NG MaxSize derive | `@PostcardMaxSizeNg` | Implemented for bounded non-generic declarations and unconstrained generic structs |
+| NG Schema derive | `@PostcardSchemaNg` | Implemented for non-generic declarations and generic structs with one or more parameters without existing `where` constraints |
+| NG MaxSize derive | `@PostcardMaxSizeNg` | Implemented for bounded non-generic declarations and generic structs with one or more parameters without existing `where` constraints |
 | NG owned tree / key | shared runtime tree, `toOwnedSchemaNg`, `keyForPathNg` | Implemented |
 
 ## `postcard-dyn`
@@ -197,7 +197,7 @@ postcard4cj is implemented entirely in Cangjie. This document maps upstream conc
 
 The repository contains no Rust source or Cargo project. Compatibility checks are Cangjie tests with fixed Golden Vectors and negative cases. CI rejects `.rs`, `Cargo.toml`, `Cargo.lock`, Rust toolchain files, and `.cargo` before building.
 
-Latest validation: **168 Cangjie tests passed, 0 failed, 0 skipped, 0 errors**.
+Latest validation: **173 Cangjie tests passed, 0 failed, 0 skipped, 0 errors**.
 
 ## Optional ecosystem integrations under audit
 
