@@ -41,7 +41,7 @@ public class FixedByteVec {
         used++
     }
 
-    public func extend(values: Array<UInt8>): Unit {
+    public func appendBytes(values: Array<UInt8>): Unit {
         if (values.size > remaining()) {
             throw PostcardException(
                 PostcardErrorKind.SerializeBufferFull,
@@ -93,7 +93,7 @@ public class FixedVecFlavor <: SerializeFlavor {
     }
 
     public func tryExtend(data: Array<UInt8>): Unit {
-        value.extend(data)
+        value.appendBytes(data)
     }
 
     public func position(): Int64 {
