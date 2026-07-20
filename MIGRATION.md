@@ -159,7 +159,7 @@ Compatibility is checked entirely in Cangjie using fixed Golden Vectors and nega
 - truncated input
 - malicious sequence/map lengths without untrusted preallocation
 
-Latest validation: **166 passed, 0 failed, 0 skipped, 0 errors**.
+Latest validation: **168 passed, 0 failed, 0 skipped, 0 errors**.
 
 ## Remaining work before a release-ready claim
 
