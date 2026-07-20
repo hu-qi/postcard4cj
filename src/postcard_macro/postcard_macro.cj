@@ -178,15 +178,23 @@ ${decodeArguments}
 }
 
 private func generateEnum(input: Tokens, declaration: EnumDecl): Tokens {
+    var genericParameters = ""
+    var genericConstraints = ""
     if (declaration.isGenericDecl) {
-        diagReport(DiagReportLevel.ERROR,input,"@Postcard generic enums are not supported yet","Use a non-generic enum payload wrapper or implement PostcardEncode/PostcardDecode manually.")
-        return input
+        if (declaration.genericConstraint.size > 0) {
+            diagReport(DiagReportLevel.ERROR,input,"@Postcard generic enums with existing where constraints are not supported yet","Move the codec bounds to a manual extension or remove the existing constraints.")
+            return input
+        }
+        let names = genericParameterList(declaration)
+        genericParameters = "<${names}>"
+        genericConstraints = " where ${genericCodecBounds(declaration)}"
     }
     if (declaration.ellipsis.value == "...") {
         diagReport(DiagReportLevel.ERROR,input,"@Postcard cannot generate a stable codec for a non-exhaustive enum","Remove the ellipsis constructor or implement the codec manually.")
         return input
     }
     let typeName = declaration.identifier.value
+    let concreteType = "${typeName}${genericParameters}"
     var encodeCases = ""
     var decodeCases = ""
     var variantIndex = 0i64
@@ -217,13 +225,13 @@ private func generateEnum(input: Tokens, declaration: EnumDecl): Tokens {
         variantIndex++
     }
     let generated = """
-extend ${typeName} <: PostcardEncode & PostcardDecode<${typeName}> {
+extend${genericParameters} ${concreteType} <: PostcardEncode & PostcardDecode<${concreteType}>${genericConstraints} {
     public func encode(encoder: PostcardEncoder): Unit {
         match (this) {
 ${encodeCases}        }
     }
 
-    public static func decode(decoder: PostcardDecoder): ${typeName} {
+    public static func decode(decoder: PostcardDecoder): ${concreteType} {
         let variantIndex = decoder.readEnumIndex()
         return match (variantIndex) {
 ${decodeCases}            case _ => throw IllegalArgumentException("Unknown Postcard enum variant index for ${typeName}")
