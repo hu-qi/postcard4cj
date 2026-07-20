@@ -3,7 +3,6 @@ package postcard4cj.v2
 import postcard4cj.core.*
 import postcard4cj.flavors.*
 import postcard4cj.serde_model.*
-import std.collection.*
 
 public enum SerializerErrorKind {
     | PushError
@@ -157,14 +156,18 @@ public func toSliceV2<T>(value: T, buffer: Array<UInt8>): Int64
     }
 }
 
-/** Append serialized bytes to an existing growable byte collection. */
-public func toExtendV2<T>(value: T, destination: ArrayList<UInt8>): ArrayList<UInt8>
+/** Stream serialized bytes directly into an existing generic byte sink. */
+public func toExtendV2<T>(value: T, destination: ByteExtendSink): ByteExtendSink
     where T <: PostcardSerialize {
-    let bytes = toVecV2<T>(value)
-    for (byte in bytes) {
-        destination.add(byte)
+    let flavor = ExtendSerializeFlavor(destination)
+    let serializer = Serializer(flavor)
+    try {
+        value.serialize(serializer)
+        serializer.finalize()
+        return flavor.sink()
+    } catch (error: PostcardException) {
+        throw mapSerializerError(error)
     }
-    return destination
 }
 
 public func serializedSizeV2<T>(value: T): Int64 where T <: PostcardSerialize {
