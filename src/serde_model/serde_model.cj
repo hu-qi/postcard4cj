@@ -2,6 +2,7 @@ package postcard4cj.serde_model
 
 import postcard4cj.core.*
 import postcard4cj.flavors.*
+import std.collection.*
 import std.math.numeric.*
 
 /** Cangjie-native substitute for Serde Serialize. */
@@ -242,7 +243,7 @@ public class Deserializer {
         return input.finalize()
     }
 
-    public func deserializeAny(): Nothing {
+    public func deserializeAny(): Unit {
         throw postcardException(PostcardErrorKind.WontImplement)
     }
 
