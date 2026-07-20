@@ -72,17 +72,42 @@ private func ngHasModifier(declaration: Decl, modifierName: String): Bool {
     return false
 }
 
+private func ngSchemaGenericParameterList(declaration: Decl): String {
+    return declaration.genericParam.parameters.toString()
+}
+
+private func ngSchemaGenericBounds(declaration: Decl): String {
+    var bounds = ""
+    var first = true
+    for (token in declaration.genericParam.parameters) {
+        let name = token.value
+        if (name.size == 0 || name == "," || name == "\n") { continue }
+        if (!first) { bounds += ", " }
+        bounds += "${name} <: PostcardSchemaNg<${name}>"
+        first = false
+    }
+    return bounds
+}
+
 private func generateNgStruct(input: Tokens, declaration: StructDecl): Tokens {
+    var genericParameters = ""
+    var genericConstraints = ""
     if (declaration.isGenericDecl) {
-        diagReport(
-            DiagReportLevel.ERROR,
-            input,
-            "@PostcardSchemaNg generic structs are not supported yet",
-            "Implement PostcardSchemaNg manually."
-        )
-        return input
+        if (declaration.genericConstraint.size > 0) {
+            diagReport(
+                DiagReportLevel.ERROR,
+                input,
+                "@PostcardSchemaNg generic structs with existing where constraints are not supported yet",
+                "Move NG schema bounds to a manual extension or remove the existing constraints."
+            )
+            return input
+        }
+        let names = ngSchemaGenericParameterList(declaration)
+        genericParameters = "<${names}>"
+        genericConstraints = " where ${ngSchemaGenericBounds(declaration)}"
     }
     let typeName = declaration.identifier.value
+    let concreteType = "${typeName}${genericParameters}"
     var fields = ""
     var count = 0i64
     for (member in declaration.body.decls) {
@@ -100,7 +125,7 @@ private func generateNgStruct(input: Tokens, declaration: StructDecl): Tokens {
         count++
     }
     let generated = """
-extend ${typeName} <: PostcardSchemaNg<${typeName}> {
+extend${genericParameters} ${concreteType} <: PostcardSchemaNg<${concreteType}>${genericConstraints} {
     public static func schemaNg(): NamedType {
         return structSchema("${typeName}", [
 ${fields}
@@ -117,7 +142,7 @@ private func generateNgEnum(input: Tokens, declaration: EnumDecl): Tokens {
             DiagReportLevel.ERROR,
             input,
             "@PostcardSchemaNg requires a non-generic exhaustive enum",
-            "Implement PostcardSchemaNg manually for this enum."
+            "Use a non-generic payload wrapper or implement PostcardSchemaNg manually."
         )
         return input
     }
