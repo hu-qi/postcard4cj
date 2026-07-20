@@ -65,6 +65,14 @@ public class PostcardOptionAndSequenceTest {
         let decoder = PostcardDecoder(encoder.toArray())
         @Assert(decoder.readSequence<UInt16>({=> decoder.readUInt16()}), [1u16,128u16])
     }
+
+    @TestCase
+    public func untrustedSequenceLengthDoesNotPreallocateWireCount(): Unit {
+        let encoder = PostcardEncoder()
+        encoder.writeSequenceLength(1_000_000_000i64)
+        let decoder = PostcardDecoder(encoder.toArray())
+        @AssertThrows[Exception](decoder.readSequence<UInt8>({=> decoder.readUInt8()}))
+    }
 }
 
 @Test
