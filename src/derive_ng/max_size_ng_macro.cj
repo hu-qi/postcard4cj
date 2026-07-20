@@ -71,7 +71,15 @@ private func ngMaxHasModifier(declaration: Decl, modifierName: String): Bool {
 }
 
 private func ngMaxGenericParameterList(declaration: Decl): String {
-    return declaration.genericParam.parameters.toString()
+    var names = ""
+    var first = true
+    for (token in declaration.genericParam.parameters) {
+        if (token.kind != TokenKind.IDENTIFIER) { continue }
+        if (!first) { names += ", " }
+        names += token.value
+        first = false
+    }
+    return names
 }
 
 private func ngMaxGenericBounds(declaration: Decl): String {
