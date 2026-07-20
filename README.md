@@ -107,13 +107,13 @@ cjpm build -V
 cjpm test -V
 ```
 
-Compatibility vectors for records, telemetry, COBS, CRC32C, compound values, 128-bit integers, generated structs, generated enums, and generic generated structs are maintained as Cangjie tests.
+Compatibility vectors for records, telemetry, COBS, CRC32C, compound values, 128-bit integers, generated structs, generated enums, generic generated structs, and framed remainder helpers are maintained as Cangjie tests.
 
 Latest pure Cangjie validation:
 
 - pure-source policy: passed
 - `cjpm build -V`: passed
-- `cjpm test -V`: **166 passed, 0 failed, 0 skipped, 0 errors**
+- `cjpm test -V`: **168 passed, 0 failed, 0 skipped, 0 errors**
 
 ## Remaining compatibility work
 
