@@ -102,31 +102,6 @@ private func decodeExpression(typeNode: TypeNode): String {
     return "${rendered}.decode(decoder)"
 }
 
-private func genericParameterList(declaration: Decl): String {
-    var names = ""
-    var first = true
-    for (token in declaration.genericParam.parameters) {
-        if (token.kind != TokenKind.IDENTIFIER) { continue }
-        if (!first) { names += ", " }
-        names += token.value
-        first = false
-    }
-    return names
-}
-
-private func genericCodecBounds(declaration: Decl): String {
-    var bounds = ""
-    var first = true
-    for (token in declaration.genericParam.parameters) {
-        if (token.kind != TokenKind.IDENTIFIER) { continue }
-        let name = token.value
-        if (!first) { bounds += ", " }
-        bounds += "${name} <: PostcardEncode & PostcardDecode<${name}>"
-        first = false
-    }
-    return bounds
-}
-
 private func generateStruct(input: Tokens, declaration: StructDecl): Tokens {
     var genericParameters = ""
     var genericConstraints = ""
@@ -135,9 +110,9 @@ private func generateStruct(input: Tokens, declaration: StructDecl): Tokens {
             diagReport(DiagReportLevel.ERROR,input,"@Postcard generic structs with existing where constraints are not supported yet","Move the codec bounds to a manual extension or remove the existing constraints.")
             return input
         }
-        let names = genericParameterList(declaration)
+        let names = genericParameterNames(declaration)
         genericParameters = "<${names}>"
-        genericConstraints = " where ${genericCodecBounds(declaration)}"
+        genericConstraints = " where ${genericBoundList(declaration, GenericBoundKind.Codec)}"
     }
 
     let typeName = declaration.identifier.value
@@ -185,9 +160,9 @@ private func generateEnum(input: Tokens, declaration: EnumDecl): Tokens {
             diagReport(DiagReportLevel.ERROR,input,"@Postcard generic enums with existing where constraints are not supported yet","Move the codec bounds to a manual extension or remove the existing constraints.")
             return input
         }
-        let names = genericParameterList(declaration)
+        let names = genericParameterNames(declaration)
         genericParameters = "<${names}>"
-        genericConstraints = " where ${genericCodecBounds(declaration)}"
+        genericConstraints = " where ${genericBoundList(declaration, GenericBoundKind.Codec)}"
     }
     if (declaration.ellipsis.value == "...") {
         diagReport(DiagReportLevel.ERROR,input,"@Postcard cannot generate a stable codec for a non-exhaustive enum","Remove the ellipsis constructor or implement the codec manually.")
