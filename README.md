@@ -32,7 +32,7 @@ Completion means providing Cangjie-native equivalents for the complete workspace
 
 See [`MIGRATION.md`](MIGRATION.md) for the current coverage matrix and acceptance criteria.
 
-## Implemented packages
+## Implemented and validated
 
 - `postcard4cj.core`
   - Postcard primitive wire model through 128-bit integers
@@ -57,9 +57,9 @@ See [`MIGRATION.md`](MIGRATION.md) for the current coverage matrix and acceptanc
   - basic `@Postcard` struct/enum macro
   - Rust `postcard = 1.1.3` Golden Vector oracle
 
-## Development branch and PR
+The latest code-bearing Cangjie validation completed successfully in Actions run `29719455828`.
 
-Full implementation work is submitted to:
+## Development branch and PR
 
 ```text
 feat/full-postcard-port
