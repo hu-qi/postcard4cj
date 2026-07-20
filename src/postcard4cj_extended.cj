@@ -136,7 +136,12 @@ extend PostcardDecoder {
     /** Reads a dynamic sequence into an Array. */
     public func readSequence<T>(readValue: () -> T): Array<T> {
         let length = readSequenceLength()
-        let output = ArrayList<T>(length)
+        // Length comes from the wire and must not be trusted as an allocation size.
+        // Any non-empty encoded element consumes at least one byte; zero-sized
+        // elements are still supported because ArrayList can grow dynamically.
+        let remainingBytes = remaining()
+        let initialCapacity = if (length > remainingBytes) { remainingBytes } else { length }
+        let output = ArrayList<T>(initialCapacity)
         var index = 0i64
         while (index < length) {
             output.add(readValue())
