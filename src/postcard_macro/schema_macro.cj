@@ -30,7 +30,7 @@ private func schemaReportUnsupported(typeNode: TypeNode): Unit {
         DiagReportLevel.ERROR,
         typeNode.toTokens(),
         "@PostcardSchema does not support field type '${rendered}'",
-        "Use a primitive, Option<T>, Array<T>, or a type implementing PostcardSchema."
+        "Use a primitive, Option<T>, Array<T>, a generic schema parameter, or a type implementing PostcardSchema."
     )
 }
 
@@ -83,18 +83,43 @@ private func schemaHasModifier(declaration: Decl, modifierName: String): Bool {
     return false
 }
 
+private func schemaGenericParameterList(declaration: Decl): String {
+    return declaration.genericParam.parameters.toString()
+}
+
+private func schemaGenericBounds(declaration: Decl): String {
+    var bounds = ""
+    var first = true
+    for (token in declaration.genericParam.parameters) {
+        let name = token.value
+        if (name.size == 0 || name == "," || name == "\n") { continue }
+        if (!first) { bounds += ", " }
+        bounds += "${name} <: PostcardSchema<${name}>"
+        first = false
+    }
+    return bounds
+}
+
 private func generateStructSchema(input: Tokens, declaration: StructDecl): Tokens {
+    var genericParameters = ""
+    var genericConstraints = ""
     if (declaration.isGenericDecl) {
-        diagReport(
-            DiagReportLevel.ERROR,
-            input,
-            "@PostcardSchema generic structs are not supported yet",
-            "Implement PostcardSchema manually until generic macro bounds are available."
-        )
-        return input
+        if (declaration.genericConstraint.size > 0) {
+            diagReport(
+                DiagReportLevel.ERROR,
+                input,
+                "@PostcardSchema generic structs with existing where constraints are not supported yet",
+                "Move schema bounds to a manual extension or remove the existing constraints."
+            )
+            return input
+        }
+        let names = schemaGenericParameterList(declaration)
+        genericParameters = "<${names}>"
+        genericConstraints = " where ${schemaGenericBounds(declaration)}"
     }
 
     let typeName = declaration.identifier.value
+    let concreteType = "${typeName}${genericParameters}"
     var fields = ""
     var fieldCount = 0i64
 
@@ -124,7 +149,7 @@ private func generateStructSchema(input: Tokens, declaration: StructDecl): Token
     }
 
     let generated = """
-extend ${typeName} <: PostcardSchema<${typeName}> {
+extend${genericParameters} ${concreteType} <: PostcardSchema<${concreteType}>${genericConstraints} {
     public static func schema(): NamedType {
         return structSchema("${typeName}", [
 ${fields}
@@ -141,7 +166,7 @@ private func generateEnumSchema(input: Tokens, declaration: EnumDecl): Tokens {
             DiagReportLevel.ERROR,
             input,
             "@PostcardSchema generic enums are not supported yet",
-            "Implement PostcardSchema manually until generic macro bounds are available."
+            "Use a non-generic payload wrapper or implement PostcardSchema manually."
         )
         return input
     }
