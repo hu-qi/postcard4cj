@@ -7,6 +7,9 @@ on:
     paths:
       - "src/**"
       - "cjpm.toml"
+      - "README.md"
+      - "MIGRATION.md"
+      - "API_COMPATIBILITY.md"
       - "**/*.rs"
       - "**/Cargo.toml"
       - "**/Cargo.lock"
@@ -19,6 +22,9 @@ on:
     paths:
       - "src/**"
       - "cjpm.toml"
+      - "README.md"
+      - "MIGRATION.md"
+      - "API_COMPATIBILITY.md"
       - "**/*.rs"
       - "**/Cargo.toml"
       - "**/Cargo.lock"
@@ -34,7 +40,7 @@ permissions:
 
 env:
   CANGJIE_VERSION: "1.1.3"
-  CANGJIE_PLATFORM: "linux-x64"
+  CANGJIE_PLATFORM: linux-x64
   CANGJIE_CACHE_DIR: "${{ github.workspace }}/.cache/cangjie-sdk"
   CANGJIE_SDK_URL: "${{ vars.CANGJIE_SDK_URL }}"
   CANGJIE_SDK_SHA256: "${{ vars.CANGJIE_SDK_SHA256 }}"
