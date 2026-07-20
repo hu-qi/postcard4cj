@@ -95,7 +95,7 @@ See [`MIGRATION.md`](MIGRATION.md) for the detailed coverage matrix and [`API_CO
 - `@PostcardSchema` and `@PostcardMaxSize`
 - `@PostcardSchemaNg` and `@PostcardMaxSizeNg`
 - struct and enum declaration-order semantics
-- `@Postcard` supports non-generic declarations and generic structs without pre-existing `where` constraints
+- all four macro families support generic structs without pre-existing `where` constraints
 - generic enums, constrained generic declarations, and rename attributes remain under audit
 
 ## Verification
@@ -113,14 +113,13 @@ Latest pure Cangjie validation:
 
 - pure-source policy: passed
 - `cjpm build -V`: passed
-- `cjpm test -V`: **162 passed, 0 failed, 0 skipped, 0 errors**
+- `cjpm test -V`: **166 passed, 0 failed, 0 skipped, 0 errors**
 
 ## Remaining compatibility work
 
 - complete the line-by-line public API audit
 - expand invalid-input and edge-case parity tests
 - add generic enum and constrained-generic macro support where the Cangjie macro/type system permits it
-- extend Schema/MaxSize generic declaration support
 - add rename and related macro attributes
 - document ownership, borrowing, const-generic, and embedded-IO substitutions
 - provide Cangjie-native adapters or explicit exclusions for optional ecosystem integrations
