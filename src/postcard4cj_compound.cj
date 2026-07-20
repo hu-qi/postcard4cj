@@ -89,7 +89,11 @@ extend PostcardDecoder {
         readValue: () -> V
     ): Array<(K, V)> {
         let length = readSequenceLength()
-        let output = ArrayList<(K, V)>(length)
+        // Do not trust a wire-provided count as an eager allocation size.
+        // ArrayList remains free to grow for legitimate zero-sized entries.
+        let remainingBytes = remaining()
+        let initialCapacity = if (length > remainingBytes) { remainingBytes } else { length }
+        let output = ArrayList<(K, V)>(initialCapacity)
         var index = 0i64
         while (index < length) {
             output.add((readKey(), readValue()))
