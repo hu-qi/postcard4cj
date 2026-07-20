@@ -91,8 +91,8 @@ private func schemaGenericBounds(declaration: Decl): String {
     var bounds = ""
     var first = true
     for (token in declaration.genericParam.parameters) {
+        if (token.kind != TokenKind.IDENTIFIER) { continue }
         let name = token.value
-        if (name.size == 0 || name == "," || name == "\n") { continue }
         if (!first) { bounds += ", " }
         bounds += "${name} <: PostcardSchema<${name}>"
         first = false
