@@ -31,6 +31,17 @@ public struct NgRecord {
 }
 
 @PostcardSchemaNg
+public struct NgGenericRecord<T> {
+    public let value: T
+    public let sample: Option<T>
+
+    public init(value: T, sample: Option<T>) {
+        this.value = value
+        this.sample = sample
+    }
+}
+
+@PostcardSchemaNg
 public enum NgCommand {
     | Ping
     | Set(UInt16)
@@ -60,6 +71,17 @@ public struct NgBoundedRecord {
 }
 
 @PostcardMaxSizeNg
+public struct NgGenericBounded<T> {
+    public let value: T
+    public let sample: Option<T>
+
+    public init(value: T, sample: Option<T>) {
+        this.value = value
+        this.sample = sample
+    }
+}
+
+@PostcardMaxSizeNg
 public enum NgBoundedCommand {
     | Ping
     | Set(UInt16)
@@ -75,6 +97,14 @@ public class NextGenerationSchemaDeriveTest {
             "struct NgRecord { id: u32, inner: NgInner, note: Option<String> }"
         )
         @Assert(formatSchema(schemaNgOf<NgRecord>()), formatSchema(NgRecord.schemaNg()))
+    }
+
+    @TestCase
+    public func ngGenericStructAddsSchemaBounds(): Unit {
+        @Assert(
+            formatSchema(NgGenericRecord<NgInner>.schemaNg()),
+            "struct NgGenericRecord { value: NgInner, sample: Option<NgInner> }"
+        )
     }
 
     @TestCase
@@ -104,6 +134,11 @@ public class NextGenerationMaxSizeDeriveTest {
     public func ngStructSumsNestedBounds(): Unit {
         @Assert(NgBoundedInner.postcardMaxSize(), 3)
         @Assert(NgBoundedRecord.postcardMaxSize(), 9)
+    }
+
+    @TestCase
+    public func ngGenericStructAddsMaximumSizeBounds(): Unit {
+        @Assert(NgGenericBounded<NgBoundedInner>.postcardMaxSize(), 7)
     }
 
     @TestCase
