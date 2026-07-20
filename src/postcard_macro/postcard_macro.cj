@@ -103,7 +103,15 @@ private func decodeExpression(typeNode: TypeNode): String {
 }
 
 private func genericParameterList(declaration: Decl): String {
-    return declaration.genericParam.parameters.toString()
+    var names = ""
+    var first = true
+    for (token in declaration.genericParam.parameters) {
+        if (token.kind != TokenKind.IDENTIFIER) { continue }
+        if (!first) { names += ", " }
+        names += token.value
+        first = false
+    }
+    return names
 }
 
 private func genericCodecBounds(declaration: Decl): String {
