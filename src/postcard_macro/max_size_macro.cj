@@ -75,31 +75,6 @@ private func maxSizeHasModifier(declaration: Decl, modifierName: String): Bool {
     return false
 }
 
-private func maxSizeGenericParameterList(declaration: Decl): String {
-    var names = ""
-    var first = true
-    for (token in declaration.genericParam.parameters) {
-        if (token.kind != TokenKind.IDENTIFIER) { continue }
-        if (!first) { names += ", " }
-        names += token.value
-        first = false
-    }
-    return names
-}
-
-private func maxSizeGenericBounds(declaration: Decl): String {
-    var bounds = ""
-    var first = true
-    for (token in declaration.genericParam.parameters) {
-        if (token.kind != TokenKind.IDENTIFIER) { continue }
-        let name = token.value
-        if (!first) { bounds += ", " }
-        bounds += "${name} <: PostcardMaxSize"
-        first = false
-    }
-    return bounds
-}
-
 private func maxSizeStructExpression(declaration: StructDecl): String {
     var expression = "0i64"
     for (member in declaration.body.decls) {
@@ -138,9 +113,9 @@ private func generateStructMaxSize(input: Tokens, declaration: StructDecl): Toke
             )
             return input
         }
-        let names = maxSizeGenericParameterList(declaration)
+        let names = genericParameterNames(declaration)
         genericParameters = "<${names}>"
-        genericConstraints = " where ${maxSizeGenericBounds(declaration)}"
+        genericConstraints = " where ${genericBoundList(declaration, GenericBoundKind.MaxSize)}"
     }
 
     let typeName = declaration.identifier.value
@@ -169,9 +144,9 @@ private func generateEnumMaxSize(input: Tokens, declaration: EnumDecl): Tokens {
             )
             return input
         }
-        let names = maxSizeGenericParameterList(declaration)
+        let names = genericParameterNames(declaration)
         genericParameters = "<${names}>"
-        genericConstraints = " where ${maxSizeGenericBounds(declaration)}"
+        genericConstraints = " where ${genericBoundList(declaration, GenericBoundKind.MaxSize)}"
     }
     if (declaration.ellipsis.value == "...") {
         diagReport(
