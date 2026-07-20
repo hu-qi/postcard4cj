@@ -23,10 +23,10 @@ public struct FixedPacket <: PostcardSerialize {
 @Test
 public class FixedByteVecTest {
     @TestCase
-    public func pushExtendAndMutationRespectUsedLength(): Unit {
+    public func pushAppendAndMutationRespectUsedLength(): Unit {
         let value = FixedByteVec(5)
         value.push(1u8)
-        value.extend([2u8, 3u8])
+        value.appendBytes([2u8, 3u8])
         @Assert(value.size(), 3)
         @Assert(value.remaining(), 2)
         @Assert(value.toArray(), [1u8, 2u8, 3u8])
