@@ -6,21 +6,28 @@ Upstream baseline commit: de182557cff45f2ca9b2b67a6b93be5917612a44
 Upstream copyright: Copyright (c) 2019 Anthony James Munns and contributors
 Upstream license: MIT OR Apache-2.0
 
-Adaptation type: Independent Cangjie-language implementation
+Adaptation type: Independent pure Cangjie implementation
 Adaptation repository: https://github.com/hu-qi/postcard4cj
+AtomGit mirror: https://atomgit.com/huqi/postcard4cj
 Adaptation copyright: Copyright 2026 hu-qi contributors
 Adaptation license: MIT OR Apache-2.0
 
+Supported compiler lines:
+
+- Cangjie LTS 1.0.5: branch `postcard4cj_lt_1.0.5`
+- Cangjie STS 1.1.3: branch `postcard4cj_st_1.1.3`
+
 Modification statement:
 
-postcard4cj reimplements the upstream Postcard wire format, public concepts, and workspace behavior in Cangjie. It does not embed, compile, execute, or distribute the upstream Rust implementation. Language-specific substitutions for ownership, borrowing, generic capacity, exceptions, macros, and IO are documented in MIGRATION.md and API_COMPATIBILITY.md.
+postcard4cj reimplements the upstream Postcard wire format, public concepts, and workspace behavior in Cangjie. It does not embed, compile, execute, or distribute the upstream Rust implementation. Language-specific substitutions for ownership, borrowing, generic capacity, exceptions, macros, and IO are documented in `MIGRATION.md`, `API_COMPATIBILITY.md`, and `doc/design.md`.
 
-Included license files:
+Included license and attribution files:
 
 - LICENSE-MIT
 - LICENSE-APACHE
 - NOTICE
+- README.OpenSource
 
 Verification:
 
-Compatibility is validated through pure Cangjie Golden Vectors, malformed-input tests, and Cangjie LTS/STS build-and-test workflows.
+Compatibility is validated through pure Cangjie Golden Vectors, malformed-input tests, security regressions, and a dual-version matrix. Both Cangjie 1.0.5 and 1.1.3 pass the build and all 178 tests.
