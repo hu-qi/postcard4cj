@@ -120,7 +120,7 @@ extend DataModelVariant <: PostcardSerialize & PostcardDeserialize<DataModelVari
 extend DataModelType <: PostcardSerialize & PostcardDeserialize<DataModelType> {
     public func serialize(serializer: Serializer): Unit {
         match (this) {
-            case DataModelType.Bool => serializer.beginUnitVariant(0u32)
+            case DataModelType.Boolean => serializer.beginUnitVariant(0u32)
             case DataModelType.I8 => serializer.beginUnitVariant(1u32)
             case DataModelType.U8 => serializer.beginUnitVariant(2u32)
             case DataModelType.I16 => serializer.beginUnitVariant(3u32)
@@ -141,7 +141,7 @@ extend DataModelType <: PostcardSerialize & PostcardDeserialize<DataModelType> {
             case DataModelType.Option(inner) =>
                 serializer.beginNewtypeVariant(18u32)
                 inner.serialize(serializer)
-            case DataModelType.Unit => serializer.beginUnitVariant(19u32)
+            case DataModelType.UnitValue => serializer.beginUnitVariant(19u32)
             case DataModelType.UnitStruct => serializer.beginUnitVariant(20u32)
             case DataModelType.NewtypeStruct(inner) =>
                 serializer.beginNewtypeVariant(21u32)
@@ -172,7 +172,7 @@ extend DataModelType <: PostcardSerialize & PostcardDeserialize<DataModelType> {
     public static func deserialize(deserializer: Deserializer): DataModelType {
         let index = deserializer.deserializeVariantIndex()
         return match (index) {
-            case 0u32 => DataModelType.Bool
+            case 0u32 => DataModelType.Boolean
             case 1u32 => DataModelType.I8
             case 2u32 => DataModelType.U8
             case 3u32 => DataModelType.I16
@@ -191,7 +191,7 @@ extend DataModelType <: PostcardSerialize & PostcardDeserialize<DataModelType> {
             case 16u32 => DataModelType.StringValue
             case 17u32 => DataModelType.ByteArray
             case 18u32 => DataModelType.Option(NamedType.deserialize(deserializer))
-            case 19u32 => DataModelType.Unit
+            case 19u32 => DataModelType.UnitValue
             case 20u32 => DataModelType.UnitStruct
             case 21u32 => DataModelType.NewtypeStruct(NamedType.deserialize(deserializer))
             case 22u32 => DataModelType.Seq(NamedType.deserialize(deserializer))
