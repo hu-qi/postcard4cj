@@ -51,7 +51,7 @@ private func hasModifier(declaration: Decl, modifierName: String): Bool {
 
 private func reportUnsupported(typeNode: TypeNode): Unit {
     let rendered = typeNode.toTokens().toString()
-    diagReport(DiagReportLevel.ERROR,typeNode.toTokens(),"@Postcard does not yet support field type '${rendered}'","Implement the codec manually or use a primitive, Option<T>, Array<T>, or nested codec type.")
+    diagReport(DiagReportLevel.ERROR,typeNode.toTokens(),"@Postcard does not yet support field type '${rendered}'","Implement the codec manually or use a primitive, Option<T>, Array<T>, a generic codec parameter, or a nested codec type.")
 }
 
 private func encodeStatement(typeNode: TypeNode, valueExpr: String): String {
@@ -64,7 +64,7 @@ private func encodeStatement(typeNode: TypeNode, valueExpr: String): String {
     }
     let identifier = reference.identifier.value
     if (identifier == "BigInt") {
-        diagReport(DiagReportLevel.ERROR,typeNode.toTokens(),"@Postcard cannot infer whether BigInt represents Rust i128 or u128","Use PostcardInt128/PostcardUInt128 or implement the codec manually.")
+        diagReport(DiagReportLevel.ERROR,typeNode.toTokens(),"@Postcard cannot infer whether BigInt represents signed or unsigned 128-bit data","Use PostcardInt128/PostcardUInt128 or implement the codec manually.")
         return "encoder.writeUnit()"
     }
     if (identifier == "Option" || identifier == "Array") {
@@ -88,7 +88,7 @@ private func decodeExpression(typeNode: TypeNode): String {
     }
     let identifier = reference.identifier.value
     if (identifier == "BigInt") {
-        diagReport(DiagReportLevel.ERROR,typeNode.toTokens(),"@Postcard cannot infer whether BigInt represents Rust i128 or u128","Use PostcardInt128/PostcardUInt128 or implement the codec manually.")
+        diagReport(DiagReportLevel.ERROR,typeNode.toTokens(),"@Postcard cannot infer whether BigInt represents signed or unsigned 128-bit data","Use PostcardInt128/PostcardUInt128 or implement the codec manually.")
         return "decoder.readUnit()"
     }
     if (identifier == "Option" || identifier == "Array") {
@@ -102,12 +102,38 @@ private func decodeExpression(typeNode: TypeNode): String {
     return "${rendered}.decode(decoder)"
 }
 
-private func generateStruct(input: Tokens, declaration: StructDecl): Tokens {
-    if (declaration.isGenericDecl) {
-        diagReport(DiagReportLevel.ERROR,input,"@Postcard generic structs are not supported yet","Implement PostcardEncode/PostcardDecode manually.")
-        return input
+private func genericParameterList(declaration: Decl): String {
+    return declaration.genericParam.parameters.toString()
+}
+
+private func genericCodecBounds(declaration: Decl): String {
+    var bounds = ""
+    var first = true
+    for (token in declaration.genericParam.parameters) {
+        let name = token.value
+        if (name.size == 0 || name == "," || name == "\n") { continue }
+        if (!first) { bounds += ", " }
+        bounds += "${name} <: PostcardEncode & PostcardDecode<${name}>"
+        first = false
     }
+    return bounds
+}
+
+private func generateStruct(input: Tokens, declaration: StructDecl): Tokens {
+    var genericParameters = ""
+    var genericConstraints = ""
+    if (declaration.isGenericDecl) {
+        if (declaration.genericConstraint.size > 0) {
+            diagReport(DiagReportLevel.ERROR,input,"@Postcard generic structs with existing where constraints are not supported yet","Move the codec bounds to a manual extension or remove the existing constraints.")
+            return input
+        }
+        let names = genericParameterList(declaration)
+        genericParameters = "<${names}>"
+        genericConstraints = " where ${genericCodecBounds(declaration)}"
+    }
+
     let typeName = declaration.identifier.value
+    let concreteType = "${typeName}${genericParameters}"
     var encodeBody = ""
     var decodeArguments = ""
     var fieldCount = 0i64
@@ -129,12 +155,12 @@ private func generateStruct(input: Tokens, declaration: StructDecl): Tokens {
         fieldCount++
     }
     let generated = """
-extend ${typeName} <: PostcardEncode & PostcardDecode<${typeName}> {
+extend${genericParameters} ${concreteType} <: PostcardEncode & PostcardDecode<${concreteType}>${genericConstraints} {
     public func encode(encoder: PostcardEncoder): Unit {
 ${encodeBody}    }
 
-    public static func decode(decoder: PostcardDecoder): ${typeName} {
-        return ${typeName}(
+    public static func decode(decoder: PostcardDecoder): ${concreteType} {
+        return ${concreteType}(
 ${decodeArguments}
         )
     }
@@ -145,7 +171,7 @@ ${decodeArguments}
 
 private func generateEnum(input: Tokens, declaration: EnumDecl): Tokens {
     if (declaration.isGenericDecl) {
-        diagReport(DiagReportLevel.ERROR,input,"@Postcard generic enums are not supported yet","Implement PostcardEncode/PostcardDecode manually.")
+        diagReport(DiagReportLevel.ERROR,input,"@Postcard generic enums are not supported yet","Use a non-generic enum payload wrapper or implement PostcardEncode/PostcardDecode manually.")
         return input
     }
     if (declaration.ellipsis.value == "...") {
