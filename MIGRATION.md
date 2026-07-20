@@ -2,6 +2,8 @@
 
 Upstream baseline: `jamesmunns/postcard@de182557cff45f2ca9b2b67a6b93be5917612a44`.
 
+Active implementation PR: [`hu-qi/postcard4cj#1`](https://github.com/hu-qi/postcard4cj/pull/1).
+
 This document defines what “complete migration” means. A byte-compatible encoder alone is not sufficient.
 
 ## Workspace mapping
