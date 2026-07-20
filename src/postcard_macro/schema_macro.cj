@@ -83,31 +83,6 @@ private func schemaHasModifier(declaration: Decl, modifierName: String): Bool {
     return false
 }
 
-private func schemaGenericParameterList(declaration: Decl): String {
-    var names = ""
-    var first = true
-    for (token in declaration.genericParam.parameters) {
-        if (token.kind != TokenKind.IDENTIFIER) { continue }
-        if (!first) { names += ", " }
-        names += token.value
-        first = false
-    }
-    return names
-}
-
-private func schemaGenericBounds(declaration: Decl): String {
-    var bounds = ""
-    var first = true
-    for (token in declaration.genericParam.parameters) {
-        if (token.kind != TokenKind.IDENTIFIER) { continue }
-        let name = token.value
-        if (!first) { bounds += ", " }
-        bounds += "${name} <: PostcardSchema<${name}>"
-        first = false
-    }
-    return bounds
-}
-
 private func generateStructSchema(input: Tokens, declaration: StructDecl): Tokens {
     var genericParameters = ""
     var genericConstraints = ""
@@ -121,9 +96,9 @@ private func generateStructSchema(input: Tokens, declaration: StructDecl): Token
             )
             return input
         }
-        let names = schemaGenericParameterList(declaration)
+        let names = genericParameterNames(declaration)
         genericParameters = "<${names}>"
-        genericConstraints = " where ${schemaGenericBounds(declaration)}"
+        genericConstraints = " where ${genericBoundList(declaration, GenericBoundKind.Schema)}"
     }
 
     let typeName = declaration.identifier.value
@@ -181,9 +156,9 @@ private func generateEnumSchema(input: Tokens, declaration: EnumDecl): Tokens {
             )
             return input
         }
-        let names = schemaGenericParameterList(declaration)
+        let names = genericParameterNames(declaration)
         genericParameters = "<${names}>"
-        genericConstraints = " where ${schemaGenericBounds(declaration)}"
+        genericConstraints = " where ${genericBoundList(declaration, GenericBoundKind.Schema)}"
     }
     if (declaration.ellipsis.value == "...") {
         diagReport(
