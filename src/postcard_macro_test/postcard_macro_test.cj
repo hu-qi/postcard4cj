@@ -64,6 +64,17 @@ public struct GenericEnvelope<T> {
     }
 }
 
+@Postcard
+public struct GenericPair<T, U> {
+    public let first: T
+    public let second: U
+
+    public init(first: T, second: U) {
+        this.first = first
+        this.second = second
+    }
+}
+
 @Test
 public class PostcardMacroTest {
     @TestCase
@@ -112,5 +123,24 @@ public class PostcardMacroTest {
         @Assert(decoded.history.size, 2)
         @Assert(decoded.history[0].code, 1u16)
         @Assert(decoded.history[1].code, 300u16)
+    }
+
+    @TestCase
+    public func generatedStructSupportsMultipleGenericParameters(): Unit {
+        let value = GenericPair<GenericLeaf, MacroRecord>(
+            GenericLeaf(128u16),
+            MacroRecord(42u32, -1i32, None, [1u16])
+        )
+        let expected: Array<UInt8> = [
+            0x80u8, 0x01u8,
+            0x2au8, 0x01u8, 0x00u8, 0x01u8, 0x01u8
+        ]
+        @Assert(toBytes<GenericPair<GenericLeaf, MacroRecord>>(value), expected)
+        let decoded = fromBytes<GenericPair<GenericLeaf, MacroRecord>>(expected)
+        @Assert(decoded.first.code, 128u16)
+        @Assert(decoded.second.id, 42u32)
+        @Assert(decoded.second.delta, -1i32)
+        @Assert(decoded.second.note, None)
+        @Assert(decoded.second.values, [1u16])
     }
 }
