@@ -35,7 +35,7 @@ public class NamedVariant {
 
 /** Complete Postcard/Serde data model plus the Schema node. */
 public enum DataModelType {
-    | Bool
+    | Boolean
     | I8
     | U8
     | I16
@@ -54,7 +54,7 @@ public enum DataModelType {
     | StringValue
     | ByteArray
     | Option(NamedType)
-    | Unit
+    | UnitValue
     | UnitStruct
     | NewtypeStruct(NamedType)
     | Seq(NamedType)
@@ -83,7 +83,7 @@ public func schemaOf<T>(): NamedType where T <: PostcardSchema<T> {
     return T.schema()
 }
 
-public func boolSchema(): NamedType { return NamedType("bool", DataModelType.Bool) }
+public func boolSchema(): NamedType { return NamedType("bool", DataModelType.Boolean) }
 public func int8Schema(): NamedType { return NamedType("i8", DataModelType.I8) }
 public func uint8Schema(): NamedType { return NamedType("u8", DataModelType.U8) }
 public func int16Schema(): NamedType { return NamedType("i16", DataModelType.I16) }
@@ -101,7 +101,7 @@ public func float64Schema(): NamedType { return NamedType("f64", DataModelType.F
 public func runeSchema(): NamedType { return NamedType("char", DataModelType.Char) }
 public func stringSchema(): NamedType { return NamedType("String", DataModelType.StringValue) }
 public func byteArraySchema(): NamedType { return NamedType("[u8]", DataModelType.ByteArray) }
-public func unitSchema(): NamedType { return NamedType("()", DataModelType.Unit) }
+public func unitSchema(): NamedType { return NamedType("()", DataModelType.UnitValue) }
 public func schemaSchema(): NamedType { return NamedType("NamedType", DataModelType.Schema) }
 
 public func optionSchema(inner: NamedType): NamedType {
@@ -138,8 +138,7 @@ public func toOwnedSchema(schema: NamedType): NamedType {
 }
 
 private func cloneNamedTypes(values: Array<NamedType>): Array<NamedType> {
-    let output = Array<NamedType>(values.size, {index: Int64 => toOwnedSchema(values[index])})
-    return output
+    return Array<NamedType>(values.size, {index: Int64 => toOwnedSchema(values[index])})
 }
 
 private func cloneNamedValues(values: Array<NamedValue>): Array<NamedValue> {
@@ -168,7 +167,7 @@ private func cloneDataModelVariant(value: DataModelVariant): DataModelVariant {
 
 private func cloneDataModelType(value: DataModelType): DataModelType {
     return match (value) {
-        case DataModelType.Bool => DataModelType.Bool
+        case DataModelType.Boolean => DataModelType.Boolean
         case DataModelType.I8 => DataModelType.I8
         case DataModelType.U8 => DataModelType.U8
         case DataModelType.I16 => DataModelType.I16
@@ -187,7 +186,7 @@ private func cloneDataModelType(value: DataModelType): DataModelType {
         case DataModelType.StringValue => DataModelType.StringValue
         case DataModelType.ByteArray => DataModelType.ByteArray
         case DataModelType.Option(inner) => DataModelType.Option(toOwnedSchema(inner))
-        case DataModelType.Unit => DataModelType.Unit
+        case DataModelType.UnitValue => DataModelType.UnitValue
         case DataModelType.UnitStruct => DataModelType.UnitStruct
         case DataModelType.NewtypeStruct(inner) =>
             DataModelType.NewtypeStruct(toOwnedSchema(inner))
