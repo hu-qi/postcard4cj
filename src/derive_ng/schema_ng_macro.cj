@@ -73,7 +73,15 @@ private func ngHasModifier(declaration: Decl, modifierName: String): Bool {
 }
 
 private func ngSchemaGenericParameterList(declaration: Decl): String {
-    return declaration.genericParam.parameters.toString()
+    var names = ""
+    var first = true
+    for (token in declaration.genericParam.parameters) {
+        if (token.kind != TokenKind.IDENTIFIER) { continue }
+        if (!first) { names += ", " }
+        names += token.value
+        first = false
+    }
+    return names
 }
 
 private func ngSchemaGenericBounds(declaration: Decl): String {
