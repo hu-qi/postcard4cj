@@ -63,7 +63,7 @@ The full-port branch currently contains the following Cangjie packages:
   - basic non-generic struct/enum `@Postcard` macro
   - Rust `postcard = 1.1.3` Golden Vector oracle
 
-All packages above build and test under Cangjie 1.1.3 on Ubuntu 22.04.
+All packages above build and test under Cangjie 1.1.3 on Ubuntu 22.04. The latest code-bearing validation completed successfully in GitHub Actions run `29719455828`.
 
 ## `postcard-core` data model coverage
 
