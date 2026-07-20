@@ -76,7 +76,15 @@ private func maxSizeHasModifier(declaration: Decl, modifierName: String): Bool {
 }
 
 private func maxSizeGenericParameterList(declaration: Decl): String {
-    return declaration.genericParam.parameters.toString()
+    var names = ""
+    var first = true
+    for (token in declaration.genericParam.parameters) {
+        if (token.kind != TokenKind.IDENTIFIER) { continue }
+        if (!first) { names += ", " }
+        names += token.value
+        first = false
+    }
+    return names
 }
 
 private func maxSizeGenericBounds(declaration: Decl): String {
