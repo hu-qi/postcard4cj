@@ -5,7 +5,7 @@ import std.collection.*
 /** Whether the schema is represented as a primitive-like inline value. */
 public func isPrimitiveSchema(value: DataModelType): Bool {
     return match (value) {
-        case DataModelType.Bool => true
+        case DataModelType.Boolean => true
         case DataModelType.I8 => true
         case DataModelType.U8 => true
         case DataModelType.I16 => true
@@ -24,7 +24,7 @@ public func isPrimitiveSchema(value: DataModelType): Bool {
         case DataModelType.StringValue => true
         case DataModelType.ByteArray => true
         case DataModelType.Option(inner) => isPrimitiveSchema(inner.ty)
-        case DataModelType.Unit => true
+        case DataModelType.UnitValue => true
         case DataModelType.UnitStruct => true
         case DataModelType.NewtypeStruct(inner) => isPrimitiveSchema(inner.ty)
         case DataModelType.Seq(_) => false
@@ -109,7 +109,7 @@ private func formatSchemaNested(value: NamedType): String {
 
 private func formatSchemaInternal(value: NamedType, topLevel: Bool): String {
     return match (value.ty) {
-        case DataModelType.Bool => "bool"
+        case DataModelType.Boolean => "bool"
         case DataModelType.I8 => "i8"
         case DataModelType.U8 => "u8"
         case DataModelType.I16 => "i16"
@@ -128,7 +128,7 @@ private func formatSchemaInternal(value: NamedType, topLevel: Bool): String {
         case DataModelType.StringValue => "String"
         case DataModelType.ByteArray => "[u8]"
         case DataModelType.Option(inner) => "Option<${formatSchemaNested(inner)}>"
-        case DataModelType.Unit => "()"
+        case DataModelType.UnitValue => "()"
         case DataModelType.UnitStruct => if (topLevel) { "struct ${value.name}" } else { value.name }
         case DataModelType.NewtypeStruct(inner) =>
             if (topLevel) {
