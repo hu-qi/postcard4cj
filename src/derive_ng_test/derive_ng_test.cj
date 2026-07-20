@@ -59,6 +59,13 @@ public enum NgCommand {
     | Pair(UInt8, Bool)
 }
 
+@PostcardSchemaNg
+public enum NgGenericCommand<T, U> {
+    | Idle
+    | One(T)
+    | Pair(T, U)
+}
+
 @PostcardMaxSizeNg
 public struct NgBoundedInner {
     public let code: UInt16
@@ -110,6 +117,13 @@ public enum NgBoundedCommand {
     | Pair(UInt32, Bool)
 }
 
+@PostcardMaxSizeNg
+public enum NgGenericBoundedCommand<T, U> {
+    | Idle
+    | One(T)
+    | Pair(T, U)
+}
+
 @Test
 public class NextGenerationSchemaDeriveTest {
     @TestCase
@@ -148,6 +162,14 @@ public class NextGenerationSchemaDeriveTest {
     }
 
     @TestCase
+    public func ngGenericEnumAddsIndependentSchemaBounds(): Unit {
+        @Assert(
+            formatSchema(NgGenericCommand<NgInner, NgRecord>.schemaNg()),
+            "enum NgGenericCommand { Idle, One(NgInner), Pair(NgInner, NgRecord) }"
+        )
+    }
+
+    @TestCase
     public func ngKeyUsesSameStableHashAlgorithm(): Unit {
         @Assert(
             keyForPathNg<NgRecord>("/ng").constCompare(
@@ -182,5 +204,14 @@ public class NextGenerationMaxSizeDeriveTest {
     @TestCase
     public func ngEnumUsesLargestPayload(): Unit {
         @Assert(NgBoundedCommand.postcardMaxSize(), 7)
+    }
+
+    @TestCase
+    public func ngGenericEnumUsesLargestBoundedPayload(): Unit {
+        // Pair payload = 3 + 9, plus one-byte discriminant.
+        @Assert(
+            NgGenericBoundedCommand<NgBoundedInner, NgBoundedRecord>.postcardMaxSize(),
+            13
+        )
     }
 }
