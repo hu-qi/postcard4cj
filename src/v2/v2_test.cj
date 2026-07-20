@@ -1,9 +1,31 @@
 package postcard4cj.v2
 
+import postcard4cj.flavors.*
 import postcard4cj.serde_model.*
 import std.collection.*
 import std.unittest.*
 import std.unittest.testmacro.*
+
+private class V2ListSink <: ByteExtendSink {
+    private let bytes: ArrayList<UInt8>
+
+    public init(prefix: Array<UInt8>) {
+        bytes = ArrayList<UInt8>()
+        for (byte in prefix) {
+            bytes.add(byte)
+        }
+    }
+
+    public func appendBytes(data: Array<UInt8>): Unit {
+        for (byte in data) {
+            bytes.add(byte)
+        }
+    }
+
+    public func toArray(): Array<UInt8> {
+        return bytes.toArray()
+    }
+}
 
 public struct V2Record <: PostcardSerialize & PostcardDeserialize<V2Record> {
     public let id: UInt32
@@ -83,12 +105,11 @@ public class PostcardV2ApiTest {
     }
 
     @TestCase
-    public func extendAppendsToExistingDestination(): Unit {
-        let output = ArrayList<UInt8>()
-        output.add(0xaau8)
-        toExtendV2<V2Record>(value, output)
+    public func extendStreamsToExistingDestination(): Unit {
+        let sink = V2ListSink([0xaau8])
+        toExtendV2<V2Record>(value, sink)
         @Assert(
-            output.toArray(),
+            sink.toArray(),
             [0xaau8, 0x2au8, 0x01u8, 0x01u8, 0x02u8, 0x48u8, 0x69u8]
         )
     }
