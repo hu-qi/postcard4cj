@@ -53,7 +53,7 @@ private func hashNamedVariant(state: BigInt, value: NamedVariant): BigInt {
 
 private func hashDataModelType(state: BigInt, value: DataModelType): BigInt {
     return match (value) {
-        case DataModelType.Bool => hashMarker(state, 0x11u8)
+        case DataModelType.Boolean => hashMarker(state, 0x11u8)
         case DataModelType.I8 => hashMarker(state, 0xc5u8)
         case DataModelType.U8 => hashMarker(state, 0x3du8)
         case DataModelType.I16 => hashMarker(state, 0x1du8)
@@ -73,7 +73,7 @@ private func hashDataModelType(state: BigInt, value: DataModelType): BigInt {
         case DataModelType.ByteArray => hashMarker(state, 0x65u8)
         case DataModelType.Option(inner) =>
             hashNamedType(hashMarker(state, 0x6du8), inner)
-        case DataModelType.Unit => hashMarker(state, 0x47u8)
+        case DataModelType.UnitValue => hashMarker(state, 0x47u8)
         case DataModelType.UnitStruct => hashMarker(state, 0xbfu8)
         case DataModelType.NewtypeStruct(inner) =>
             hashNamedType(hashMarker(state, 0x9du8), inner)
