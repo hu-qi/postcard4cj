@@ -70,6 +70,23 @@ private func ngMaxHasModifier(declaration: Decl, modifierName: String): Bool {
     return false
 }
 
+private func ngMaxGenericParameterList(declaration: Decl): String {
+    return declaration.genericParam.parameters.toString()
+}
+
+private func ngMaxGenericBounds(declaration: Decl): String {
+    var bounds = ""
+    var first = true
+    for (token in declaration.genericParam.parameters) {
+        let name = token.value
+        if (name.size == 0 || name == "," || name == "\n") { continue }
+        if (!first) { bounds += ", " }
+        bounds += "${name} <: PostcardMaxSize"
+        first = false
+    }
+    return bounds
+}
+
 private func ngMaxDiscriminantBytes(variantCount: Int64): Int64 {
     var value = UInt64(variantCount)
     var bytes = 1i64
@@ -81,16 +98,24 @@ private func ngMaxDiscriminantBytes(variantCount: Int64): Int64 {
 }
 
 private func generateNgMaxStruct(input: Tokens, declaration: StructDecl): Tokens {
+    var genericParameters = ""
+    var genericConstraints = ""
     if (declaration.isGenericDecl) {
-        diagReport(
-            DiagReportLevel.ERROR,
-            input,
-            "@PostcardMaxSizeNg generic structs are not supported yet",
-            "Implement PostcardMaxSize manually."
-        )
-        return input
+        if (declaration.genericConstraint.size > 0) {
+            diagReport(
+                DiagReportLevel.ERROR,
+                input,
+                "@PostcardMaxSizeNg generic structs with existing where constraints are not supported yet",
+                "Move maximum-size bounds to a manual extension or remove the existing constraints."
+            )
+            return input
+        }
+        let names = ngMaxGenericParameterList(declaration)
+        genericParameters = "<${names}>"
+        genericConstraints = " where ${ngMaxGenericBounds(declaration)}"
     }
     let typeName = declaration.identifier.value
+    let concreteType = "${typeName}${genericParameters}"
     var expression = "0i64"
     for (member in declaration.body.decls) {
         let variable = match (member as VarDecl) {
@@ -103,7 +128,7 @@ private func generateNgMaxStruct(input: Tokens, declaration: StructDecl): Tokens
         expression += " + ${ngMaxExpression(variable.declType)}"
     }
     let generated = """
-extend ${typeName} <: PostcardMaxSize {
+extend${genericParameters} ${concreteType} <: PostcardMaxSize${genericConstraints} {
     public static func postcardMaxSize(): Int64 {
         return ${expression}
     }
@@ -118,7 +143,7 @@ private func generateNgMaxEnum(input: Tokens, declaration: EnumDecl): Tokens {
             DiagReportLevel.ERROR,
             input,
             "@PostcardMaxSizeNg requires a non-generic exhaustive enum",
-            "Implement PostcardMaxSize manually."
+            "Use a non-generic payload wrapper or implement PostcardMaxSize manually."
         )
         return input
     }
