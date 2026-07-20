@@ -197,7 +197,7 @@ postcard4cj is implemented entirely in Cangjie. This document maps upstream conc
 
 The repository contains no Rust source or Cargo project. Compatibility checks are Cangjie tests with fixed Golden Vectors and negative cases. CI rejects `.rs`, `Cargo.toml`, `Cargo.lock`, Rust toolchain files, and `.cargo` before building.
 
-Latest validation: **166 Cangjie tests passed, 0 failed, 0 skipped, 0 errors**.
+Latest validation: **168 Cangjie tests passed, 0 failed, 0 skipped, 0 errors**.
 
 ## Optional ecosystem integrations under audit
 
