@@ -1,0 +1,16 @@
+postcard4cj
+Copyright 2026 hu-qi contributors
+
+This project is a Cangjie-language port of the behavior, wire format, public
+concepts, and workspace organization of the Rust project "postcard":
+
+    https://github.com/jamesmunns/postcard
+
+The original Postcard project is Copyright (c) 2019 Anthony James Munns and is
+licensed under either the MIT License or the Apache License, Version 2.0.
+Copies of both licenses are included in this repository.
+
+The Cangjie implementation is a substantial language-level rewrite. Files in
+this repository have been changed from the original Rust design to account for
+Cangjie type-system, macro, ownership, runtime-capacity, and IO semantics.
+Notable substitutions are documented in MIGRATION.md.

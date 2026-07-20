@@ -5,10 +5,14 @@ on:
     branches:
       - main
     paths:
+      - "src/**"
+      - "cjpm.toml"
       - "interop/**"
       - ".github/workflows/postcard4cj-rust-oracle.yml"
   pull_request:
     paths:
+      - "src/**"
+      - "cjpm.toml"
       - "interop/**"
       - ".github/workflows/postcard4cj-rust-oracle.yml"
   workflow_dispatch:
