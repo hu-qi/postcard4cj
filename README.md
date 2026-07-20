@@ -1,77 +1,95 @@
 # postcard4cj
 
-A Cangjie port of the complete [`jamesmunns/postcard`](https://github.com/jamesmunns/postcard) repository.
+A Cangjie port of the complete [`jamesmunns/postcard`](https://github.com/jamesmunns/postcard) workspace.
 
-> **Status: active full-port work. Not release-ready.**
+> **Status: full workspace coverage implemented; compatibility audit in progress.**
 >
-> The project now includes a dedicated wire/core layer, composable Flavors, a Cangjie-native serializer/deserializer data model, a COBS accumulator, fixed-width integer codecs, and maximum-size calculation. Schema, dynamic values, next-generation derives, stream adapters, and the separate `postcard2` compatibility layer remain incomplete.
+> Every upstream workspace crate now has a Cangjie counterpart. The branch builds under Cangjie 1.1.3 and currently passes 144 Cangjie tests plus the Rust `postcard = 1.1.3` interoperability oracle. The Draft PR remains open while API parity, language-level substitutions, generic derive support, and the complete upstream negative-test matrix are audited.
 
-## Port baseline
-
-The port is tracked against upstream `main` commit:
+## Upstream baseline
 
 ```text
-de182557cff45f2ca9b2b67a6b93be5917612a44
+jamesmunns/postcard@de182557cff45f2ca9b2b67a6b93be5917612a44
 ```
 
-The upstream repository contains 11 workspace crates:
+## Workspace mapping
 
-- `postcard`
-- `postcard-core`
-- `postcard-derive`
-- `postcard-derive-ng`
-- `postcard-dyn`
-- `postcard-dyn-ng`
-- `postcard-schema`
-- `postcard-schema-ng`
-- `postcard2`
-- `postcard2-eio`
-- `postcard2-heapless`
+| Upstream crate | Cangjie counterpart |
+|---|---|
+| `postcard-core` | `postcard4cj.core` |
+| `postcard` | `postcard4cj`, `postcard4cj.serde_model`, `postcard4cj.flavors`, `postcard4cj.accumulator`, `postcard4cj.fixint`, `postcard4cj.io`, `postcard4cj.max_size` |
+| `postcard-derive` | `postcard4cj.postcard_macro` |
+| `postcard-derive-ng` | `postcard4cj.derive_ng` |
+| `postcard-schema` | `postcard4cj.schema` |
+| `postcard-schema-ng` | `postcard4cj.schema_ng` |
+| `postcard-dyn` | `postcard4cj.dynamic` |
+| `postcard-dyn-ng` | `postcard4cj.dynamic_ng` |
+| `postcard2` | `postcard4cj.v2` |
+| `postcard2-eio` | `postcard4cj.v2_eio` |
+| `postcard2-heapless` | `postcard4cj.v2_fixed` |
 
-Completion means providing Cangjie-native equivalents for the complete workspace behavior: wire primitives, serializer/deserializer data model, composable flavors, fixed and dynamic storage, stream IO, accumulators, fixed-width integers, max-size derivation, schema/reflection, dynamic values, and the postcard2 adapters.
+See [`MIGRATION.md`](MIGRATION.md) for the detailed coverage and acceptance matrix.
 
-See [`MIGRATION.md`](MIGRATION.md) for the current coverage matrix and acceptance criteria.
+## Implemented capabilities
 
-## Implemented and validated
+### Wire and data model
 
-- `postcard4cj.core`
-  - Postcard primitive wire model through 128-bit integers
-  - stable Postcard error categories
-  - length/discriminant helpers and remainder handling
-- `postcard4cj.flavors`
-  - growable and fixed storage
-  - size counting
-  - composable COBS and CRC32C
-  - slice/COBS/CRC deserialization sources
-- `postcard4cj.serde_model`
-  - `PostcardSerialize` / `PostcardDeserialize<T>`
-  - primitive, Option, unit, newtype, tuple, struct, sequence, map, and enum variant APIs
-  - exact, fixed-buffer, flavored, size and remainder helpers
-- `postcard4cj.accumulator`
-  - chunked COBS frame collection and typed deserialization
-- `postcard4cj.fixint`
-  - fixed-width LE/BE Int/UInt 16, 32, 64 and 128-bit codecs
-- `postcard4cj.max_size`
-  - primitive and composite maximum-size rules
-- compatibility foundation
-  - basic `@Postcard` struct/enum macro
-  - Rust `postcard = 1.1.3` Golden Vector oracle
+- all Postcard primitive wire items through signed and unsigned 128-bit integers
+- canonical Varint and ZigZag encoding
+- Bool, floats, Rune, UTF-8 strings, byte arrays, Option, Unit
+- sequences, maps, tuples, structs, and all enum variant forms
+- exact decoding and take-with-remainder decoding
+- all 16 Postcard 1.x error categories
 
-The latest code-bearing Cangjie validation completed successfully in Actions run `29719455828`.
+### Flavors and storage
 
-## Development branch and PR
+- growable Array output
+- caller-provided fixed Slice output
+- generic streaming Extend sink
+- serialized-size counting
+- composable COBS and CRC32C serialization/deserialization
+- Slice, stream, COBS, and CRC sources with remainder semantics
+- runtime-capacity fixed byte vector corresponding to `heapless::Vec<u8, B>`
 
-```text
-feat/full-postcard-port
-```
+### Higher-level modules
 
-Draft pull request: [#1 feat: port complete Postcard workspace to Cangjie](https://github.com/hu-qi/postcard4cj/pull/1)
+- chunked COBS accumulator
+- fixed-width LE/BE integer codecs for 16/32/64/128-bit values
+- serializer/deserializer model and helper APIs
+- legacy stream IO helpers
+- separate postcard2-style API and error model
+- postcard2 EIO and fixed-capacity adapters
 
-The pull request remains Draft until the complete migration matrix passes.
+### Schema and dynamic values
+
+- complete Postcard Schema data model
+- Schema values serialized with Postcard
+- runtime-owned Schema tree and recursive type discovery
+- pseudo-Rust Schema formatting
+- upstream-compatible FNV-1a type/path keys
+- lossless schema-directed Dynamic values
+- arbitrary-key Dynamic maps
+- explicit `None` versus `Some(Unit)` representation
+- `serde_json::Value`-compatible JSON model and conversion rules
+- legacy and next-generation schema/dynamic namespaces
+
+### Macros
+
+- `@Postcard` codec generation
+- `@PostcardSchema` and `@PostcardMaxSize`
+- `@PostcardSchemaNg` and `@PostcardMaxSizeNg`
+- struct and enum declaration-order semantics
 
 ## Verification
 
-GitHub Actions runs Cangjie 1.1.3 (`cjnative`) on Ubuntu 22.04 and verifies the Rust interoperability oracle.
+GitHub Actions installs Cangjie 1.1.3 (`cjnative`) on Ubuntu 22.04 using the configured OBS callback mirror and verifies the SDK checksum.
+
+Latest validated result:
+
+- `cjpm build -V`: success
+- `cjpm test -V`: **144 passed, 0 failed, 0 skipped, 0 errors**
+- Rust Oracle `cargo test`: success
+- Rust Oracle `cargo run`: success
 
 ```bash
 cjpm build -V
@@ -82,15 +100,29 @@ cargo test
 cargo run
 ```
 
-## Remaining major work
+## Development branch and PR
 
-- schema model, stable type keys and owned schema formatting
-- schema and MaxSize macro generation
-- dynamic schema-directed values and JSON conversion
-- generic Extend and stream reader/writer Flavors
-- `postcard2`, EIO and fixed-capacity adapter packages
-- complete upstream negative and compatibility test matrix
+```text
+feat/full-postcard-port
+```
+
+Draft pull request: [#1 feat: port complete Postcard workspace to Cangjie](https://github.com/hu-qi/postcard4cj/pull/1)
+
+## Remaining audit work
+
+- compare every upstream public API against its Cangjie counterpart
+- expand invalid-input and edge-case parity against upstream tests
+- add generic struct/enum macro support where the Cangjie macro/type system permits it
+- document all ownership, borrowing, const-generic, and embedded-IO substitutions
+- audit optional upstream integrations such as chrono, UUID, nalgebra, fixed, defmt, and heapless version adapters
+- optimize buffered COBS/CRC middleware toward the upstream zero-extra-allocation design
+- finalize release documentation and remove the Draft status only after the compatibility matrix is signed off
 
 ## License
 
-The port follows the upstream dual-license model: MIT OR Apache-2.0. Upstream attribution and license files are retained with the port.
+Licensed under either:
+
+- Apache License, Version 2.0 (`LICENSE-APACHE`)
+- MIT License (`LICENSE-MIT`)
+
+`NOTICE` records the upstream attribution and the Cangjie-language modifications.
