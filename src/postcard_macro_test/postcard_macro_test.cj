@@ -37,10 +37,37 @@ public enum MacroCommand {
     | Rename(String, Bool)
 }
 
+public struct GenericLeaf <: PostcardEncode & PostcardDecode<GenericLeaf> {
+    public let code: UInt16
+
+    public init(code: UInt16) {
+        this.code = code
+    }
+
+    public func encode(encoder: PostcardEncoder): Unit {
+        encoder.writeUInt16(code)
+    }
+
+    public static func decode(decoder: PostcardDecoder): GenericLeaf {
+        return GenericLeaf(decoder.readUInt16())
+    }
+}
+
+@Postcard
+public struct GenericEnvelope<T> {
+    public let value: T
+    public let history: Array<T>
+
+    public init(value: T, history: Array<T>) {
+        this.value = value
+        this.history = history
+    }
+}
+
 @Test
 public class PostcardMacroTest {
     @TestCase
-    public func generatedStructCodecMatchesRustWireFormat(): Unit {
+    public func generatedStructCodecMatchesPostcardWireFormat(): Unit {
         let value = MacroRecord(42u32,-1i32,Some("Hi"),[1u16,128u16])
         let expected: Array<UInt8> = [0x2au8,0x01u8,0x01u8,0x02u8,0x48u8,0x69u8,0x02u8,0x01u8,0x80u8,0x01u8]
         @Assert(toBytes<MacroRecord>(value),expected)
@@ -70,5 +97,20 @@ public class PostcardMacroTest {
         match (speed) { case MacroCommand.SetSpeed(value) => @Assert(value,128u16); case _ => throw IllegalStateException("Decoded the wrong MacroCommand variant") }
         let renamed = fromBytes<MacroCommand>([0x02u8,0x02u8,0x48u8,0x69u8,0x01u8])
         match (renamed) { case MacroCommand.Rename(name,enabled) => @Assert(name,"Hi"); @Assert(enabled,true); case _ => throw IllegalStateException("Decoded the wrong MacroCommand payload") }
+    }
+
+    @TestCase
+    public func generatedGenericStructAddsCodecBounds(): Unit {
+        let value = GenericEnvelope<GenericLeaf>(
+            GenericLeaf(128u16),
+            [GenericLeaf(1u16), GenericLeaf(300u16)]
+        )
+        let expected: Array<UInt8> = [0x80u8,0x01u8,0x02u8,0x01u8,0xacu8,0x02u8]
+        @Assert(toBytes<GenericEnvelope<GenericLeaf>>(value), expected)
+        let decoded = fromBytes<GenericEnvelope<GenericLeaf>>(expected)
+        @Assert(decoded.value.code, 128u16)
+        @Assert(decoded.history.size, 2)
+        @Assert(decoded.history[0].code, 1u16)
+        @Assert(decoded.history[1].code, 300u16)
     }
 }
