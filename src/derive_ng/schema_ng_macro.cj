@@ -72,31 +72,6 @@ private func ngHasModifier(declaration: Decl, modifierName: String): Bool {
     return false
 }
 
-private func ngSchemaGenericParameterList(declaration: Decl): String {
-    var names = ""
-    var first = true
-    for (token in declaration.genericParam.parameters) {
-        if (token.kind != TokenKind.IDENTIFIER) { continue }
-        if (!first) { names += ", " }
-        names += token.value
-        first = false
-    }
-    return names
-}
-
-private func ngSchemaGenericBounds(declaration: Decl): String {
-    var bounds = ""
-    var first = true
-    for (token in declaration.genericParam.parameters) {
-        if (token.kind != TokenKind.IDENTIFIER) { continue }
-        let name = token.value
-        if (!first) { bounds += ", " }
-        bounds += "${name} <: PostcardSchemaNg<${name}>"
-        first = false
-    }
-    return bounds
-}
-
 private func generateNgStruct(input: Tokens, declaration: StructDecl): Tokens {
     var genericParameters = ""
     var genericConstraints = ""
@@ -110,9 +85,9 @@ private func generateNgStruct(input: Tokens, declaration: StructDecl): Tokens {
             )
             return input
         }
-        let names = ngSchemaGenericParameterList(declaration)
+        let names = ngGenericParameterNames(declaration)
         genericParameters = "<${names}>"
-        genericConstraints = " where ${ngSchemaGenericBounds(declaration)}"
+        genericConstraints = " where ${ngGenericBoundList(declaration, NgGenericBoundKind.Schema)}"
     }
     let typeName = declaration.identifier.value
     let concreteType = "${typeName}${genericParameters}"
@@ -157,9 +132,9 @@ private func generateNgEnum(input: Tokens, declaration: EnumDecl): Tokens {
             )
             return input
         }
-        let names = ngSchemaGenericParameterList(declaration)
+        let names = ngGenericParameterNames(declaration)
         genericParameters = "<${names}>"
-        genericConstraints = " where ${ngSchemaGenericBounds(declaration)}"
+        genericConstraints = " where ${ngGenericBoundList(declaration, NgGenericBoundKind.Schema)}"
     }
     if (declaration.ellipsis.value == "...") {
         diagReport(
