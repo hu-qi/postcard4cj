@@ -8,17 +8,62 @@ This document defines what “complete migration” means. A byte-compatible enc
 
 | Upstream crate | Cangjie target | Required behavior | Current state |
 |---|---|---|---|
-| `postcard-core` | `postcard4cj.core` | framework-independent wire primitives, varints, discriminants, lengths, borrowed/temp reads | Partial: primitive codec exists; dedicated core package/API still required |
-| `postcard` | `postcard4cj` | full serializer/deserializer data model, errors, helpers, flavors, IO, accumulator, fixint, size calculation | Partial: selected helpers and direct typed codec only |
-| `postcard-derive` | `postcard4cj.derive` | schema and max-size macro generation compatible with legacy APIs | Not implemented |
+| `postcard-core` | `postcard4cj.core` | framework-independent wire primitives, varints, discriminants, lengths, borrowed/temp reads | Substantial foundation: dedicated core package, complete primitive wire API, lengths/discriminants, stable errors and remainder; stream/temp-source substitution still pending |
+| `postcard` | `postcard4cj`, `postcard4cj.serde_model`, `postcard4cj.flavors` | full serializer/deserializer data model, errors, helpers, flavors, IO, accumulator, fixint, size calculation | Partial: data model, composable buffer/COBS/CRC/size flavors, accumulator, fixint and size calculation implemented; stream IO and compatibility consolidation pending |
+| `postcard-derive` | `postcard4cj.derive` | schema and max-size macro generation compatible with legacy APIs | Partial: basic struct/enum codec macro exists; schema and MaxSize generation pending |
 | `postcard-derive-ng` | `postcard4cj.derive_ng` | next-generation derive behavior | Not implemented |
 | `postcard-schema` | `postcard4cj.schema` | reflection-like type schema, stable type keys/hashes, owned schema, formatting, integrations | Not implemented |
 | `postcard-schema-ng` | `postcard4cj.schema_ng` | next-generation schema model and derives | Not implemented |
 | `postcard-dyn` | `postcard4cj.dynamic` | schema-directed dynamic encode/decode and JSON-compatible dynamic values | Not implemented |
 | `postcard-dyn-ng` | `postcard4cj.dynamic_ng` | next-generation dynamic schema pipeline | Not implemented |
-| `postcard2` | `postcard4cj.v2` | `postcard-core`-based serializer/deserializer and modern API surface | Not implemented |
+| `postcard2` | `postcard4cj.v2` | `postcard-core`-based serializer/deserializer and modern API surface | Not implemented as a separate compatibility layer |
 | `postcard2-eio` | `postcard4cj.v2_eio` | stream reader/writer adapters corresponding to embedded IO | Not implemented |
-| `postcard2-heapless` | `postcard4cj.v2_fixed` | fixed-capacity collection/storage adapters | Partial concept only: fixed output buffer exists |
+| `postcard2-heapless` | `postcard4cj.v2_fixed` | fixed-capacity collection/storage adapters | Partial foundation: fixed-capacity Slice Flavor and buffer APIs implemented |
+
+## Implemented and CI-validated foundation
+
+The full-port branch currently contains the following Cangjie packages:
+
+- `postcard4cj.core`
+  - all Postcard primitive wire items
+  - signed ZigZag and unsigned Varints through 128 bits
+  - lengths, Option discriminants, enum discriminants and headerless aggregates
+  - all 16 upstream Postcard error categories
+  - fixed and growable core buffers
+  - exact position/remainder handling and negative vectors
+- `postcard4cj.flavors`
+  - growable Array storage
+  - fixed Slice storage
+  - size-counting flavor
+  - composable COBS and CRC32C serialization middleware
+  - Slice, COBS and CRC32C deserialization sources
+  - size hints and remainder semantics
+- `postcard4cj.serde_model`
+  - Cangjie-native `PostcardSerialize` / `PostcardDeserialize<T>`
+  - complete primitive, Option, unit, newtype, tuple, struct, sequence, map and enum-variant model
+  - known-length sequence/map enforcement
+  - non-self-describing `deserializeAny` rejection
+  - growable, fixed-buffer, flavored, exact and take-with-remainder helpers
+  - serialized-size calculation via the counting flavor
+- `postcard4cj.accumulator`
+  - chunked zero-terminated COBS accumulation
+  - `Consumed`, `OverFull`, `DeserError`, and typed `Success` results
+  - multiple-frame remainder handling
+- `postcard4cj.fixint`
+  - fixed-width little- and big-endian codecs
+  - Int/UInt 16, 32, 64 and 128-bit support
+  - signed two's-complement and range validation
+- `postcard4cj.max_size`
+  - primitive maximum-size rules
+  - user-type `PostcardMaxSize` interface
+  - Option, Result, tuple, fixed array, bounded sequence/string/map and enum formulas
+- existing compatibility layer
+  - zero-terminated COBS and CRC32C helpers
+  - fixed caller buffers and growable arrays
+  - basic non-generic struct/enum `@Postcard` macro
+  - Rust `postcard = 1.1.3` Golden Vector oracle
+
+All packages above build and test under Cangjie 1.1.3 on Ubuntu 22.04.
 
 ## `postcard-core` data model coverage
 
@@ -58,7 +103,7 @@ The upstream core layer covers all Postcard wire items, not only primitive integ
 
 ### Error model
 
-Implement the upstream error categories as a dedicated Cangjie error type:
+The dedicated Cangjie error type now contains all upstream categories:
 
 - `WontImplement`
 - `NotYetImplemented`
@@ -78,48 +123,66 @@ Implement the upstream error categories as a dedicated Cangjie error type:
 
 ### Serializer/deserializer data model
 
-Provide a Cangjie-native equivalent of the complete Serde-facing model:
+Implemented:
 
 - primitive methods
 - Option and unit forms
 - unit/newtype/tuple/struct variants
 - sequences and maps with known-length enforcement
-- tuples, tuple structs, structs
-- collect-string formatting
+- tuples, tuple structs and structs
+- collect-string representation after Cangjie formatting
 - human-readable flag fixed to false
 - deserialize-any rejection consistent with Postcard’s non-self-describing format
 
 ### Serialization flavors
 
+Implemented:
+
 - fixed slice/buffer
 - growable collection
-- generic extend sink
-- stream writer
 - COBS middleware
 - CRC32C middleware
 - size-counting flavor
 - composable finalization
 
+Pending:
+
+- generic collection Extend sink
+- standard and embedded stream writers
+- zero-extra-allocation incremental COBS/CRC middleware optimization
+
 ### Deserialization flavors
 
+Implemented:
+
 - slice source with remainder
-- stream reader with temporary storage
 - COBS decoding
 - CRC32C validation
 - size hints
 - exact/take-one decoding with remainder
 
+Pending:
+
+- stream reader with temporary storage
+- lifetime/borrowing substitutions documented per Cangjie runtime semantics
+
 ### Other modules
 
+Implemented:
+
 - incremental COBS accumulator
-- fixed-width integer wrappers (`fixint`)
+- fixed-width integer field codecs (`fixint`)
 - serialized-size calculation
-- maximum-size interface and derive support
+- maximum-size interface and primitive/composite formulas
+
+Pending:
+
+- MaxSize attribute-macro generation
 - standard/embedded IO helpers
 
 ## Schema and dynamic values
 
-Completion requires the schema and dynamic crates, including:
+Completion still requires the schema and dynamic crates, including:
 
 - primitive, sequence, tuple, map, struct, and enum schema nodes
 - stable schema/type keys and hashing
@@ -154,16 +217,4 @@ The port is complete only when all of the following are true:
 9. MIT and Apache-2.0 licenses and upstream attribution are present.
 10. README no longer carries an “in progress” warning.
 
-## Current Phase 1 foundation
-
-The retained prototype currently provides:
-
-- core integer encodings including `BigInt`-backed Rust-compatible 128-bit integers
-- Bool, floats, bytes, UTF-8 strings, Rune, Option, Unit
-- sequences, tuple-2, ordered map entries, enum indices
-- fixed and growable output buffers
-- COBS and CRC32C helpers
-- a basic non-generic struct/enum `@Postcard` macro
-- Rust 1.1.3 Golden Vector oracle
-
-These capabilities are useful and tested, but represent only the initial compatibility layer.
+The repository remains an active port until all ten criteria are satisfied.
