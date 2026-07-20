@@ -75,6 +75,23 @@ private func maxSizeHasModifier(declaration: Decl, modifierName: String): Bool {
     return false
 }
 
+private func maxSizeGenericParameterList(declaration: Decl): String {
+    return declaration.genericParam.parameters.toString()
+}
+
+private func maxSizeGenericBounds(declaration: Decl): String {
+    var bounds = ""
+    var first = true
+    for (token in declaration.genericParam.parameters) {
+        let name = token.value
+        if (name.size == 0 || name == "," || name == "\n") { continue }
+        if (!first) { bounds += ", " }
+        bounds += "${name} <: PostcardMaxSize"
+        first = false
+    }
+    return bounds
+}
+
 private func maxSizeStructExpression(declaration: StructDecl): String {
     var expression = "0i64"
     for (member in declaration.body.decls) {
@@ -101,20 +118,28 @@ private func maxSizeDiscriminantBytes(variantCount: Int64): Int64 {
 }
 
 private func generateStructMaxSize(input: Tokens, declaration: StructDecl): Tokens {
+    var genericParameters = ""
+    var genericConstraints = ""
     if (declaration.isGenericDecl) {
-        diagReport(
-            DiagReportLevel.ERROR,
-            input,
-            "@PostcardMaxSize generic structs are not supported yet",
-            "Implement PostcardMaxSize manually until generic macro bounds are available."
-        )
-        return input
+        if (declaration.genericConstraint.size > 0) {
+            diagReport(
+                DiagReportLevel.ERROR,
+                input,
+                "@PostcardMaxSize generic structs with existing where constraints are not supported yet",
+                "Move maximum-size bounds to a manual extension or remove the existing constraints."
+            )
+            return input
+        }
+        let names = maxSizeGenericParameterList(declaration)
+        genericParameters = "<${names}>"
+        genericConstraints = " where ${maxSizeGenericBounds(declaration)}"
     }
 
     let typeName = declaration.identifier.value
+    let concreteType = "${typeName}${genericParameters}"
     let expression = maxSizeStructExpression(declaration)
     let generated = """
-extend ${typeName} <: PostcardMaxSize {
+extend${genericParameters} ${concreteType} <: PostcardMaxSize${genericConstraints} {
     public static func postcardMaxSize(): Int64 {
         return ${expression}
     }
@@ -129,7 +154,7 @@ private func generateEnumMaxSize(input: Tokens, declaration: EnumDecl): Tokens {
             DiagReportLevel.ERROR,
             input,
             "@PostcardMaxSize generic enums are not supported yet",
-            "Implement PostcardMaxSize manually until generic macro bounds are available."
+            "Use a non-generic payload wrapper or implement PostcardMaxSize manually."
         )
         return input
     }
