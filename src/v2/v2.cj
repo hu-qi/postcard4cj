@@ -3,6 +3,7 @@ package postcard4cj.v2
 import postcard4cj.core.*
 import postcard4cj.flavors.*
 import postcard4cj.serde_model.*
+import std.collection.*
 
 public enum SerializerErrorKind {
     | PushError
