@@ -69,6 +69,13 @@ public struct DerivedGenericSchemaPair<T, U> {
     }
 }
 
+@PostcardSchema
+public enum DerivedGenericSchemaCommand<T, U> {
+    | Idle
+    | One(T)
+    | Pair(T, U)
+}
+
 @PostcardMaxSize
 public struct DerivedBoundedRecord {
     public let id: UInt32
@@ -133,6 +140,13 @@ public enum DerivedBoundedCommand {
     | Rename(UInt32, Bool)
 }
 
+@PostcardMaxSize
+public enum DerivedGenericBoundedCommand<T, U> {
+    | Idle
+    | One(T)
+    | Pair(T, U)
+}
+
 @Test
 public class PostcardSchemaDeriveTest {
     @TestCase
@@ -175,6 +189,14 @@ public class PostcardSchemaDeriveTest {
         @Assert(
             formatSchema(DerivedGenericSchemaPair<DerivedInnerSchema, DerivedOuterSchema>.schema()),
             "struct DerivedGenericSchemaPair { first: DerivedInnerSchema, second: DerivedOuterSchema }"
+        )
+    }
+
+    @TestCase
+    public func genericEnumAddsIndependentSchemaBounds(): Unit {
+        @Assert(
+            formatSchema(DerivedGenericSchemaCommand<DerivedInnerSchema, DerivedOuterSchema>.schema()),
+            "enum DerivedGenericSchemaCommand { Idle, One(DerivedInnerSchema), Pair(DerivedInnerSchema, DerivedOuterSchema) }"
         )
     }
 
@@ -225,5 +247,14 @@ public class PostcardMaxSizeDeriveTest {
     public func enumAddsDiscriminantToLargestPayload(): Unit {
         // Three variants => one-byte discriminant; largest payload u32+bool = 6.
         @Assert(DerivedBoundedCommand.postcardMaxSize(), 7)
+    }
+
+    @TestCase
+    public func genericEnumUsesLargestBoundedPayload(): Unit {
+        // Pair payload = 3 + 4, plus one-byte discriminant.
+        @Assert(
+            DerivedGenericBoundedCommand<DerivedBoundedInner, DerivedBoundedOuter>.postcardMaxSize(),
+            8
+        )
     }
 }
