@@ -47,6 +47,17 @@ public struct DerivedOuterSchema {
     }
 }
 
+@PostcardSchema
+public struct DerivedGenericSchema<T> {
+    public let value: T
+    public let sample: Option<T>
+
+    public init(value: T, sample: Option<T>) {
+        this.value = value
+        this.sample = sample
+    }
+}
+
 @PostcardMaxSize
 public struct DerivedBoundedRecord {
     public let id: UInt32
@@ -79,6 +90,17 @@ public struct DerivedBoundedOuter {
     public init(inner: DerivedBoundedInner, enabled: Bool) {
         this.inner = inner
         this.enabled = enabled
+    }
+}
+
+@PostcardMaxSize
+public struct DerivedGenericBounded<T> {
+    public let value: T
+    public let sample: Option<T>
+
+    public init(value: T, sample: Option<T>) {
+        this.value = value
+        this.sample = sample
     }
 }
 
@@ -119,6 +141,14 @@ public class PostcardSchemaDeriveTest {
     }
 
     @TestCase
+    public func genericStructAddsSchemaBounds(): Unit {
+        @Assert(
+            formatSchema(DerivedGenericSchema<DerivedInnerSchema>.schema()),
+            "struct DerivedGenericSchema { value: DerivedInnerSchema, sample: Option<DerivedInnerSchema> }"
+        )
+    }
+
+    @TestCase
     public func generatedSchemaHasPostcardWireRepresentation(): Unit {
         let schema = DerivedSchemaCommand.schema()
         let bytes = toByteArray<NamedType>(schema)
@@ -145,6 +175,12 @@ public class PostcardMaxSizeDeriveTest {
     public func nestedTypeUsesNestedMaximum(): Unit {
         @Assert(DerivedBoundedInner.postcardMaxSize(), 3)
         @Assert(DerivedBoundedOuter.postcardMaxSize(), 4)
+    }
+
+    @TestCase
+    public func genericStructAddsMaximumSizeBounds(): Unit {
+        // T=3 and Option<T>=1+3.
+        @Assert(DerivedGenericBounded<DerivedBoundedInner>.postcardMaxSize(), 7)
     }
 
     @TestCase
