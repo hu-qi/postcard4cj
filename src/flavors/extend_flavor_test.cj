@@ -15,7 +15,7 @@ private class ArrayListSink <: ByteExtendSink {
         }
     }
 
-    public func extend(data: Array<UInt8>): Unit {
+    public func appendBytes(data: Array<UInt8>): Unit {
         for (byte in data) {
             values.add(byte)
         }
@@ -27,7 +27,7 @@ private class ArrayListSink <: ByteExtendSink {
 }
 
 private class RejectingSink <: ByteExtendSink {
-    public func extend(data: Array<UInt8>): Unit {
+    public func appendBytes(data: Array<UInt8>): Unit {
         throw IllegalStateException("sink rejected data")
     }
 }
