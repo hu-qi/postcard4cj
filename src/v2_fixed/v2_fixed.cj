@@ -56,14 +56,14 @@ public class FixedByteVec {
 
     public func get(index: Int64): UInt8 {
         if (index < 0 || index >= used) {
-            throw IndexOutOfBoundsException("FixedByteVec index is outside used data")
+            throw IllegalArgumentException("FixedByteVec index is outside used data")
         }
         return storage[index]
     }
 
     public func set(index: Int64, value: UInt8): Unit {
         if (index < 0 || index >= used) {
-            throw IndexOutOfBoundsException("FixedByteVec index is outside used data")
+            throw IllegalArgumentException("FixedByteVec index is outside used data")
         }
         storage[index] = value
     }
