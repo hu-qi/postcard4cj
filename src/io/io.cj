@@ -2,8 +2,14 @@ package postcard4cj.io
 
 import postcard4cj.core.*
 import postcard4cj.serde_model.*
-import postcard4cj.v2.*
-import postcard4cj.v2_eio.*
+import postcard4cj.v2.DeserializerErrorKind
+import postcard4cj.v2.DeserializerException
+import postcard4cj.v2.SerializerErrorKind
+import postcard4cj.v2.SerializerException
+import postcard4cj.v2_eio.ByteReader
+import postcard4cj.v2_eio.ByteWriter
+import postcard4cj.v2_eio.fromEioV2
+import postcard4cj.v2_eio.toEioV2
 
 public class IoDeserializeResult<T> {
     public let value: T
