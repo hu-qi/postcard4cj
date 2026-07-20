@@ -70,31 +70,6 @@ private func ngMaxHasModifier(declaration: Decl, modifierName: String): Bool {
     return false
 }
 
-private func ngMaxGenericParameterList(declaration: Decl): String {
-    var names = ""
-    var first = true
-    for (token in declaration.genericParam.parameters) {
-        if (token.kind != TokenKind.IDENTIFIER) { continue }
-        if (!first) { names += ", " }
-        names += token.value
-        first = false
-    }
-    return names
-}
-
-private func ngMaxGenericBounds(declaration: Decl): String {
-    var bounds = ""
-    var first = true
-    for (token in declaration.genericParam.parameters) {
-        if (token.kind != TokenKind.IDENTIFIER) { continue }
-        let name = token.value
-        if (!first) { bounds += ", " }
-        bounds += "${name} <: PostcardMaxSize"
-        first = false
-    }
-    return bounds
-}
-
 private func ngMaxDiscriminantBytes(variantCount: Int64): Int64 {
     var value = UInt64(variantCount)
     var bytes = 1i64
@@ -118,9 +93,9 @@ private func generateNgMaxStruct(input: Tokens, declaration: StructDecl): Tokens
             )
             return input
         }
-        let names = ngMaxGenericParameterList(declaration)
+        let names = ngGenericParameterNames(declaration)
         genericParameters = "<${names}>"
-        genericConstraints = " where ${ngMaxGenericBounds(declaration)}"
+        genericConstraints = " where ${ngGenericBoundList(declaration, NgGenericBoundKind.MaxSize)}"
     }
     let typeName = declaration.identifier.value
     let concreteType = "${typeName}${genericParameters}"
@@ -158,9 +133,9 @@ private func generateNgMaxEnum(input: Tokens, declaration: EnumDecl): Tokens {
             )
             return input
         }
-        let names = ngMaxGenericParameterList(declaration)
+        let names = ngGenericParameterNames(declaration)
         genericParameters = "<${names}>"
-        genericConstraints = " where ${ngMaxGenericBounds(declaration)}"
+        genericConstraints = " where ${ngGenericBoundList(declaration, NgGenericBoundKind.MaxSize)}"
     }
     if (declaration.ellipsis.value == "...") {
         diagReport(
