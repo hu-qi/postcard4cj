@@ -4,7 +4,7 @@ import postcard4cj.core.*
 
 /** Generic byte collection/sink corresponding to Rust Extend<u8>. */
 public interface ByteExtendSink {
-    func extend(data: Array<UInt8>): Unit
+    func appendBytes(data: Array<UInt8>): Unit
 }
 
 /** Serialization Flavor that forwards bytes directly to a generic sink. */
@@ -23,7 +23,7 @@ public class ExtendSerializeFlavor <: SerializeFlavor {
 
     public func tryPush(data: UInt8): Unit {
         try {
-            sinkValue.extend([data])
+            sinkValue.appendBytes([data])
             written++
         } catch (_: Exception) {
             throw PostcardException(
@@ -35,7 +35,7 @@ public class ExtendSerializeFlavor <: SerializeFlavor {
 
     public func tryExtend(data: Array<UInt8>): Unit {
         try {
-            sinkValue.extend(data)
+            sinkValue.appendBytes(data)
             written += data.size
         } catch (_: Exception) {
             throw PostcardException(
