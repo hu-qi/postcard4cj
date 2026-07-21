@@ -2,14 +2,15 @@
 
 ## Current validation
 
-Latest quality run: GitHub Actions workflow `29798361619`, Cangjie STS 1.1.3.
+Latest quality run: GitHub Actions run `29810847543` (`postcard4cj pure Cangjie` run #200), Cangjie STS 1.1.3.
 
 - tests: **189 passed, 0 failed, 0 skipped, 0 errors**
 - all instrumented files under `src`: **3854 / 5813 lines, 66.30%**
 - runtime-library files excluding tests, benchmarks, and compile-time macro packages: **2106 / 2935 lines, 71.75%**
+- compile-time macro packages: **980 instrumented lines**, reported separately because runtime coverage does not observe macro-expansion execution
 - reports generated: HTML details, XML, and JSON
 
-The complete generated report is retained as the `postcard4cj-quality-artifacts` workflow artifact. It contains `index.html`, per-file HTML pages, `coverage.xml`, and `coverage.json`.
+The complete generated report is retained as the `postcard4cj-quality-artifacts` workflow artifact. It contains the raw `cov_output` tree, `index.html`, per-file HTML pages, `coverage.xml`, and `coverage.json`.
 
 Compile-time macro packages are included in the all-source denominator but report zero runtime hits because Cangjie coverage instruments executed runtime code rather than macro-expansion execution. The second figure therefore isolates runtime-library coverage while keeping the all-source figure visible.
 
@@ -44,7 +45,13 @@ Compile-time macro packages are included in the all-source denominator but repor
 ```bash
 cjpm test --coverage -V
 mkdir -p target/cjcov
-cjcov --root=. --source=src --html-details --xml --json --output=target/cjcov
+cjcov \
+  --root="$(pwd)/cov_output" \
+  --source="$(pwd)/src" \
+  --html-details \
+  --xml \
+  --json \
+  --output="$(pwd)/target/cjcov"
 ```
 
-Do not run `cjpm bundle` before copying the report out of `target`, because bundling may rebuild that directory. CI writes coverage reports to a runner-temporary directory and uploads them as artifacts.
+`cjpm test --coverage` collects the raw `.gcno` and `.gcda` files under `cov_output/<package>/`. Copy or generate the report before commands that clean or replace build artifacts. CI uploads both the raw coverage tree and the rendered reports.
