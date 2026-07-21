@@ -39,3 +39,22 @@ func genericBoundList(declaration: Decl, kind: GenericBoundKind): String {
     }
     return bounds
 }
+
+private func declaredGenericConstraintClause(declaration: Decl): String {
+    var clause = ""
+    for (index in 0..declaration.genericConstraint.size) {
+        if (index > 0) { clause += ", " }
+        clause += declaration.genericConstraint[index].toTokens().toString()
+    }
+    return clause
+}
+
+/** Preserve the declaration's existing constraints and append macro-required bounds. */
+func mergedGenericConstraintClause(declaration: Decl, kind: GenericBoundKind): String {
+    let generated = genericBoundList(declaration, kind)
+    let declared = declaredGenericConstraintClause(declaration)
+    if (declared.size == 0) {
+        return " where ${generated}"
+    }
+    return "${declared}, ${generated}"
+}
