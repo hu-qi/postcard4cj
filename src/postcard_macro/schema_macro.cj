@@ -87,18 +87,9 @@ private func generateStructSchema(input: Tokens, declaration: StructDecl): Token
     var genericParameters = ""
     var genericConstraints = ""
     if (declaration.isGenericDecl) {
-        if (declaration.genericConstraint.size > 0) {
-            diagReport(
-                DiagReportLevel.ERROR,
-                input,
-                "@PostcardSchema generic structs with existing where constraints are not supported yet",
-                "Move schema bounds to a manual extension or remove the existing constraints."
-            )
-            return input
-        }
         let names = genericParameterNames(declaration)
         genericParameters = "<${names}>"
-        genericConstraints = " where ${genericBoundList(declaration, GenericBoundKind.Schema)}"
+        genericConstraints = mergedGenericConstraintClause(declaration, GenericBoundKind.Schema)
     }
 
     let typeName = declaration.identifier.value
@@ -147,18 +138,9 @@ private func generateEnumSchema(input: Tokens, declaration: EnumDecl): Tokens {
     var genericParameters = ""
     var genericConstraints = ""
     if (declaration.isGenericDecl) {
-        if (declaration.genericConstraint.size > 0) {
-            diagReport(
-                DiagReportLevel.ERROR,
-                input,
-                "@PostcardSchema generic enums with existing where constraints are not supported yet",
-                "Move schema bounds to a manual extension or remove the existing constraints."
-            )
-            return input
-        }
         let names = genericParameterNames(declaration)
         genericParameters = "<${names}>"
-        genericConstraints = " where ${genericBoundList(declaration, GenericBoundKind.Schema)}"
+        genericConstraints = mergedGenericConstraintClause(declaration, GenericBoundKind.Schema)
     }
     if (declaration.ellipsis.value == "...") {
         diagReport(
