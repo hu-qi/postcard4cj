@@ -190,6 +190,7 @@ jobs:
         with:
           name: postcard4cj-quality-artifacts
           path: |
+            src
             target/cjcov
             target/*.cjp
             target/meta-data.json
