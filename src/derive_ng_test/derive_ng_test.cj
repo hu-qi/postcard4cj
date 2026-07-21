@@ -8,8 +8,11 @@ import postcard4cj.serde_model.*
 import std.unittest.*
 import std.unittest.testmacro.*
 
+public interface NgSchemaMarker {}
+public interface NgBoundedMarker {}
+
 @PostcardSchemaNg
-public struct NgInner {
+public struct NgInner <: NgSchemaMarker {
     public let code: UInt16
 
     public init(code: UInt16) {
@@ -66,8 +69,23 @@ public enum NgGenericCommand<T, U> {
     | Pair(T, U)
 }
 
+@PostcardSchemaNg
+public struct NgConstrainedRecord<T> where T <: NgSchemaMarker {
+    public let value: T
+
+    public init(value: T) {
+        this.value = value
+    }
+}
+
+@PostcardSchemaNg
+public enum NgConstrainedCommand<T> where T <: NgSchemaMarker {
+    | Idle
+    | Value(T)
+}
+
 @PostcardMaxSizeNg
-public struct NgBoundedInner {
+public struct NgBoundedInner <: NgBoundedMarker {
     public let code: UInt16
 
     public init(code: UInt16) {
@@ -124,6 +142,21 @@ public enum NgGenericBoundedCommand<T, U> {
     | Pair(T, U)
 }
 
+@PostcardMaxSizeNg
+public struct NgConstrainedBounded<T> where T <: NgBoundedMarker {
+    public let value: T
+
+    public init(value: T) {
+        this.value = value
+    }
+}
+
+@PostcardMaxSizeNg
+public enum NgConstrainedBoundedCommand<T> where T <: NgBoundedMarker {
+    | Idle
+    | Value(T)
+}
+
 @Test
 public class NextGenerationSchemaDeriveTest {
     @TestCase
@@ -170,6 +203,18 @@ public class NextGenerationSchemaDeriveTest {
     }
 
     @TestCase
+    public func ngGeneratedSchemasPreserveDeclaredWhereConstraints(): Unit {
+        @Assert(
+            formatSchema(NgConstrainedRecord<NgInner>.schemaNg()),
+            "struct NgConstrainedRecord { value: NgInner }"
+        )
+        @Assert(
+            formatSchema(NgConstrainedCommand<NgInner>.schemaNg()),
+            "enum NgConstrainedCommand { Idle, Value(NgInner) }"
+        )
+    }
+
+    @TestCase
     public func ngKeyUsesSameStableHashAlgorithm(): Unit {
         @Assert(
             keyForPathNg<NgRecord>("/ng").constCompare(
@@ -208,10 +253,15 @@ public class NextGenerationMaxSizeDeriveTest {
 
     @TestCase
     public func ngGenericEnumUsesLargestBoundedPayload(): Unit {
-        // Pair payload = 3 + 9, plus one-byte discriminant.
         @Assert(
             NgGenericBoundedCommand<NgBoundedInner, NgBoundedRecord>.postcardMaxSize(),
             13
         )
+    }
+
+    @TestCase
+    public func ngGeneratedMaxSizesPreserveDeclaredWhereConstraints(): Unit {
+        @Assert(NgConstrainedBounded<NgBoundedInner>.postcardMaxSize(), 3)
+        @Assert(NgConstrainedBoundedCommand<NgBoundedInner>.postcardMaxSize(), 4)
     }
 }
