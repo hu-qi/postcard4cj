@@ -7,6 +7,9 @@ import postcard4cj.serde_model.*
 import std.unittest.*
 import std.unittest.testmacro.*
 
+public interface SchemaMarker {}
+public interface BoundedMarker {}
+
 @PostcardSchema
 public struct DerivedSchemaRecord {
     public let id: UInt32
@@ -28,7 +31,7 @@ public enum DerivedSchemaCommand {
 }
 
 @PostcardSchema
-public struct DerivedInnerSchema {
+public struct DerivedInnerSchema <: SchemaMarker {
     public let code: UInt16
 
     public init(code: UInt16) {
@@ -76,6 +79,21 @@ public enum DerivedGenericSchemaCommand<T, U> {
     | Pair(T, U)
 }
 
+@PostcardSchema
+public struct DerivedConstrainedSchema<T> where T <: SchemaMarker {
+    public let value: T
+
+    public init(value: T) {
+        this.value = value
+    }
+}
+
+@PostcardSchema
+public enum DerivedConstrainedSchemaCommand<T> where T <: SchemaMarker {
+    | Idle
+    | Value(T)
+}
+
 @PostcardMaxSize
 public struct DerivedBoundedRecord {
     public let id: UInt32
@@ -92,7 +110,7 @@ public struct DerivedBoundedRecord {
 }
 
 @PostcardMaxSize
-public struct DerivedBoundedInner {
+public struct DerivedBoundedInner <: BoundedMarker {
     public let code: UInt16
 
     public init(code: UInt16) {
@@ -145,6 +163,21 @@ public enum DerivedGenericBoundedCommand<T, U> {
     | Idle
     | One(T)
     | Pair(T, U)
+}
+
+@PostcardMaxSize
+public struct DerivedConstrainedBounded<T> where T <: BoundedMarker {
+    public let value: T
+
+    public init(value: T) {
+        this.value = value
+    }
+}
+
+@PostcardMaxSize
+public enum DerivedConstrainedBoundedCommand<T> where T <: BoundedMarker {
+    | Idle
+    | Value(T)
 }
 
 @Test
@@ -201,6 +234,18 @@ public class PostcardSchemaDeriveTest {
     }
 
     @TestCase
+    public func generatedSchemasPreserveDeclaredWhereConstraints(): Unit {
+        @Assert(
+            formatSchema(DerivedConstrainedSchema<DerivedInnerSchema>.schema()),
+            "struct DerivedConstrainedSchema { value: DerivedInnerSchema }"
+        )
+        @Assert(
+            formatSchema(DerivedConstrainedSchemaCommand<DerivedInnerSchema>.schema()),
+            "enum DerivedConstrainedSchemaCommand { Idle, Value(DerivedInnerSchema) }"
+        )
+    }
+
+    @TestCase
     public func generatedSchemaHasPostcardWireRepresentation(): Unit {
         let schema = DerivedSchemaCommand.schema()
         let bytes = toByteArray<NamedType>(schema)
@@ -219,7 +264,6 @@ public class PostcardSchemaDeriveTest {
 public class PostcardMaxSizeDeriveTest {
     @TestCase
     public func structSumsFieldMaximums(): Unit {
-        // u32=5, bool=1, Option<u16>=1+3, Rune=5
         @Assert(DerivedBoundedRecord.postcardMaxSize(), 15)
     }
 
@@ -231,7 +275,6 @@ public class PostcardMaxSizeDeriveTest {
 
     @TestCase
     public func genericStructAddsMaximumSizeBounds(): Unit {
-        // T=3 and Option<T>=1+3.
         @Assert(DerivedGenericBounded<DerivedBoundedInner>.postcardMaxSize(), 7)
     }
 
@@ -245,16 +288,20 @@ public class PostcardMaxSizeDeriveTest {
 
     @TestCase
     public func enumAddsDiscriminantToLargestPayload(): Unit {
-        // Three variants => one-byte discriminant; largest payload u32+bool = 6.
         @Assert(DerivedBoundedCommand.postcardMaxSize(), 7)
     }
 
     @TestCase
     public func genericEnumUsesLargestBoundedPayload(): Unit {
-        // Pair payload = 3 + 4, plus one-byte discriminant.
         @Assert(
             DerivedGenericBoundedCommand<DerivedBoundedInner, DerivedBoundedOuter>.postcardMaxSize(),
             8
         )
+    }
+
+    @TestCase
+    public func generatedMaxSizesPreserveDeclaredWhereConstraints(): Unit {
+        @Assert(DerivedConstrainedBounded<DerivedBoundedInner>.postcardMaxSize(), 3)
+        @Assert(DerivedConstrainedBoundedCommand<DerivedBoundedInner>.postcardMaxSize(), 4)
     }
 }
