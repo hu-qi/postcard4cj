@@ -36,3 +36,22 @@ func ngGenericBoundList(declaration: Decl, kind: NgGenericBoundKind): String {
     }
     return bounds
 }
+
+private func ngDeclaredGenericConstraintClause(declaration: Decl): String {
+    var clause = ""
+    for (index in 0..declaration.genericConstraint.size) {
+        if (index > 0) { clause += ", " }
+        clause += declaration.genericConstraint[index].toTokens().toString()
+    }
+    return clause
+}
+
+/** Preserve the declaration's existing constraints and append NG-required bounds. */
+func ngMergedGenericConstraintClause(declaration: Decl, kind: NgGenericBoundKind): String {
+    let generated = ngGenericBoundList(declaration, kind)
+    let declared = ngDeclaredGenericConstraintClause(declaration)
+    if (declared.size == 0) {
+        return " where ${generated}"
+    }
+    return "${declared}, ${generated}"
+}
