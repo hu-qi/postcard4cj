@@ -131,11 +131,11 @@ public class Serializer {
 
     /** Unit, unit structs, newtype structs, tuples and structs have no header. */
     public func serializeUnit(): Unit {}
-    public func beginUnitStruct(name: String): Unit {}
-    public func beginNewtypeStruct(name: String): Unit {}
-    public func beginTuple(length: Int64): Unit {}
-    public func beginTupleStruct(name: String, length: Int64): Unit {}
-    public func beginStruct(name: String, fieldCount: Int64): Unit {}
+    public func beginUnitStruct(_: String): Unit {}
+    public func beginNewtypeStruct(_: String): Unit {}
+    public func beginTuple(_: Int64): Unit {}
+    public func beginTupleStruct(_: String, _: Int64): Unit {}
+    public func beginStruct(_: String, _: Int64): Unit {}
     public func endContainer(): Unit {}
 
     public func beginUnitVariant(index: UInt32): Unit {
@@ -146,11 +146,11 @@ public class Serializer {
         serializeUInt32(index)
     }
 
-    public func beginTupleVariant(index: UInt32, length: Int64): Unit {
+    public func beginTupleVariant(index: UInt32, _: Int64): Unit {
         serializeUInt32(index)
     }
 
-    public func beginStructVariant(index: UInt32, fieldCount: Int64): Unit {
+    public func beginStructVariant(index: UInt32, _: Int64): Unit {
         serializeUInt32(index)
     }
 
@@ -377,11 +377,11 @@ public class Deserializer {
     }
 
     public func deserializeUnit(): Unit { return () }
-    public func beginUnitStruct(name: String): Unit { return () }
-    public func beginNewtypeStruct(name: String): Unit { return () }
-    public func beginTuple(length: Int64): Unit { return () }
-    public func beginTupleStruct(name: String, length: Int64): Unit { return () }
-    public func beginStruct(name: String, fieldCount: Int64): Unit { return () }
+    public func beginUnitStruct(_: String): Unit { return () }
+    public func beginNewtypeStruct(_: String): Unit { return () }
+    public func beginTuple(_: Int64): Unit { return () }
+    public func beginTupleStruct(_: String, _: Int64): Unit { return () }
+    public func beginStruct(_: String, _: Int64): Unit { return () }
     public func endContainer(): Unit { return () }
 
     public func deserializeVariantIndex(): UInt32 {
@@ -390,8 +390,8 @@ public class Deserializer {
 
     public func beginUnitVariant(): Unit { return () }
     public func beginNewtypeVariant(): Unit { return () }
-    public func beginTupleVariant(length: Int64): Unit { return () }
-    public func beginStructVariant(fieldCount: Int64): Unit { return () }
+    public func beginTupleVariant(_: Int64): Unit { return () }
+    public func beginStructVariant(_: Int64): Unit { return () }
 
     public func deserializeLength(): Int64 {
         let length = deserializeUInt64()
