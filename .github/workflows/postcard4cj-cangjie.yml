@@ -178,9 +178,10 @@ jobs:
         run: |
           set -euo pipefail
           source .github/scripts/setup-cangjie.sh
-          mkdir -p target/cjcov
+          COVERAGE_DIR="${RUNNER_TEMP}/postcard4cj-cjcov"
+          mkdir -p "${COVERAGE_DIR}"
           cjpm test --coverage -V | tee "${RUNNER_TEMP}/postcard4cj-coverage.log"
-          cjcov --root=. --source=src --html-details --xml --json --output=target/cjcov
+          cjcov --root=. --source=src --html-details --xml --json --output="${COVERAGE_DIR}"
           cjpm bench -V | tee "${RUNNER_TEMP}/postcard4cj-benchmark.log"
           cjpm bundle -V | tee "${RUNNER_TEMP}/postcard4cj-bundle.log"
 
@@ -190,10 +191,9 @@ jobs:
         with:
           name: postcard4cj-quality-artifacts
           path: |
-            src
-            target/cjcov
-            target/*.cjp
-            target/meta-data.json
+            ${{ runner.temp }}/postcard4cj-cjcov
+            target/**/*.cjp
+            target/**/meta-data.json
             ${{ runner.temp }}/postcard4cj-coverage.log
             ${{ runner.temp }}/postcard4cj-benchmark.log
             ${{ runner.temp }}/postcard4cj-bundle.log
