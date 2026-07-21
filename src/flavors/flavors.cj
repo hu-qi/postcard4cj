@@ -101,7 +101,7 @@ public class SizeSerializeFlavor <: SerializeFlavor {
         count = 0
     }
 
-    public func tryPush(data: UInt8): Unit {
+    public func tryPush(_: UInt8): Unit {
         count++
     }
 
