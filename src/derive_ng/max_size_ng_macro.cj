@@ -84,18 +84,9 @@ private func generateNgMaxStruct(input: Tokens, declaration: StructDecl): Tokens
     var genericParameters = ""
     var genericConstraints = ""
     if (declaration.isGenericDecl) {
-        if (declaration.genericConstraint.size > 0) {
-            diagReport(
-                DiagReportLevel.ERROR,
-                input,
-                "@PostcardMaxSizeNg generic structs with existing where constraints are not supported yet",
-                "Move maximum-size bounds to a manual extension or remove the existing constraints."
-            )
-            return input
-        }
         let names = ngGenericParameterNames(declaration)
         genericParameters = "<${names}>"
-        genericConstraints = " where ${ngGenericBoundList(declaration, NgGenericBoundKind.MaxSize)}"
+        genericConstraints = ngMergedGenericConstraintClause(declaration, NgGenericBoundKind.MaxSize)
     }
     let typeName = declaration.identifier.value
     let concreteType = "${typeName}${genericParameters}"
@@ -124,18 +115,9 @@ private func generateNgMaxEnum(input: Tokens, declaration: EnumDecl): Tokens {
     var genericParameters = ""
     var genericConstraints = ""
     if (declaration.isGenericDecl) {
-        if (declaration.genericConstraint.size > 0) {
-            diagReport(
-                DiagReportLevel.ERROR,
-                input,
-                "@PostcardMaxSizeNg generic enums with existing where constraints are not supported yet",
-                "Move maximum-size bounds to a manual extension or remove the existing constraints."
-            )
-            return input
-        }
         let names = ngGenericParameterNames(declaration)
         genericParameters = "<${names}>"
-        genericConstraints = " where ${ngGenericBoundList(declaration, NgGenericBoundKind.MaxSize)}"
+        genericConstraints = ngMergedGenericConstraintClause(declaration, NgGenericBoundKind.MaxSize)
     }
     if (declaration.ellipsis.value == "...") {
         diagReport(
