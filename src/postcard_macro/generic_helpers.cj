@@ -20,41 +20,51 @@ func genericParameterNames(declaration: Decl): String {
     return names
 }
 
+private func requiredGenericBounds(name: String, kind: GenericBoundKind): String {
+    return match (kind) {
+        case GenericBoundKind.Codec =>
+            "PostcardEncode & PostcardDecode<${name}>"
+        case GenericBoundKind.Schema =>
+            "PostcardSchema<${name}>"
+        case GenericBoundKind.MaxSize =>
+            "PostcardMaxSize"
+    }
+}
+
+private func declaredUpperBounds(declaration: Decl, name: String): String {
+    for (constraint in declaration.genericConstraint) {
+        if (constraint.typeArgument.toTokens().toString() != name) { continue }
+        var bounds = ""
+        var first = true
+        for (upperBound in constraint.upperBounds) {
+            if (!first) { bounds += " & " }
+            bounds += upperBound.toTokens().toString()
+            first = false
+        }
+        return bounds
+    }
+    return ""
+}
+
 func genericBoundList(declaration: Decl, kind: GenericBoundKind): String {
-    var bounds = ""
-    var first = true
+    var constraints = ""
+    var firstConstraint = true
     for (token in declaration.genericParam.parameters) {
         if (token.kind != TokenKind.IDENTIFIER) { continue }
         let name = token.value
-        if (!first) { bounds += ", " }
-        bounds += match (kind) {
-            case GenericBoundKind.Codec =>
-                "${name} <: PostcardEncode & PostcardDecode<${name}>"
-            case GenericBoundKind.Schema =>
-                "${name} <: PostcardSchema<${name}>"
-            case GenericBoundKind.MaxSize =>
-                "${name} <: PostcardMaxSize"
+        if (!firstConstraint) { constraints += ", " }
+        let declared = declaredUpperBounds(declaration, name)
+        constraints += "${name} <: "
+        if (declared.size > 0) {
+            constraints += "${declared} & "
         }
-        first = false
+        constraints += requiredGenericBounds(name, kind)
+        firstConstraint = false
     }
-    return bounds
+    return constraints
 }
 
-private func declaredGenericConstraintClause(declaration: Decl): String {
-    var clause = ""
-    for (index in 0..declaration.genericConstraint.size) {
-        if (index > 0) { clause += ", " }
-        clause += declaration.genericConstraint[index].toTokens().toString()
-    }
-    return clause
-}
-
-/** Preserve the declaration's existing constraints and append macro-required bounds. */
+/** Preserve the declaration's existing upper bounds and append macro-required bounds. */
 func mergedGenericConstraintClause(declaration: Decl, kind: GenericBoundKind): String {
-    let generated = genericBoundList(declaration, kind)
-    let declared = declaredGenericConstraintClause(declaration)
-    if (declared.size == 0) {
-        return " where ${generated}"
-    }
-    return "${declared}, ${generated}"
+    return " where ${genericBoundList(declaration, kind)}"
 }
