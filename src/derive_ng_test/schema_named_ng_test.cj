@@ -2,6 +2,7 @@ package postcard4cj.derive_ng_test
 
 import postcard4cj.derive_ng.*
 import postcard4cj.schema.*
+import postcard4cj.schema_ng.*
 import std.unittest.*
 import std.unittest.testmacro.*
 
