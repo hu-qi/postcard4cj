@@ -6,8 +6,8 @@ import std.collection.*
 /**
  * Cangjie-native equivalent of Postcard's serialization Flavor abstraction.
  *
- * Flavors may store bytes directly or buffer and transform them before passing
- * them to an inner flavor. All failures use the stable Postcard error model.
+ * Flavors may store bytes directly or transform them before passing them to an
+ * inner flavor. All failures use the stable Postcard error model.
  */
 public interface SerializeFlavor {
     func tryPush(data: UInt8): Unit
@@ -122,46 +122,6 @@ public class SizeSerializeFlavor <: SerializeFlavor {
     }
 }
 
-private func encodeCobs(input: Array<UInt8>): Array<UInt8> {
-    let output = ArrayList<UInt8>(input.size + input.size / 254 + 2)
-    var segmentStart = 0i64
-
-    while (segmentStart <= input.size) {
-        var segmentEnd = segmentStart
-        while (segmentEnd < input.size && input[segmentEnd] != 0u8) {
-            segmentEnd++
-        }
-
-        var cursor = segmentStart
-        var remaining = segmentEnd - segmentStart
-        while (remaining >= 254) {
-            output.add(0xffu8)
-            var copied = 0i64
-            while (copied < 254) {
-                output.add(input[cursor + copied])
-                copied++
-            }
-            cursor += 254
-            remaining -= 254
-        }
-
-        output.add(UInt8(remaining + 1))
-        var copied = 0i64
-        while (copied < remaining) {
-            output.add(input[cursor + copied])
-            copied++
-        }
-
-        if (segmentEnd == input.size) {
-            break
-        }
-        segmentStart = segmentEnd + 1
-    }
-
-    output.add(0u8)
-    return output.toArray()
-}
-
 private func decodeCobs(frame: Array<UInt8>): Array<UInt8> {
     if (frame.size < 2 || frame[frame.size - 1] != 0u8) {
         throw postcardException(PostcardErrorKind.DeserializeBadEncoding)
@@ -204,34 +164,26 @@ private func decodeCobs(frame: Array<UInt8>): Array<UInt8> {
 
 private let CRC32C_REFLECTED_POLYNOMIAL: UInt32 = 0x82f63b78u32
 
+private func updateCrc32c(crc: UInt32, byte: UInt8): UInt32 {
+    var updated = crc ^ UInt32(byte)
+    var bit = 0i64
+    while (bit < 8) {
+        if ((updated & 1u32) != 0u32) {
+            updated = (updated >> 1) ^ CRC32C_REFLECTED_POLYNOMIAL
+        } else {
+            updated >>= 1
+        }
+        bit++
+    }
+    return updated
+}
+
 private func crc32c(input: Array<UInt8>): UInt32 {
     var crc = 0xffff_ffffu32
     for (byte in input) {
-        crc ^= UInt32(byte)
-        var bit = 0i64
-        while (bit < 8) {
-            if ((crc & 1u32) != 0u32) {
-                crc = (crc >> 1) ^ CRC32C_REFLECTED_POLYNOMIAL
-            } else {
-                crc >>= 1
-            }
-            bit++
-        }
+        crc = updateCrc32c(crc, byte)
     }
     return crc ^ 0xffff_ffffu32
-}
-
-private func appendCrc32c(input: Array<UInt8>): Array<UInt8> {
-    let checksum = crc32c(input)
-    let output = ArrayList<UInt8>(input.size + 4)
-    for (byte in input) {
-        output.add(byte)
-    }
-    output.add(UInt8(checksum & 0xffu32))
-    output.add(UInt8((checksum >> 8) & 0xffu32))
-    output.add(UInt8((checksum >> 16) & 0xffu32))
-    output.add(UInt8((checksum >> 24) & 0xffu32))
-    return output.toArray()
 }
 
 private func stripAndVerifyCrc32c(input: Array<UInt8>): Array<UInt8> {
@@ -251,57 +203,121 @@ private func stripAndVerifyCrc32c(input: Array<UInt8>): Array<UInt8> {
     return payload
 }
 
-/** COBS middleware flavor. It transforms bytes before finalizing its inner flavor. */
+/**
+ * Incremental COBS middleware.
+ *
+ * The previous implementation retained the complete raw payload and allocated
+ * another complete encoded payload during finalization. This implementation
+ * stores already encoded blocks and a fixed 254-byte pending segment, so
+ * finalization writes directly into the inner flavor without a second complete
+ * message allocation. `snapshot()` remains non-mutating and composable.
+ */
 public class CobsSerializeFlavor <: SerializeFlavor {
     private let inner: SerializeFlavor
-    private let raw: ArrayList<UInt8>
+    private let encoded: ArrayList<UInt8>
+    private let segment: Array<UInt8>
+    private var segmentLength: Int64
+    private var rawPosition: Int64
 
     public init(inner: SerializeFlavor) {
         this.inner = inner
-        raw = ArrayList<UInt8>()
+        encoded = ArrayList<UInt8>()
+        segment = Array<UInt8>(254, repeat: 0u8)
+        segmentLength = 0
+        rawPosition = 0
+    }
+
+    private func appendPendingBlock(output: ArrayList<UInt8>): Unit {
+        output.add(UInt8(segmentLength + 1))
+        var index = 0i64
+        while (index < segmentLength) {
+            output.add(segment[index])
+            index++
+        }
+    }
+
+    private func flushPendingBlock(): Unit {
+        appendPendingBlock(encoded)
+        segmentLength = 0
     }
 
     public func tryPush(data: UInt8): Unit {
-        raw.add(data)
+        rawPosition++
+        if (data == 0u8) {
+            flushPendingBlock()
+            return
+        }
+
+        segment[segmentLength] = data
+        segmentLength++
+        if (segmentLength == 254) {
+            encoded.add(0xffu8)
+            var index = 0i64
+            while (index < 254) {
+                encoded.add(segment[index])
+                index++
+            }
+            segmentLength = 0
+        }
     }
 
     public func tryExtend(data: Array<UInt8>): Unit {
         for (byte in data) {
-            raw.add(byte)
+            tryPush(byte)
         }
     }
 
     public func position(): Int64 {
-        return raw.size
+        return rawPosition
     }
 
     public func snapshot(): Array<UInt8> {
-        return encodeCobs(raw.toArray())
+        let output = ArrayList<UInt8>(encoded.size + segmentLength + 2)
+        for (byte in encoded) {
+            output.add(byte)
+        }
+        appendPendingBlock(output)
+        output.add(0u8)
+        return output.toArray()
     }
 
     public func finalize(): Array<UInt8> {
-        inner.tryExtend(snapshot())
+        flushPendingBlock()
+        encoded.add(0u8)
+        for (byte in encoded) {
+            inner.tryPush(byte)
+        }
         return inner.finalize()
     }
 }
 
-/** CRC-32/ISCSI middleware flavor. */
+/**
+ * Incremental CRC-32/ISCSI middleware.
+ *
+ * The checksum is updated as bytes arrive. Raw bytes are retained only to
+ * preserve arbitrary Flavor composition and non-mutating snapshot semantics;
+ * finalization forwards them directly and does not allocate a second complete
+ * payload-plus-checksum array.
+ */
 public class Crc32SerializeFlavor <: SerializeFlavor {
     private let inner: SerializeFlavor
     private let raw: ArrayList<UInt8>
+    private var crc: UInt32
 
     public init(inner: SerializeFlavor) {
         this.inner = inner
         raw = ArrayList<UInt8>()
+        crc = 0xffff_ffffu32
     }
 
     public func tryPush(data: UInt8): Unit {
         raw.add(data)
+        crc = updateCrc32c(crc, data)
     }
 
     public func tryExtend(data: Array<UInt8>): Unit {
         for (byte in data) {
-            raw.add(byte)
+            tryPush(byte)
         }
     }
 
@@ -309,12 +325,36 @@ public class Crc32SerializeFlavor <: SerializeFlavor {
         return raw.size
     }
 
+    private func checksum(): UInt32 {
+        return crc ^ 0xffff_ffffu32
+    }
+
+    private func appendChecksum(output: ArrayList<UInt8>): Unit {
+        let value = checksum()
+        output.add(UInt8(value & 0xffu32))
+        output.add(UInt8((value >> 8) & 0xffu32))
+        output.add(UInt8((value >> 16) & 0xffu32))
+        output.add(UInt8((value >> 24) & 0xffu32))
+    }
+
     public func snapshot(): Array<UInt8> {
-        return appendCrc32c(raw.toArray())
+        let output = ArrayList<UInt8>(raw.size + 4)
+        for (byte in raw) {
+            output.add(byte)
+        }
+        appendChecksum(output)
+        return output.toArray()
     }
 
     public func finalize(): Array<UInt8> {
-        inner.tryExtend(snapshot())
+        for (byte in raw) {
+            inner.tryPush(byte)
+        }
+        let value = checksum()
+        inner.tryPush(UInt8(value & 0xffu32))
+        inner.tryPush(UInt8((value >> 8) & 0xffu32))
+        inner.tryPush(UInt8((value >> 16) & 0xffu32))
+        inner.tryPush(UInt8((value >> 24) & 0xffu32))
         return inner.finalize()
     }
 }
