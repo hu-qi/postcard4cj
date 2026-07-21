@@ -76,18 +76,9 @@ private func generateNgStruct(input: Tokens, declaration: StructDecl): Tokens {
     var genericParameters = ""
     var genericConstraints = ""
     if (declaration.isGenericDecl) {
-        if (declaration.genericConstraint.size > 0) {
-            diagReport(
-                DiagReportLevel.ERROR,
-                input,
-                "@PostcardSchemaNg generic structs with existing where constraints are not supported yet",
-                "Move NG schema bounds to a manual extension or remove the existing constraints."
-            )
-            return input
-        }
         let names = ngGenericParameterNames(declaration)
         genericParameters = "<${names}>"
-        genericConstraints = " where ${ngGenericBoundList(declaration, NgGenericBoundKind.Schema)}"
+        genericConstraints = ngMergedGenericConstraintClause(declaration, NgGenericBoundKind.Schema)
     }
     let typeName = declaration.identifier.value
     let concreteType = "${typeName}${genericParameters}"
@@ -123,18 +114,9 @@ private func generateNgEnum(input: Tokens, declaration: EnumDecl): Tokens {
     var genericParameters = ""
     var genericConstraints = ""
     if (declaration.isGenericDecl) {
-        if (declaration.genericConstraint.size > 0) {
-            diagReport(
-                DiagReportLevel.ERROR,
-                input,
-                "@PostcardSchemaNg generic enums with existing where constraints are not supported yet",
-                "Move NG schema bounds to a manual extension or remove the existing constraints."
-            )
-            return input
-        }
         let names = ngGenericParameterNames(declaration)
         genericParameters = "<${names}>"
-        genericConstraints = " where ${ngGenericBoundList(declaration, NgGenericBoundKind.Schema)}"
+        genericConstraints = ngMergedGenericConstraintClause(declaration, NgGenericBoundKind.Schema)
     }
     if (declaration.ellipsis.value == "...") {
         diagReport(
