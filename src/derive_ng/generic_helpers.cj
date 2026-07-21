@@ -19,39 +19,49 @@ func ngGenericParameterNames(declaration: Decl): String {
     return names
 }
 
+private func ngRequiredGenericBounds(name: String, kind: NgGenericBoundKind): String {
+    return match (kind) {
+        case NgGenericBoundKind.Schema =>
+            "PostcardSchemaNg<${name}>"
+        case NgGenericBoundKind.MaxSize =>
+            "PostcardMaxSize"
+    }
+}
+
+private func ngDeclaredUpperBounds(declaration: Decl, name: String): String {
+    for (constraint in declaration.genericConstraint) {
+        if (constraint.typeArgument.toTokens().toString() != name) { continue }
+        var bounds = ""
+        var first = true
+        for (upperBound in constraint.upperBounds) {
+            if (!first) { bounds += " & " }
+            bounds += upperBound.toTokens().toString()
+            first = false
+        }
+        return bounds
+    }
+    return ""
+}
+
 func ngGenericBoundList(declaration: Decl, kind: NgGenericBoundKind): String {
-    var bounds = ""
-    var first = true
+    var constraints = ""
+    var firstConstraint = true
     for (token in declaration.genericParam.parameters) {
         if (token.kind != TokenKind.IDENTIFIER) { continue }
         let name = token.value
-        if (!first) { bounds += ", " }
-        bounds += match (kind) {
-            case NgGenericBoundKind.Schema =>
-                "${name} <: PostcardSchemaNg<${name}>"
-            case NgGenericBoundKind.MaxSize =>
-                "${name} <: PostcardMaxSize"
+        if (!firstConstraint) { constraints += ", " }
+        let declared = ngDeclaredUpperBounds(declaration, name)
+        constraints += "${name} <: "
+        if (declared.size > 0) {
+            constraints += "${declared} & "
         }
-        first = false
+        constraints += ngRequiredGenericBounds(name, kind)
+        firstConstraint = false
     }
-    return bounds
+    return constraints
 }
 
-private func ngDeclaredGenericConstraintClause(declaration: Decl): String {
-    var clause = ""
-    for (index in 0..declaration.genericConstraint.size) {
-        if (index > 0) { clause += ", " }
-        clause += declaration.genericConstraint[index].toTokens().toString()
-    }
-    return clause
-}
-
-/** Preserve the declaration's existing constraints and append NG-required bounds. */
+/** Preserve the declaration's existing upper bounds and append NG-required bounds. */
 func ngMergedGenericConstraintClause(declaration: Decl, kind: NgGenericBoundKind): String {
-    let generated = ngGenericBoundList(declaration, kind)
-    let declared = ngDeclaredGenericConstraintClause(declaration)
-    if (declared.size == 0) {
-        return " where ${generated}"
-    }
-    return "${declared}, ${generated}"
+    return " where ${ngGenericBoundList(declaration, kind)}"
 }
