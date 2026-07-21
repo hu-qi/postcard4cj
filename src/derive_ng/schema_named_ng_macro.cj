@@ -3,36 +3,40 @@ macro package postcard4cj.derive_ng
 import std.ast.*
 import std.collection.*
 
+private func ngRenameArguments(attributes: Tokens): Array<String> {
+    let values = ArrayList<String>()
+    for (token in attributes) {
+        if (token.kind == TokenKind.STRING_LITERAL) {
+            values.add(token.value)
+        } else if (token.value != ",") {
+            throw IllegalArgumentException(
+                "NG Schema rename attributes accept only comma-separated string literals."
+            )
+        }
+    }
+    return values.toArray()
+}
+
 private class NgSchemaRenameConfig {
     let typeName: String
     private let names: HashMap<String, String>
 
     init(attributes: Tokens, defaultTypeName: String) {
         names = HashMap<String, String>()
-        let arguments = parseCommaSeparatedExpressions(attributes)
+        let arguments = ngRenameArguments(attributes)
         if (arguments.size == 0) {
             typeName = defaultTypeName
             return
         }
-        typeName = readString(arguments[0], "type name")
-        for (argument in arguments[1..]) {
-            let mapping = readString(argument, "name mapping")
+        typeName = arguments[0]
+        for (mapping in arguments[1..]) {
             let separator = mapping.indexOf("=") ?? -1
             if (separator <= 0 || separator >= mapping.size - 1) {
-                throw MacroException("NG Schema rename mapping '${mapping}' must use 'source=target'.")
+                throw IllegalArgumentException(
+                    "NG Schema rename mapping '${mapping}' must use 'source=target'."
+                )
             }
             names[mapping[..separator]] = mapping[separator + 1..]
-        }
-    }
-
-    private static func readString(expression: Expr, role: String): String {
-        match (expression) {
-            case literal: LitConstExpr =>
-                if (literal.literal.kind != TokenKind.STRING_LITERAL) {
-                    throw MacroException("NG Schema ${role} must be a string literal.")
-                }
-                return literal.literal.value
-            case _ => throw MacroException("NG Schema ${role} must be a string literal.")
         }
     }
 
@@ -74,7 +78,7 @@ private func ngNamedSchemaExpression(typeNode: TypeNode): String {
     let identifier = reference.identifier.value
     if (identifier == "Option" || identifier == "Array") {
         if (reference.typeArguments.size != 1) {
-            throw MacroException("NG Schema container '${rendered}' must have one type argument.")
+            throw IllegalArgumentException("NG Schema container '${rendered}' must have one type argument.")
         }
         let inner = ngNamedSchemaExpression(reference.typeArguments[0])
         return if (identifier == "Option") {
@@ -93,11 +97,7 @@ private func ngNamedHasModifier(declaration: Decl, modifierName: String): Bool {
     return false
 }
 
-private func generateNgNamedStruct(
-    input: Tokens,
-    declaration: StructDecl,
-    config: NgSchemaRenameConfig
-): Tokens {
+private func generateNgNamedStruct(input: Tokens, declaration: StructDecl, config: NgSchemaRenameConfig): Tokens {
     var genericParameters = ""
     var genericConstraints = ""
     if (declaration.isGenericDecl) {
@@ -131,13 +131,9 @@ ${fields}
     return input + cangjieLex("\n" + generated, true)
 }
 
-private func generateNgNamedEnum(
-    input: Tokens,
-    declaration: EnumDecl,
-    config: NgSchemaRenameConfig
-): Tokens {
+private func generateNgNamedEnum(input: Tokens, declaration: EnumDecl, config: NgSchemaRenameConfig): Tokens {
     if (declaration.ellipsis.value == "...") {
-        throw MacroException("Named NG Schema cannot be generated for a non-exhaustive enum.")
+        throw IllegalArgumentException("Named NG Schema cannot be generated for a non-exhaustive enum.")
     }
     var genericParameters = ""
     var genericConstraints = ""
@@ -187,7 +183,7 @@ public macro PostcardSchemaNgNamed(attributes: Tokens, input: Tokens): Tokens {
         case Some(value) => value.identifier.value
         case None => match (declaration as EnumDecl) {
             case Some(value) => value.identifier.value
-            case None => throw MacroException("@PostcardSchemaNgNamed requires a struct or enum.")
+            case None => throw IllegalArgumentException("@PostcardSchemaNgNamed requires a struct or enum.")
         }
     }
     let config = NgSchemaRenameConfig(attributes, defaultName)
@@ -197,6 +193,6 @@ public macro PostcardSchemaNgNamed(attributes: Tokens, input: Tokens): Tokens {
     }
     match (declaration as EnumDecl) {
         case Some(value) => return generateNgNamedEnum(input, value, config)
-        case None => throw MacroException("@PostcardSchemaNgNamed requires a struct or enum.")
+        case None => throw IllegalArgumentException("@PostcardSchemaNgNamed requires a struct or enum.")
     }
 }
