@@ -1,0 +1,7 @@
+target/
+.cjpm/
+*.gcda
+*.gcno
+*.gcov
+cangjie-repo.toml
+doc/cjcov/report/
