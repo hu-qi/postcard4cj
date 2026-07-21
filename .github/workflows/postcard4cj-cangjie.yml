@@ -9,6 +9,8 @@ on:
       - "test/**"
       - "doc/**"
       - "cjpm.toml"
+      - "cangjie-repo.toml.example"
+      - ".gitignore"
       - "README.md"
       - "README.OpenSource"
       - "CHANGELOG.md"
@@ -28,6 +30,8 @@ on:
       - "test/**"
       - "doc/**"
       - "cjpm.toml"
+      - "cangjie-repo.toml.example"
+      - ".gitignore"
       - "README.md"
       - "README.OpenSource"
       - "CHANGELOG.md"
@@ -135,3 +139,62 @@ jobs:
           path: ${{ runner.temp }}/postcard4cj-cangjie-${{ matrix.cangjie-version }}.log
           if-no-files-found: error
           retention-days: 7
+
+  coverage-benchmark-bundle:
+    name: STS coverage / benchmark / bundle
+    needs: build-and-test
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    env:
+      CANGJIE_VERSION: "1.1.3"
+      CANGJIE_SDK_SHA256: "2b68905afc466e665ae181595c63f96c18d75fd2c1fb6c6f0cb64e179c28d61a"
+      CANGJIE_CACHE_DIR: ${{ github.workspace }}/.cache/cangjie-sdk/1.1.3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - name: Install native dependencies
+        run: |
+          sudo apt-get update --quiet=2
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install --yes --quiet=2 \
+            binutils \
+            libc6-dev \
+            libc++-dev \
+            libffi-dev \
+            libssl-dev \
+            libstdc++6 \
+            zlib1g-dev >/dev/null
+
+      - name: Cache Cangjie SDK
+        uses: actions/cache@v4
+        with:
+          path: .cache/cangjie-sdk/1.1.3
+          key: cangjie-sdk-${{ runner.os }}-${{ runner.arch }}-1.1.3
+
+      - name: Generate coverage, run benchmarks, and bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          source .github/scripts/setup-cangjie.sh
+          mkdir -p target/cjcov
+          cjpm test --coverage -V | tee "${RUNNER_TEMP}/postcard4cj-coverage.log"
+          cjcov --root=. --source=src --html-details --xml --json --output=target/cjcov
+          cjpm bench -V | tee "${RUNNER_TEMP}/postcard4cj-benchmark.log"
+          cjpm bundle -V | tee "${RUNNER_TEMP}/postcard4cj-bundle.log"
+
+      - name: Upload quality artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: postcard4cj-quality-artifacts
+          path: |
+            target/cjcov
+            target/*.cjp
+            target/meta-data.json
+            ${{ runner.temp }}/postcard4cj-coverage.log
+            ${{ runner.temp }}/postcard4cj-benchmark.log
+            ${{ runner.temp }}/postcard4cj-bundle.log
+          if-no-files-found: warn
+          retention-days: 14
