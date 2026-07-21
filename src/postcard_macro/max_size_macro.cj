@@ -104,18 +104,9 @@ private func generateStructMaxSize(input: Tokens, declaration: StructDecl): Toke
     var genericParameters = ""
     var genericConstraints = ""
     if (declaration.isGenericDecl) {
-        if (declaration.genericConstraint.size > 0) {
-            diagReport(
-                DiagReportLevel.ERROR,
-                input,
-                "@PostcardMaxSize generic structs with existing where constraints are not supported yet",
-                "Move maximum-size bounds to a manual extension or remove the existing constraints."
-            )
-            return input
-        }
         let names = genericParameterNames(declaration)
         genericParameters = "<${names}>"
-        genericConstraints = " where ${genericBoundList(declaration, GenericBoundKind.MaxSize)}"
+        genericConstraints = mergedGenericConstraintClause(declaration, GenericBoundKind.MaxSize)
     }
 
     let typeName = declaration.identifier.value
@@ -135,18 +126,9 @@ private func generateEnumMaxSize(input: Tokens, declaration: EnumDecl): Tokens {
     var genericParameters = ""
     var genericConstraints = ""
     if (declaration.isGenericDecl) {
-        if (declaration.genericConstraint.size > 0) {
-            diagReport(
-                DiagReportLevel.ERROR,
-                input,
-                "@PostcardMaxSize generic enums with existing where constraints are not supported yet",
-                "Move maximum-size bounds to a manual extension or remove the existing constraints."
-            )
-            return input
-        }
         let names = genericParameterNames(declaration)
         genericParameters = "<${names}>"
-        genericConstraints = " where ${genericBoundList(declaration, GenericBoundKind.MaxSize)}"
+        genericConstraints = mergedGenericConstraintClause(declaration, GenericBoundKind.MaxSize)
     }
     if (declaration.ellipsis.value == "...") {
         diagReport(
