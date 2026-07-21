@@ -37,7 +37,9 @@ public enum MacroCommand {
     | Rename(String, Bool)
 }
 
-public struct GenericLeaf <: PostcardEncode & PostcardDecode<GenericLeaf> {
+public interface CodecMarker {}
+
+public struct GenericLeaf <: CodecMarker & PostcardEncode & PostcardDecode<GenericLeaf> {
     public let code: UInt16
 
     public init(code: UInt16) {
@@ -80,6 +82,21 @@ public enum GenericCommand<T, U> {
     | Idle
     | One(T)
     | Pair(T, U)
+}
+
+@Postcard
+public struct ConstrainedEnvelope<T> where T <: CodecMarker {
+    public let value: T
+
+    public init(value: T) {
+        this.value = value
+    }
+}
+
+@Postcard
+public enum ConstrainedCommand<T> where T <: CodecMarker {
+    | Idle
+    | Value(T)
 }
 
 @Test
@@ -171,5 +188,19 @@ public class PostcardMacroTest {
                 @Assert(second.delta, -1i32)
             case _ => throw IllegalStateException("Decoded the wrong GenericCommand variant")
         }
+    }
+
+    @TestCase
+    public func generatedCodecsPreserveDeclaredWhereConstraints(): Unit {
+        let wrapped = ConstrainedEnvelope<GenericLeaf>(GenericLeaf(300u16))
+        @Assert(
+            toBytes<ConstrainedEnvelope<GenericLeaf>>(wrapped),
+            [0xacu8, 0x02u8]
+        )
+        let command: ConstrainedCommand<GenericLeaf> = ConstrainedCommand.Value(GenericLeaf(128u16))
+        @Assert(
+            toBytes<ConstrainedCommand<GenericLeaf>>(command),
+            [0x01u8, 0x80u8, 0x01u8]
+        )
     }
 }
