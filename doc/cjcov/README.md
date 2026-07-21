@@ -2,14 +2,16 @@
 
 ## Current validation
 
-The pure Cangjie suite contains **178 passing tests** on both:
+Latest quality run: GitHub Actions workflow `29798361619`, Cangjie STS 1.1.3.
 
-- Cangjie LTS 1.0.5
-- Cangjie STS 1.1.3
+- tests: **189 passed, 0 failed, 0 skipped, 0 errors**
+- all instrumented files under `src`: **3854 / 5813 lines, 66.30%**
+- runtime-library files excluding tests, benchmarks, and compile-time macro packages: **2106 / 2935 lines, 71.75%**
+- reports generated: HTML details, XML, and JSON
 
-Both matrix jobs also pass the pure-source gate and `cjpm build -V`.
+The complete generated report is retained as the `postcard4cj-quality-artifacts` workflow artifact. It contains `index.html`, per-file HTML pages, `coverage.xml`, and `coverage.json`.
 
-The repository does not claim a source-line coverage percentage because a retained `cjcov` report has not yet been generated. This document records functional coverage only; a generated report is required before publishing a numerical percentage.
+Compile-time macro packages are included in the all-source denominator but report zero runtime hits because Cangjie coverage instruments executed runtime code rather than macro-expansion execution. The second figure therefore isolates runtime-library coverage while keeping the all-source figure visible.
 
 ## Functional coverage matrix
 
@@ -25,34 +27,24 @@ The repository does not claim a source-line coverage percentage because a retain
 | Tuple, struct and enum forms | Declaration-order behavior and all payload forms |
 | Fixed and growable output | Success and capacity failures |
 | Extend and stream IO | Read/write behavior and scratch storage |
-| COBS | Golden frame, malformed frame, accumulator and remainder |
-| CRC32C/iSCSI | Golden checksum, mismatch and remainder |
+| COBS | Golden frame, malformed frame, 254-byte block, accumulator and remainder |
+| CRC32C/iSCSI | Golden checksum, split writes, mismatch and remainder |
 | Fixed-width integers | LE/BE 16/32/64/128-bit fields |
 | Schema and stable keys | Formatting, serialization, recursive use and keys |
 | Dynamic values | Lossless and JSON-compatible round trips |
-| Legacy macros | Codec, Schema and MaxSize generation for structs/enums |
-| NG macros | Schema and MaxSize generation for structs/enums |
-| Generic macros | Single- and multi-parameter generic structs and enums |
+| Legacy and NG macros | Codec, Schema and MaxSize structs/enums |
+| Generic macros | Single/multi-parameter structs/enums and merged `where` bounds |
+| Rename metadata | Legacy and NG type, field and variant names |
 | Security regression | Malicious collection lengths without direct wire-count allocation |
-| Pure Cangjie policy | Rejection of Rust/Cargo/toolchain artifacts |
+| Pure Cangjie policy | Rust/Cargo/toolchain rejection |
 | Compiler compatibility | Full suite under LTS 1.0.5 and STS 1.1.3 |
 
 ## Reproduction
 
-Activate one SDK environment and run:
-
 ```bash
-cjpm build -V
-cjpm test -V
+cjpm test --coverage -V
+mkdir -p target/cjcov
+cjcov --root=. --source=src --html-details --xml --json --output=target/cjcov
 ```
 
-Repeat with only the other SDK environment active.
-
-## Completion criteria
-
-Before center-repository publication:
-
-1. Retain LTS and STS CI logs.
-2. Generate and retain a `cjcov` report.
-3. Record uncovered public branches or explicit exclusions.
-4. Do not report a numerical source-line percentage without the generated artifact.
+Do not run `cjpm bundle` before copying the report out of `target`, because bundling may rebuild that directory. CI writes coverage reports to a runner-temporary directory and uploads them as artifacts.
