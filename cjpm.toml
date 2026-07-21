@@ -22,7 +22,10 @@ exclude = [
   "target",
   ".git",
   ".github",
-  "cangjie-repo.toml"
+  "cangjie-repo.toml",
+  "src/**/*_test.cj",
+  "src/**/*_test/**",
+  "src/benchmark/**"
 ]
 license = ["MIT", "Apache-2.0"]
 authors = ["hu-qi contributors"]
