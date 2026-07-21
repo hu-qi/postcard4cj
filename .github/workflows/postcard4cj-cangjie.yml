@@ -178,14 +178,15 @@ jobs:
         run: |
           set -euo pipefail
           source .github/scripts/setup-cangjie.sh
+          COVERAGE_RAW_DIR="$(pwd)/cov_output"
           COVERAGE_DIR="${RUNNER_TEMP}/postcard4cj-cjcov"
           mkdir -p "${COVERAGE_DIR}"
 
           cjpm test --coverage -V | tee "${RUNNER_TEMP}/postcard4cj-coverage.log"
-          find target -type f \( -name '*.gcno' -o -name '*.gcda' \) -print | sort \
+          find "${COVERAGE_RAW_DIR}" -type f \( -name '*.gcno' -o -name '*.gcda' \) -print | sort \
             | tee "${RUNNER_TEMP}/postcard4cj-coverage-files.log"
           test -s "${RUNNER_TEMP}/postcard4cj-coverage-files.log"
-          cjcov --root=target --source="$(pwd)/src" --html-details --xml --json --output="${COVERAGE_DIR}" \
+          cjcov --root="${COVERAGE_RAW_DIR}" --source="$(pwd)/src" --html-details --xml --json --output="${COVERAGE_DIR}" \
             | tee "${RUNNER_TEMP}/postcard4cj-cjcov.log"
           test -s "${COVERAGE_DIR}/coverage.json"
           test -s "${COVERAGE_DIR}/coverage.xml"
@@ -215,6 +216,7 @@ jobs:
         with:
           name: postcard4cj-quality-artifacts
           path: |
+            cov_output
             ${{ runner.temp }}/postcard4cj-cjcov
             target/**/*.cjp
             target/**/meta-data.json
