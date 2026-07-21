@@ -73,16 +73,15 @@ private func ngHasModifier(declaration: Decl, modifierName: String): Bool {
 }
 
 private func generateNgStruct(input: Tokens, declaration: StructDecl): Tokens {
+    var genericParameters = ""
+    var genericConstraints = ""
     if (declaration.isGenericDecl) {
-        diagReport(
-            DiagReportLevel.ERROR,
-            input,
-            "@PostcardSchemaNg generic structs are not supported yet",
-            "Implement PostcardSchemaNg manually."
-        )
-        return input
+        let names = ngGenericParameterNames(declaration)
+        genericParameters = "<${names}>"
+        genericConstraints = ngMergedGenericConstraintClause(declaration, NgGenericBoundKind.Schema)
     }
     let typeName = declaration.identifier.value
+    let concreteType = "${typeName}${genericParameters}"
     var fields = ""
     var count = 0i64
     for (member in declaration.body.decls) {
@@ -100,7 +99,7 @@ private func generateNgStruct(input: Tokens, declaration: StructDecl): Tokens {
         count++
     }
     let generated = """
-extend ${typeName} <: PostcardSchemaNg<${typeName}> {
+extend${genericParameters} ${concreteType} <: PostcardSchemaNg<${concreteType}>${genericConstraints} {
     public static func schemaNg(): NamedType {
         return structSchema("${typeName}", [
 ${fields}
@@ -112,16 +111,24 @@ ${fields}
 }
 
 private func generateNgEnum(input: Tokens, declaration: EnumDecl): Tokens {
-    if (declaration.isGenericDecl || declaration.ellipsis.value == "...") {
+    var genericParameters = ""
+    var genericConstraints = ""
+    if (declaration.isGenericDecl) {
+        let names = ngGenericParameterNames(declaration)
+        genericParameters = "<${names}>"
+        genericConstraints = ngMergedGenericConstraintClause(declaration, NgGenericBoundKind.Schema)
+    }
+    if (declaration.ellipsis.value == "...") {
         diagReport(
             DiagReportLevel.ERROR,
             input,
-            "@PostcardSchemaNg requires a non-generic exhaustive enum",
-            "Implement PostcardSchemaNg manually for this enum."
+            "@PostcardSchemaNg cannot generate a stable schema for a non-exhaustive enum",
+            "Remove the ellipsis constructor or implement PostcardSchemaNg manually."
         )
         return input
     }
     let typeName = declaration.identifier.value
+    let concreteType = "${typeName}${genericParameters}"
     var variants = ""
     var index = 0i64
     for (constructor in declaration.constructors) {
@@ -149,7 +156,7 @@ private func generateNgEnum(input: Tokens, declaration: EnumDecl): Tokens {
         index++
     }
     let generated = """
-extend ${typeName} <: PostcardSchemaNg<${typeName}> {
+extend${genericParameters} ${concreteType} <: PostcardSchemaNg<${concreteType}>${genericConstraints} {
     public static func schemaNg(): NamedType {
         return enumSchema("${typeName}", [
 ${variants}

@@ -1,208 +1,146 @@
 # Public API compatibility audit
 
-Baseline: `jamesmunns/postcard@de182557cff45f2ca9b2b67a6b93be5917612a44`.
+Behavior baseline: `jamesmunns/postcard@de182557cff45f2ca9b2b67a6b93be5917612a44`.
 
-Cangjie follows camelCase naming while Rust uses snake_case. A mapping marked **Implemented** preserves the behavior and wire format, even when the spelling or ownership model differs.
+postcard4cj is implemented entirely in Cangjie. The upstream project defines protocol behavior and API concepts only; it is not compiled, executed, or distributed by this repository.
 
-## `postcard-core`
+## Compatibility status
 
-### Serialization primitives
-
-| Rust concept | Cangjie mapping | Status |
+| Upstream workspace crate | Cangjie package | Status |
 |---|---|---|
-| `ser::Flavor` | `postcard4cj.flavors.SerializeFlavor` | Implemented |
-| `try_push_bool` | `CoreEncoder.pushBool` | Implemented |
-| `try_push_i8/i16/i32/i64/i128` | `CoreEncoder.pushInt8/16/32/64/128` | Implemented |
-| `try_push_u8/u16/u32/u64/u128` | `CoreEncoder.pushUInt8/16/32/64/128` | Implemented |
-| `try_push_isize/usize` | `CoreEncoder.pushPlatformInt/UInt` | Implemented with 64-bit runtime substitution |
-| `try_push_f32/f64` | `CoreEncoder.pushFloat32/64` | Implemented |
-| `try_push_char` | `CoreEncoder.pushRune` | Implemented |
-| `try_push_str` | `CoreEncoder.pushString` | Implemented |
-| `try_push_bytes` | `CoreEncoder.pushBytes` | Implemented |
-| `try_push_option_none/some` | `CoreEncoder.pushOptionNone/Some` | Implemented |
-| `try_push_discriminant` | `CoreEncoder.pushDiscriminant` | Implemented |
-| `try_push_length` | `CoreEncoder.pushLength` | Implemented |
+| `postcard-core` | `postcard4cj.core` | Implemented |
+| `postcard` | `postcard4cj` and utility packages | Implemented |
+| `postcard-derive` | `postcard4cj.postcard_macro` | Implemented within the documented macro boundary |
+| `postcard-derive-ng` | `postcard4cj.derive_ng` | Implemented within the documented macro boundary |
+| `postcard-schema` | `postcard4cj.schema` | Implemented |
+| `postcard-schema-ng` | `postcard4cj.schema_ng` | Implemented |
+| `postcard-dyn` | `postcard4cj.dynamic` | Implemented |
+| `postcard-dyn-ng` | `postcard4cj.dynamic_ng` | Implemented |
+| `postcard2` | `postcard4cj.v2` | Implemented |
+| `postcard2-eio` | `postcard4cj.v2_eio` | Implemented through Cangjie IO interfaces |
+| `postcard2-heapless` | `postcard4cj.v2_fixed` | Implemented with runtime capacity |
 
-### Deserialization primitives
+## Core wire APIs
 
-| Rust concept | Cangjie mapping | Status |
+| Upstream concept | Cangjie mapping | Status |
 |---|---|---|
-| `de::Flavor<'de>` | `postcard4cj.flavors.DeserializeFlavor` | Implemented; lifetime-free Cangjie ownership model |
-| `try_take_bool` | `CoreDecoder.takeBool` | Implemented |
-| `try_take_i8/i16/i32/i64/i128` | `CoreDecoder.takeInt8/16/32/64/128` | Implemented |
-| `try_take_u8/u16/u32/u64/u128` | `CoreDecoder.takeUInt8/16/32/64/128` | Implemented |
-| `try_take_isize/usize` | `CoreDecoder.takePlatformInt/UInt` | Implemented with 64-bit runtime substitution |
-| `try_take_f32/f64` | `CoreDecoder.takeFloat32/64` | Implemented |
-| `try_take_char` | `CoreDecoder.takeRune` | Implemented |
-| `try_take_str` / `_temp` | `CoreDecoder.takeString` | Implemented as owned Cangjie String |
-| `try_take_bytes` / `_temp` | `CoreDecoder.takeBytes` | Implemented as Array/slice value |
-| `try_take_option_discrim` | `CoreDecoder.takeOptionDiscriminant` | Implemented |
-| `try_take_discriminant` | `CoreDecoder.takeDiscriminant` | Implemented |
-| `try_take_length` | `CoreDecoder.takeLength` | Implemented |
+| serialization Flavor | `SerializeFlavor` | Implemented |
+| deserialization Flavor | `DeserializeFlavor` | Implemented |
+| primitive signed/unsigned integers | encoder/decoder methods through 128-bit | Implemented |
+| platform-width integers | 64-bit Cangjie runtime substitution | Implemented |
+| Bool, floats, char/Rune | corresponding encoder/decoder methods | Implemented |
+| String and bytes | owned Cangjie values | Implemented |
+| Option and discriminants | Option/enum helpers | Implemented |
+| sequence and map lengths | length-prefixed helpers | Implemented |
+| exact decode | `fromBytes` / `fromByteArray` | Implemented |
+| take with remainder | `takeFromByteArray` and related helpers | Implemented |
 
-## `postcard`
+## Top-level serialization
 
-### Top-level serialization
-
-| Rust API | Cangjie mapping | Status |
+| Upstream API family | Cangjie mapping | Status |
 |---|---|---|
-| `Serializer<F>` | `postcard4cj.serde_model.Serializer` | Implemented |
-| `serialize_with_flavor` | `serializeWithFlavor` | Implemented |
 | `to_slice` | `toSlice` / `encodeTo` | Implemented |
-| `to_extend` | `ExtendSerializeFlavor`, `toExtendV2` | Implemented as `ByteExtendSink` |
-| `to_vec` | `toByteArray`, `toVecV2` | Implemented; Cangjie Array replaces heapless default |
-| `to_allocvec` | `toByteArray` | Implemented; Array is the owned collection |
-| `to_stdvec` | `toByteArray` | Implemented; no separate std/alloc collection split |
-| `to_eio` | `toEioV2` | Implemented via `ByteWriter` |
-| `to_io` | `postcard4cj.io.toIo` | Implemented via `ByteWriter` |
-| `to_slice_cobs` | `serializeWithFlavor(... CobsSerializeFlavor(...))`, `toBytesCobs` | Implemented |
-| `to_vec_cobs` / `to_allocvec_cobs` / `to_stdvec_cobs` | COBS Flavor with Array storage | Implemented |
-| `to_slice_crc32` | CRC Flavor or `toBytesCrc32Iscsi` | Implemented |
-| `to_vec_crc32` / alloc/std variants | CRC Flavor with selected storage | Implemented |
+| owned vector output | `toBytes` / `toByteArray` / `toVecV2` | Implemented |
+| Extend output | `ExtendSerializeFlavor` / `toExtendV2` | Implemented |
+| IO/EIO output | `postcard4cj.io.toIo` / `toEioV2` | Implemented |
+| COBS output | `toBytesCobs`, `encodeToCobs`, COBS Flavor | Implemented |
+| CRC32C output | `toBytesCrc32Iscsi`, `encodeToCrc32Iscsi`, CRC Flavor | Implemented |
+| serialized-size calculation | `serializedSize` / `serializedSizeV2` | Implemented |
 
-### Top-level deserialization
+## Top-level deserialization
 
-| Rust API | Cangjie mapping | Status |
+| Upstream API family | Cangjie mapping | Status |
 |---|---|---|
-| `Deserializer<F>` | `postcard4cj.serde_model.Deserializer` | Implemented |
-| `from_bytes` | `fromByteArray`; `fromBytesV2` for postcard2 semantics | Implemented |
-| `take_from_bytes` | `takeFromByteArray` / `takeFromBytesV2` | Implemented |
-| `from_bytes_cobs` | `CobsDeserializeFlavor`, `fromBytesCobs` | Implemented |
-| `take_from_bytes_cobs` | `takeDynamicWithFlavor` or typed Deserializer with COBS Flavor | Implemented behavior; convenience alias audit pending |
-| `from_bytes_crc32` | `Crc32DeserializeFlavor`, `fromBytesCrc32Iscsi` | Implemented |
-| `take_from_bytes_crc32` | typed Deserializer with CRC Flavor | Implemented behavior; convenience alias audit pending |
-| `from_eio` | `fromEioV2` | Implemented via `ByteReader` and scratch buffer |
-| `from_io` | `postcard4cj.io.fromIo` | Implemented via `ByteReader` and scratch buffer |
+| exact bytes decode | `fromBytes`, `fromByteArray`, `fromBytesV2` | Implemented |
+| bytes decode with remainder | `takeFromByteArray`, `takeFromBytesV2` | Implemented |
+| COBS exact decode | `fromBytesCobs` | Implemented |
+| COBS remainder decode | `takeFromBytesCobs` | Implemented |
+| CRC32C exact decode | `fromBytesCrc32Iscsi` | Implemented |
+| CRC32C remainder decode | `takeFromBytesCrc32Iscsi` | Implemented |
+| IO/EIO input | `postcard4cj.io.fromIo` / `fromEioV2` | Implemented |
 
-### Flavors
+## Flavors and storage
 
-| Rust Flavor | Cangjie mapping | Status |
+| Upstream Flavor/concept | Cangjie mapping | Status |
 |---|---|---|
-| `ser_flavors::Slice` | `SliceSerializeFlavor` | Implemented |
-| `ser_flavors::HVec` | `FixedVecFlavor` | Implemented with runtime capacity |
-| `ser_flavors::AllocVec` / `StdVec` | `ArraySerializeFlavor` | Implemented |
-| `ser_flavors::ExtendFlavor` | `ExtendSerializeFlavor` | Implemented |
-| `ser_flavors::WriteFlavor` | `v2_eio.WriteFlavor` | Implemented |
-| `ser_flavors::Cobs` | `CobsSerializeFlavor` | Implemented; buffered transform |
-| `ser_flavors::CrcModifier` | `Crc32SerializeFlavor` | Implemented; buffered transform |
-| size-counting Flavor | `SizeSerializeFlavor` | Implemented |
-| `de_flavors::Slice` | `SliceDeserializeFlavor` | Implemented |
-| IO/EIO reader Flavor | `v2_eio.ReaderFlavor` | Implemented |
-| COBS source | `CobsDeserializeFlavor` | Implemented |
-| CRC source | `Crc32DeserializeFlavor` | Implemented |
+| fixed slice | `SliceSerializeFlavor` | Implemented |
+| fixed bounded vector | `FixedVecFlavor` / `FixedByteVec` | Runtime-capacity substitution |
+| growable vector | `ArraySerializeFlavor` | Implemented |
+| Extend sink | `ExtendSerializeFlavor` | Implemented |
+| stream writer/reader | Cangjie `ByteWriter` / `ByteReader` | Implemented |
+| size counter | `SizeSerializeFlavor` | Implemented |
+| COBS modifier/source | COBS serialize/deserialize Flavors | Implemented |
+| CRC modifier/source | CRC32C serialize/deserialize Flavors | Implemented |
 
-### Other modules
+COBS and CRC middleware currently may use temporary buffers. Incremental lower-allocation operation is a performance follow-up, not a wire-compatibility gap.
 
-| Rust API | Cangjie mapping | Status |
+## Additional modules
+
+| Upstream module | Cangjie mapping | Status |
 |---|---|---|
-| `Error`, `Result` | `PostcardErrorKind`, `PostcardException` | Implemented; exceptions replace Result return type |
-| `accumulator::CobsAccumulator<N>` | `CobsAccumulator(capacity)` | Implemented with runtime capacity |
-| `fixint::le/be` wrappers | `postcard4cj.fixint` LE/BE functions | Implemented |
-| `experimental::serialized_size` | `serializedSize` | Implemented |
-| `experimental::max_size::MaxSize` | `PostcardMaxSize` | Implemented |
-| derive `MaxSize` | `@PostcardMaxSize` | Implemented for bounded non-generic declarations |
+| COBS accumulator | `CobsAccumulator` | Implemented |
+| fixed-width integers | `postcard4cj.fixint` | Implemented for LE/BE 16/32/64/128-bit values |
+| maximum serialized size | `PostcardMaxSize` | Implemented |
+| Schema graph and formatting | `postcard4cj.schema` | Implemented |
+| stable Schema keys | `keyForPath`, `keyForSchemaPath` | Implemented with upstream-compatible FNV markers |
+| dynamic lossless values | `postcard4cj.dynamic` | Implemented |
+| JSON-compatible conversion | dynamic JSON helpers | Implemented |
+| Postcard2-style facade | `postcard4cj.v2` | Implemented |
 
-## `postcard-derive`
+## Macro compatibility
 
-| Rust derive | Cangjie mapping | Status |
+| Capability | Cangjie entry point | Status |
 |---|---|---|
-| `#[derive(MaxSize)]` | `@PostcardMaxSize` | Implemented for bounded non-generic struct/enum forms |
-| `#[derive(Schema)]` | `@PostcardSchema` | Implemented for non-generic struct/enum forms |
-| Serde codec derives | `@Postcard` | Implemented for non-generic struct/enum forms |
-| `#[serde(rename = ...)]` / postcard rename | Manual Schema or codec declaration | Pending macro attribute audit |
-| generic bounds | Manual implementation | Pending Cangjie generic-macro audit |
+| codec generation | `@Postcard` | Implemented for structs and exhaustive enums |
+| legacy Schema generation | `@PostcardSchema` | Implemented for structs and exhaustive enums |
+| legacy MaxSize generation | `@PostcardMaxSize` | Implemented for bounded structs and exhaustive enums |
+| NG Schema generation | `@PostcardSchemaNg` | Implemented for structs and exhaustive enums |
+| NG MaxSize generation | `@PostcardMaxSizeNg` | Implemented for bounded structs and exhaustive enums |
+| one or more generic type parameters | all five entry points | Implemented when no pre-existing `where` clause is present |
+| declaration-order field/variant semantics | all relevant macros | Implemented |
+| merge existing generic constraints | all five entry points | Pending |
+| rename and related attributes | codec/Schema macros | Pending |
+| non-exhaustive enum generation | enum macros | Explicitly rejected |
+| unbounded String/Array MaxSize | MaxSize macros | Explicitly rejected |
 
-## `postcard-schema`
+Generated parameter lists and bounds are rebuilt only from identifier tokens, preventing punctuation or whitespace from becoming malformed generic constraints.
 
-| Rust API | Cangjie mapping | Status |
-|---|---|---|
-| `Schema` trait | `PostcardSchema<T>` | Implemented |
-| `NamedType` | `postcard4cj.schema.NamedType` | Implemented |
-| `DataModelType` | `DataModelType` | Implemented; `Bool`/`Unit` names changed to avoid keywords, wire indices retained |
-| `NamedValue` | `NamedValue` | Implemented |
-| `NamedVariant` | `NamedVariant` | Implemented |
-| `DataModelVariant` | `DataModelVariant` | Implemented |
-| owned schema tree | single runtime-owned Schema graph + `toOwnedSchema` | Deliberate Cangjie substitution |
-| Schema serialization | `PostcardSerialize` implementations | Implemented |
-| Schema formatting | `formatSchema` | Implemented |
-| recursive used types | `allUsedTypes` | Implemented |
-| `Key` / hash v2 | `Key`, `keyForPath`, `keyForSchemaPath` | Implemented with upstream FNV markers |
-| primitive/container impls | Schema constructor helpers and macros | Implemented core set; optional integration audit pending |
+## Language-level substitutions
 
-## `postcard-schema-ng` / `postcard-derive-ng`
+- Owned `String` and `Array<UInt8>` replace lifetime-bound borrowed values.
+- Caller scratch arrays replace temporary lifetime borrowing.
+- Runtime-capacity fixed vectors replace const-generic storage.
+- Cangjie exceptions replace Rust `Result` return surfaces while retaining explicit error categories.
+- `ByteReader` and `ByteWriter` replace versioned embedded-IO traits.
+- One runtime-owned Schema graph replaces separate static-reference and owned trees.
 
-| Rust concept | Cangjie mapping | Status |
-|---|---|---|
-| NG Schema trait | `PostcardSchemaNg<T>` | Implemented |
-| NG derive Schema | `@PostcardSchemaNg` | Implemented |
-| NG derive MaxSize | `@PostcardMaxSizeNg` | Implemented |
-| NG owned tree / key | shared validated runtime tree, `toOwnedSchemaNg`, `keyForPathNg` | Implemented |
+These substitutions preserve wire bytes and observable error/capacity behavior where an upstream equivalent exists.
 
-## `postcard-dyn`
+## Optional ecosystem integrations under audit
 
-| Rust API/concept | Cangjie mapping | Status |
-|---|---|---|
-| schema-directed deserialize to `serde_json::Value` | `fromByteArrayDynamicJson` | Implemented |
-| schema-directed serialize from `serde_json::Value` | `toByteArrayDynamicJson` | Implemented |
-| `DeError` categories | `DynamicErrorKind`, `DynamicException` | Implemented |
-| JSON Null/Bool/Number/String/Array/Object | `JsonValue` | Implemented |
-| lossless value model | `DynamicValue` | Additional Cangjie capability |
-| arbitrary-key maps | `DynamicValue.MapValue` | Additional Cangjie capability |
-| explicit `None` vs `Some(Unit)` | `DynamicOption` | Additional Cangjie capability |
-| Schema as a Dynamic value | `DynamicValue.SchemaValue` | Implemented outside JSON conversion |
+The following upstream integrations require Cangjie-native types or explicit exclusions:
 
-## `postcard-dyn-ng`
+- UUID
+- date/time types
+- matrix/vector types
+- fixed-point types
+- diagnostic formatting integrations
+- large fixed-array helpers
+- historical bounded-vector and embedded-IO aliases
 
-| Rust concept | Cangjie mapping | Status |
-|---|---|---|
-| NG dynamic codec | `postcard4cj.dynamic_ng` | Implemented |
-| NG JSON conversion | `toByteArrayDynamicJsonNg`, `fromByteArrayDynamicJsonNg` | Implemented |
-| NG remainder and Flavor APIs | `takeFromByteArrayDynamicNg`, `takeDynamicWithFlavorNg` | Implemented |
+No integration is implemented by embedding Rust code.
 
-## `postcard2`
+## Verification
 
-| Rust API | Cangjie mapping | Status |
-|---|---|---|
-| `Serializer<F>` | `V2Serializer` and core-backed `Serializer` | Implemented |
-| `Deserializer<F>` | `V2Deserializer` and core-backed `Deserializer` | Implemented |
-| `SerializerError<PE, FE>` | `SerializerErrorKind`, `SerializerException` | Implemented without generic error payload types |
-| `DeserializerError<PE, FE>` | `DeserializerErrorKind`, `DeserializerException` | Implemented without generic error payload types |
-| `to_slice` | `toSliceV2` | Implemented |
-| `to_vec` | `toVecV2` | Implemented |
-| `to_extend` | `toExtendV2` | Implemented with `ByteExtendSink` |
-| `serialized_size` | `serializedSizeV2` | Implemented |
-| `from_bytes` | `fromBytesV2` | Implemented; trailing bytes ignored like upstream |
-| `take_from_bytes` | `takeFromBytesV2` | Implemented |
+The pure Cangjie CI matrix validates the same source tree on:
 
-## `postcard2-eio`
+- Cangjie LTS 1.0.5
+- Cangjie STS 1.1.3
 
-| Rust API | Cangjie mapping | Status |
-|---|---|---|
-| embedded-io 0.7 Write Flavor | `ByteWriter`, `WriteFlavor` | Implemented |
-| embedded-io 0.7 Reader Flavor | `ByteReader`, `ReaderFlavor` | Implemented |
-| `to_eio` | `toEioV2` | Implemented |
-| `from_eio` | `fromEioV2` | Implemented |
-| reader + unused buffer return | `EioDeserializeResult<T>` | Implemented |
+Latest result on both release lines:
 
-## `postcard2-heapless`
+- pure-source gate: passed
+- build: passed
+- tests: **178 passed, 0 failed, 0 skipped, 0 errors**
 
-| Rust API | Cangjie mapping | Status |
-|---|---|---|
-| `HVec<const B: usize>` | `FixedByteVec(capacity)` | Implemented with runtime capacity |
-| HVec Flavor | `FixedVecFlavor` | Implemented |
-| fixed vector helper | `toFixedVecV2` | Implemented |
-
-## Optional upstream integrations under audit
-
-The upstream feature matrix includes integrations not yet claimed as release-ready:
-
-- UUID 1.x
-- chrono 0.4
-- nalgebra 0.33 / 0.34
-- fixed 1.x
-- defmt
-- serde-big-array
-- historical heapless 0.7 / 0.8 / 0.9 aliases
-- embedded-io 0.4 / 0.6 compatibility aliases
-
-These do not change the Postcard wire format. Each will receive either a Cangjie-native adapter, a direct statement that the native Cangjie type already implements the core interfaces, or an explicit exclusion before the PR leaves Draft.
+See `doc/design.md`, `doc/feature_api.md`, and `MIGRATION.md` for architecture, usage, and detailed language substitutions.

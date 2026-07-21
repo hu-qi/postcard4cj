@@ -38,7 +38,7 @@ private class MemoryWriter <: ByteWriter {
 }
 
 private class FailingWriter <: ByteWriter {
-    public func writeAll(data: Array<UInt8>): Unit {
+    public func writeAll(_: Array<UInt8>): Unit {
         throw IllegalStateException("write failure")
     }
 

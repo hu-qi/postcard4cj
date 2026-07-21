@@ -1,4 +1,4 @@
-name: postcard4cj Cangjie
+name: postcard4cj pure Cangjie
 
 on:
   push:
@@ -6,14 +6,42 @@ on:
       - main
     paths:
       - "src/**"
+      - "test/**"
+      - "doc/**"
       - "cjpm.toml"
+      - "cangjie-repo.toml.example"
+      - ".gitignore"
+      - "README.md"
+      - "README.OpenSource"
+      - "CHANGELOG.md"
+      - "MIGRATION.md"
+      - "API_COMPATIBILITY.md"
+      - "**/*.rs"
+      - "**/Cargo.toml"
+      - "**/Cargo.lock"
+      - "rust-toolchain*"
+      - ".cargo/**"
       - ".github/scripts/setup-cangjie.sh"
       - ".github/scripts/resolve-cangjie-sdk-url.py"
       - ".github/workflows/postcard4cj-cangjie.yml"
   pull_request:
     paths:
       - "src/**"
+      - "test/**"
+      - "doc/**"
       - "cjpm.toml"
+      - "cangjie-repo.toml.example"
+      - ".gitignore"
+      - "README.md"
+      - "README.OpenSource"
+      - "CHANGELOG.md"
+      - "MIGRATION.md"
+      - "API_COMPATIBILITY.md"
+      - "**/*.rs"
+      - "**/Cargo.toml"
+      - "**/Cargo.lock"
+      - "rust-toolchain*"
+      - ".cargo/**"
       - ".github/scripts/setup-cangjie.sh"
       - ".github/scripts/resolve-cangjie-sdk-url.py"
       - ".github/workflows/postcard4cj-cangjie.yml"
@@ -23,17 +51,104 @@ permissions:
   contents: read
 
 env:
-  CANGJIE_VERSION: "1.1.3"
-  CANGJIE_PLATFORM: "linux-x64"
-  CANGJIE_CACHE_DIR: "${{ github.workspace }}/.cache/cangjie-sdk"
-  CANGJIE_SDK_URL: "${{ vars.CANGJIE_SDK_URL }}"
-  CANGJIE_SDK_SHA256: "${{ vars.CANGJIE_SDK_SHA256 }}"
+  CANGJIE_PLATFORM: linux-x64
   PYTHONUNBUFFERED: "1"
 
 jobs:
   build-and-test:
+    name: ${{ matrix.release-line }} / Cangjie ${{ matrix.cangjie-version }}
     runs-on: ubuntu-22.04
-    timeout-minutes: 30
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - release-line: LTS
+            cangjie-version: "1.0.5"
+            sdk-sha256: ""
+          - release-line: STS
+            cangjie-version: "1.1.3"
+            sdk-sha256: "2b68905afc466e665ae181595c63f96c18d75fd2c1fb6c6f0cb64e179c28d61a"
+    env:
+      CANGJIE_VERSION: ${{ matrix.cangjie-version }}
+      CANGJIE_SDK_SHA256: ${{ matrix.sdk-sha256 }}
+      CANGJIE_CACHE_DIR: ${{ github.workspace }}/.cache/cangjie-sdk/${{ matrix.cangjie-version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - name: Enforce pure Cangjie sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t forbidden < <(
+            find . -type f \
+              \( -name '*.rs' -o -name 'Cargo.toml' -o -name 'Cargo.lock' -o -name 'rust-toolchain' -o -name 'rust-toolchain.toml' \) \
+              -not -path './.git/*' -print
+          )
+          if (( ${#forbidden[@]} > 0 )); then
+            printf 'Rust source/toolchain files are not allowed in postcard4cj:\n'
+            printf ' - %s\n' "${forbidden[@]}"
+            exit 1
+          fi
+          if [[ -d .cargo ]]; then
+            echo '.cargo is not allowed in the pure Cangjie repository.'
+            exit 1
+          fi
+
+      - name: Install native dependencies
+        run: |
+          sudo apt-get update --quiet=2
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install --yes --quiet=2 \
+            binutils \
+            libc6-dev \
+            libc++-dev \
+            libffi-dev \
+            libssl-dev \
+            libstdc++6 \
+            zlib1g-dev >/dev/null
+
+      - name: Cache Cangjie SDK
+        uses: actions/cache@v4
+        with:
+          path: .cache/cangjie-sdk/${{ matrix.cangjie-version }}
+          key: cangjie-sdk-${{ runner.os }}-${{ runner.arch }}-${{ matrix.cangjie-version }}
+
+      - name: Install Cangjie and run checks
+        shell: bash
+        run: |
+          LOG_FILE="${RUNNER_TEMP}/postcard4cj-cangjie-${CANGJIE_VERSION}.log"
+          set +e
+          (
+            set -euo pipefail
+            source .github/scripts/setup-cangjie.sh
+            cjpm build -V
+            cjpm test -V
+          ) >"${LOG_FILE}" 2>&1
+          STATUS=$?
+          cat "${LOG_FILE}"
+          exit "${STATUS}"
+
+      - name: Upload Cangjie diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: postcard4cj-cangjie-${{ matrix.release-line }}-${{ matrix.cangjie-version }}
+          path: ${{ runner.temp }}/postcard4cj-cangjie-${{ matrix.cangjie-version }}.log
+          if-no-files-found: error
+          retention-days: 7
+
+  coverage-benchmark-bundle:
+    name: STS coverage / benchmark / bundle
+    needs: build-and-test
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    env:
+      CANGJIE_VERSION: "1.1.3"
+      CANGJIE_SDK_SHA256: "2b68905afc466e665ae181595c63f96c18d75fd2c1fb6c6f0cb64e179c28d61a"
+      CANGJIE_CACHE_DIR: ${{ github.workspace }}/.cache/cangjie-sdk/1.1.3
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -55,29 +170,62 @@ jobs:
       - name: Cache Cangjie SDK
         uses: actions/cache@v4
         with:
-          path: .cache/cangjie-sdk
-          key: cangjie-sdk-${{ runner.os }}-${{ runner.arch }}-${{ env.CANGJIE_VERSION }}
+          path: .cache/cangjie-sdk/1.1.3
+          key: cangjie-sdk-${{ runner.os }}-${{ runner.arch }}-1.1.3
 
-      - name: Install Cangjie and run checks
+      - name: Generate coverage, run benchmarks, lint, and bundle
         shell: bash
         run: |
-          LOG_FILE="${RUNNER_TEMP}/postcard4cj-cangjie.log"
-          set +e
-          (
-            set -euo pipefail
-            source .github/scripts/setup-cangjie.sh
-            cjpm build -V
-            cjpm test -V
-          ) >"${LOG_FILE}" 2>&1
-          STATUS=$?
-          cat "${LOG_FILE}"
-          exit "${STATUS}"
+          set -euo pipefail
+          source .github/scripts/setup-cangjie.sh
+          COVERAGE_RAW_DIR="$(pwd)/cov_output"
+          COVERAGE_DIR="${RUNNER_TEMP}/postcard4cj-cjcov"
+          mkdir -p "${COVERAGE_DIR}"
 
-      - name: Upload Cangjie diagnostics
+          cjpm test --coverage -V | tee "${RUNNER_TEMP}/postcard4cj-coverage.log"
+          find "${COVERAGE_RAW_DIR}" -type f \( -name '*.gcno' -o -name '*.gcda' \) -print | sort \
+            | tee "${RUNNER_TEMP}/postcard4cj-coverage-files.log"
+          test -s "${RUNNER_TEMP}/postcard4cj-coverage-files.log"
+          cjcov --root="${COVERAGE_RAW_DIR}" --source="$(pwd)/src" --html-details --xml --json --output="${COVERAGE_DIR}" \
+            | tee "${RUNNER_TEMP}/postcard4cj-cjcov.log"
+          test -s "${COVERAGE_DIR}/coverage.json"
+          test -s "${COVERAGE_DIR}/coverage.xml"
+          test -s "${COVERAGE_DIR}/index.html"
+
+          cjpm bench -V | tee "${RUNNER_TEMP}/postcard4cj-benchmark.log"
+
+          set +e
+          cjlint -f src >"${RUNNER_TEMP}/postcard4cj-cjlint.log" 2>&1
+          LINT_STATUS=$?
+          set -e
+          cat "${RUNNER_TEMP}/postcard4cj-cjlint.log"
+          if grep -Eq '(^|[[:space:]])error:' "${RUNNER_TEMP}/postcard4cj-cjlint.log"; then
+            echo "cjlint reported error-level diagnostics."
+            exit "${LINT_STATUS:-1}"
+          fi
+          echo "cjlint warning debt is recorded as a quality artifact; error-level diagnostics remain blocking."
+
+          cjpm bundle --skip-lint -V | tee "${RUNNER_TEMP}/postcard4cj-bundle.log"
+          test -n "$(find target -type f -name '*.cjp' -print -quit)"
+          find target -type f \( -name '*.cjp' -o -name 'meta-data.json' \) -print | sort \
+            | tee "${RUNNER_TEMP}/postcard4cj-bundle-files.log"
+
+      - name: Upload quality artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: postcard4cj-cangjie-diagnostics
-          path: ${{ runner.temp }}/postcard4cj-cangjie.log
-          if-no-files-found: error
-          retention-days: 7
+          name: postcard4cj-quality-artifacts
+          path: |
+            cov_output
+            ${{ runner.temp }}/postcard4cj-cjcov
+            target/**/*.cjp
+            target/**/meta-data.json
+            ${{ runner.temp }}/postcard4cj-coverage.log
+            ${{ runner.temp }}/postcard4cj-coverage-files.log
+            ${{ runner.temp }}/postcard4cj-cjcov.log
+            ${{ runner.temp }}/postcard4cj-benchmark.log
+            ${{ runner.temp }}/postcard4cj-cjlint.log
+            ${{ runner.temp }}/postcard4cj-bundle.log
+            ${{ runner.temp }}/postcard4cj-bundle-files.log
+          if-no-files-found: warn
+          retention-days: 14

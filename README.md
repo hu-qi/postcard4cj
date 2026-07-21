@@ -1,10 +1,18 @@
 # postcard4cj
 
-A Cangjie port of the complete [`jamesmunns/postcard`](https://github.com/jamesmunns/postcard) workspace.
+A pure Cangjie implementation of the complete [`jamesmunns/postcard`](https://github.com/jamesmunns/postcard) workspace behavior.
 
-> **Status: full workspace coverage implemented; compatibility audit in progress.**
->
-> Every upstream workspace crate now has a Cangjie counterpart. The branch builds under Cangjie 1.1.3 and currently passes 144 Cangjie tests plus the Rust `postcard = 1.1.3` interoperability oracle. The Draft PR remains open while API parity, language-level substitutions, generic derive support, and the complete upstream negative-test matrix are audited.
+> **Status: release candidate.** All 11 upstream workspace crates have documented Cangjie counterparts, the repository contains no Rust implementation, and the same source tree passes the complete LTS/STS quality matrix.
+
+## Supported Cangjie versions
+
+- LTS: Cangjie 1.0.5
+- STS: Cangjie 1.1.3
+
+The package declares 1.0.5 as its minimum compiler version. Version-specific maintenance branches are available:
+
+- `postcard4cj_lt_1.0.5`
+- `postcard4cj_st_1.1.3`
 
 ## Upstream baseline
 
@@ -12,12 +20,18 @@ A Cangjie port of the complete [`jamesmunns/postcard`](https://github.com/jamesm
 jamesmunns/postcard@de182557cff45f2ca9b2b67a6b93be5917612a44
 ```
 
+The upstream repository defines the protocol and observable behavior. It is not a runtime, build, or test dependency of postcard4cj.
+
+## Pure Cangjie policy
+
+CI rejects Rust source, Cargo manifests, Rust toolchain configuration, and `.cargo` before compiling. Serialization, deserialization, tests, compatibility vectors, benchmarks, coverage, and packaging are implemented with Cangjie tooling only.
+
 ## Workspace mapping
 
 | Upstream crate | Cangjie counterpart |
 |---|---|
 | `postcard-core` | `postcard4cj.core` |
-| `postcard` | `postcard4cj`, `postcard4cj.serde_model`, `postcard4cj.flavors`, `postcard4cj.accumulator`, `postcard4cj.fixint`, `postcard4cj.io`, `postcard4cj.max_size` |
+| `postcard` | `postcard4cj` plus flavors, accumulator, fixint, IO, and MaxSize packages |
 | `postcard-derive` | `postcard4cj.postcard_macro` |
 | `postcard-derive-ng` | `postcard4cj.derive_ng` |
 | `postcard-schema` | `postcard4cj.schema` |
@@ -28,95 +42,92 @@ jamesmunns/postcard@de182557cff45f2ca9b2b67a6b93be5917612a44
 | `postcard2-eio` | `postcard4cj.v2_eio` |
 | `postcard2-heapless` | `postcard4cj.v2_fixed` |
 
-See [`MIGRATION.md`](MIGRATION.md) for the detailed coverage and acceptance matrix.
-
 ## Implemented capabilities
 
-### Wire and data model
+### Wire model and APIs
 
-- all Postcard primitive wire items through signed and unsigned 128-bit integers
+- signed and unsigned integer wire items through 128-bit
 - canonical Varint and ZigZag encoding
-- Bool, floats, Rune, UTF-8 strings, byte arrays, Option, Unit
-- sequences, maps, tuples, structs, and all enum variant forms
-- exact decoding and take-with-remainder decoding
+- Bool, Float32/64, Rune, UTF-8 String, bytes, Option, and Unit
+- sequences, maps, tuples, structs, and every exhaustive enum payload form
+- exact decode and decode-with-remainder APIs
 - all 16 Postcard 1.x error categories
+- allocation caps for untrusted collection lengths
+- fixed, growable, Extend, stream, COBS, CRC32C, accumulator, and fixed-capacity paths
+- postcard2-style facade, EIO, and fixed-capacity adapters
 
-### Flavors and storage
+### Framing and allocation behavior
 
-- growable Array output
-- caller-provided fixed Slice output
-- generic streaming Extend sink
-- serialized-size counting
-- composable COBS and CRC32C serialization/deserialization
-- Slice, stream, COBS, and CRC sources with remainder semantics
-- runtime-capacity fixed byte vector corresponding to `heapless::Vec<u8, B>`
-
-### Higher-level modules
-
-- chunked COBS accumulator
-- fixed-width LE/BE integer codecs for 16/32/64/128-bit values
-- serializer/deserializer model and helper APIs
-- legacy stream IO helpers
-- separate postcard2-style API and error model
-- postcard2 EIO and fixed-capacity adapters
+- incremental COBS block construction with a fixed 254-byte pending segment
+- incremental CRC32C checksum updates
+- non-mutating `snapshot()` and composable Flavor finalization
+- COBS/CRC exact and remainder helpers
 
 ### Schema and dynamic values
 
-- complete Postcard Schema data model
-- Schema values serialized with Postcard
-- runtime-owned Schema tree and recursive type discovery
-- pseudo-Rust Schema formatting
-- upstream-compatible FNV-1a type/path keys
-- lossless schema-directed Dynamic values
-- arbitrary-key Dynamic maps
-- explicit `None` versus `Some(Unit)` representation
-- `serde_json::Value`-compatible JSON model and conversion rules
-- legacy and next-generation schema/dynamic namespaces
+- complete runtime-owned Schema model and Postcard codec
+- formatting, recursive type discovery, and upstream-compatible FNV keys
+- lossless Dynamic values and JSON-compatible conversion
+- arbitrary-key maps and distinct `None` / `Some(Unit)` values
+- legacy and next-generation Schema/Dynamic namespaces
 
 ### Macros
 
-- `@Postcard` codec generation
-- `@PostcardSchema` and `@PostcardMaxSize`
-- `@PostcardSchemaNg` and `@PostcardMaxSizeNg`
-- struct and enum declaration-order semantics
+- `@Postcard`
+- `@PostcardSchema`
+- `@PostcardMaxSize`
+- `@PostcardSchemaNg`
+- `@PostcardMaxSizeNg`
+- `@PostcardSchemaNamed[...]`
+- `@PostcardSchemaNgNamed[...]`
+
+The five codec/Schema/MaxSize entry points support non-generic and generic structs and exhaustive enums with one or more type parameters. Existing `where` upper bounds are preserved and merged with generated Postcard bounds.
+
+The named Schema macros provide Cangjie-native rename metadata for type names, struct fields, and enum variants without changing wire bytes. Example:
+
+```cangjie
+@PostcardSchemaNamed["wire_record", "id=wire_id"]
+public struct Record {
+    public let id: UInt32
+}
+```
+
+Non-exhaustive enums are rejected because a stable variant set cannot be derived. MaxSize generation rejects unbounded String and Array fields.
 
 ## Verification
 
-GitHub Actions installs Cangjie 1.1.3 (`cjnative`) on Ubuntu 22.04 using the configured OBS callback mirror and verifies the SDK checksum.
+The latest complete CI run validates both compiler lines and the STS quality gates:
 
-Latest validated result:
+- pure-source policy: passed
+- Cangjie 1.0.5 build: passed
+- Cangjie 1.0.5 tests: **189 passed, 0 failed, 0 skipped, 0 errors**
+- Cangjie 1.1.3 build: passed
+- Cangjie 1.1.3 tests: **189 passed, 0 failed, 0 skipped, 0 errors**
+- `cjcov` HTML/XML/JSON reports: generated
+- source-line coverage across all instrumented `src`: **66.30%**
+- runtime-library coverage excluding test, benchmark, and compile-time macro packages: **71.75%**
+- native benchmark cases: **6 passed**
+- `cjpm bundle`: passed
+- package artifact: `postcard4cj-0.1.0.cjp`
 
-- `cjpm build -V`: success
-- `cjpm test -V`: **144 passed, 0 failed, 0 skipped, 0 errors**
-- Rust Oracle `cargo test`: success
-- Rust Oracle `cargo run`: success
+The test suite covers Golden Vectors, malformed and truncated input, malicious lengths, COBS/CRC framing, remainder semantics, Flavor composition, Schema/Dynamic behavior, generic constraints, and rename metadata.
 
-```bash
-cjpm build -V
-cjpm test -V
+## Documentation
 
-cd interop/rust-oracle
-cargo test
-cargo run
-```
+- [Design](doc/design.md)
+- [Feature and API guide](doc/feature_api.md)
+- [Coverage report](doc/cjcov/README.md)
+- [Benchmarks](doc/benchmark.md)
+- [Optional integration decisions](doc/optional_integrations.md)
+- [Migration matrix](MIGRATION.md)
+- [Public API compatibility](API_COMPATIBILITY.md)
+- [Changelog](CHANGELOG.md)
+- [Open-source record](README.OpenSource)
+- [Test layout](test/README.md)
 
-## Development branch and PR
+## Release operations
 
-```text
-feat/full-postcard-port
-```
-
-Draft pull request: [#1 feat: port complete Postcard workspace to Cangjie](https://github.com/hu-qi/postcard4cj/pull/1)
-
-## Remaining audit work
-
-- compare every upstream public API against its Cangjie counterpart
-- expand invalid-input and edge-case parity against upstream tests
-- add generic struct/enum macro support where the Cangjie macro/type system permits it
-- document all ownership, borrowing, const-generic, and embedded-IO substitutions
-- audit optional upstream integrations such as chrono, UUID, nalgebra, fixed, defmt, and heapless version adapters
-- optimize buffered COBS/CRC middleware toward the upstream zero-extra-allocation design
-- finalize release documentation and remove the Draft status only after the compatibility matrix is signed off
+The source package is bundle-ready. Actual publication to the Cangjie center repository requires a publisher token in a local, gitignored `cangjie-repo.toml`. AtomGit mirroring likewise requires a valid external credential and reachable AtomGit service; credentials are never stored in this repository.
 
 ## License
 
@@ -125,4 +136,4 @@ Licensed under either:
 - Apache License, Version 2.0 (`LICENSE-APACHE`)
 - MIT License (`LICENSE-MIT`)
 
-`NOTICE` records the upstream attribution and the Cangjie-language modifications.
+`NOTICE` records upstream attribution and the independent Cangjie implementation.

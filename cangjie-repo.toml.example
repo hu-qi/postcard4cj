@@ -1,0 +1,6 @@
+[repository.cache]
+path = ""
+
+[repository.home]
+registry = "https://pkg.cangjie-lang.cn/registry"
+token = "<YOUR_CANGJIE_CENTER_REPOSITORY_TOKEN>"

@@ -37,10 +37,72 @@ public enum MacroCommand {
     | Rename(String, Bool)
 }
 
+public interface CodecMarker {}
+
+public struct GenericLeaf <: CodecMarker & PostcardEncode & PostcardDecode<GenericLeaf> {
+    public let code: UInt16
+
+    public init(code: UInt16) {
+        this.code = code
+    }
+
+    public func encode(encoder: PostcardEncoder): Unit {
+        encoder.writeUInt16(code)
+    }
+
+    public static func decode(decoder: PostcardDecoder): GenericLeaf {
+        return GenericLeaf(decoder.readUInt16())
+    }
+}
+
+@Postcard
+public struct GenericEnvelope<T> {
+    public let value: T
+    public let history: Array<T>
+
+    public init(value: T, history: Array<T>) {
+        this.value = value
+        this.history = history
+    }
+}
+
+@Postcard
+public struct GenericPair<T, U> {
+    public let first: T
+    public let second: U
+
+    public init(first: T, second: U) {
+        this.first = first
+        this.second = second
+    }
+}
+
+@Postcard
+public enum GenericCommand<T, U> {
+    | Idle
+    | One(T)
+    | Pair(T, U)
+}
+
+@Postcard
+public struct ConstrainedEnvelope<T> where T <: CodecMarker {
+    public let value: T
+
+    public init(value: T) {
+        this.value = value
+    }
+}
+
+@Postcard
+public enum ConstrainedCommand<T> where T <: CodecMarker {
+    | Idle
+    | Value(T)
+}
+
 @Test
 public class PostcardMacroTest {
     @TestCase
-    public func generatedStructCodecMatchesRustWireFormat(): Unit {
+    public func generatedStructCodecMatchesPostcardWireFormat(): Unit {
         let value = MacroRecord(42u32,-1i32,Some("Hi"),[1u16,128u16])
         let expected: Array<UInt8> = [0x2au8,0x01u8,0x01u8,0x02u8,0x48u8,0x69u8,0x02u8,0x01u8,0x80u8,0x01u8]
         @Assert(toBytes<MacroRecord>(value),expected)
@@ -70,5 +132,75 @@ public class PostcardMacroTest {
         match (speed) { case MacroCommand.SetSpeed(value) => @Assert(value,128u16); case _ => throw IllegalStateException("Decoded the wrong MacroCommand variant") }
         let renamed = fromBytes<MacroCommand>([0x02u8,0x02u8,0x48u8,0x69u8,0x01u8])
         match (renamed) { case MacroCommand.Rename(name,enabled) => @Assert(name,"Hi"); @Assert(enabled,true); case _ => throw IllegalStateException("Decoded the wrong MacroCommand payload") }
+    }
+
+    @TestCase
+    public func generatedGenericStructAddsCodecBounds(): Unit {
+        let value = GenericEnvelope<GenericLeaf>(
+            GenericLeaf(128u16),
+            [GenericLeaf(1u16), GenericLeaf(300u16)]
+        )
+        let expected: Array<UInt8> = [0x80u8,0x01u8,0x02u8,0x01u8,0xacu8,0x02u8]
+        @Assert(toBytes<GenericEnvelope<GenericLeaf>>(value), expected)
+        let decoded = fromBytes<GenericEnvelope<GenericLeaf>>(expected)
+        @Assert(decoded.value.code, 128u16)
+        @Assert(decoded.history.size, 2)
+        @Assert(decoded.history[0].code, 1u16)
+        @Assert(decoded.history[1].code, 300u16)
+    }
+
+    @TestCase
+    public func generatedStructSupportsMultipleGenericParameters(): Unit {
+        let value = GenericPair<GenericLeaf, MacroRecord>(
+            GenericLeaf(128u16),
+            MacroRecord(42u32, -1i32, None, [1u16])
+        )
+        let expected: Array<UInt8> = [
+            0x80u8, 0x01u8,
+            0x2au8, 0x01u8, 0x00u8, 0x01u8, 0x01u8
+        ]
+        @Assert(toBytes<GenericPair<GenericLeaf, MacroRecord>>(value), expected)
+        let decoded = fromBytes<GenericPair<GenericLeaf, MacroRecord>>(expected)
+        @Assert(decoded.first.code, 128u16)
+        @Assert(decoded.second.id, 42u32)
+        @Assert(decoded.second.delta, -1i32)
+        @Assert(decoded.second.note, None)
+        @Assert(decoded.second.values, [1u16])
+    }
+
+    @TestCase
+    public func generatedGenericEnumUsesDeclarationOrderAndBounds(): Unit {
+        let value: GenericCommand<GenericLeaf, MacroRecord> = GenericCommand.Pair(
+            GenericLeaf(128u16),
+            MacroRecord(42u32, -1i32, None, [1u16])
+        )
+        let expected: Array<UInt8> = [
+            0x02u8,
+            0x80u8, 0x01u8,
+            0x2au8, 0x01u8, 0x00u8, 0x01u8, 0x01u8
+        ]
+        @Assert(toBytes<GenericCommand<GenericLeaf, MacroRecord>>(value), expected)
+        let decoded = fromBytes<GenericCommand<GenericLeaf, MacroRecord>>(expected)
+        match (decoded) {
+            case GenericCommand.Pair(first, second) =>
+                @Assert(first.code, 128u16)
+                @Assert(second.id, 42u32)
+                @Assert(second.delta, -1i32)
+            case _ => throw IllegalStateException("Decoded the wrong GenericCommand variant")
+        }
+    }
+
+    @TestCase
+    public func generatedCodecsPreserveDeclaredWhereConstraints(): Unit {
+        let wrapped = ConstrainedEnvelope<GenericLeaf>(GenericLeaf(300u16))
+        @Assert(
+            toBytes<ConstrainedEnvelope<GenericLeaf>>(wrapped),
+            [0xacu8, 0x02u8]
+        )
+        let command: ConstrainedCommand<GenericLeaf> = ConstrainedCommand.Value(GenericLeaf(128u16))
+        @Assert(
+            toBytes<ConstrainedCommand<GenericLeaf>>(command),
+            [0x01u8, 0x80u8, 0x01u8]
+        )
     }
 }

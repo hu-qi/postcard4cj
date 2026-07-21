@@ -30,7 +30,7 @@ private func schemaReportUnsupported(typeNode: TypeNode): Unit {
         DiagReportLevel.ERROR,
         typeNode.toTokens(),
         "@PostcardSchema does not support field type '${rendered}'",
-        "Use a primitive, Option<T>, Array<T>, or a type implementing PostcardSchema."
+        "Use a primitive, Option<T>, Array<T>, a generic schema parameter, or a type implementing PostcardSchema."
     )
 }
 
@@ -84,17 +84,16 @@ private func schemaHasModifier(declaration: Decl, modifierName: String): Bool {
 }
 
 private func generateStructSchema(input: Tokens, declaration: StructDecl): Tokens {
+    var genericParameters = ""
+    var genericConstraints = ""
     if (declaration.isGenericDecl) {
-        diagReport(
-            DiagReportLevel.ERROR,
-            input,
-            "@PostcardSchema generic structs are not supported yet",
-            "Implement PostcardSchema manually until generic macro bounds are available."
-        )
-        return input
+        let names = genericParameterNames(declaration)
+        genericParameters = "<${names}>"
+        genericConstraints = mergedGenericConstraintClause(declaration, GenericBoundKind.Schema)
     }
 
     let typeName = declaration.identifier.value
+    let concreteType = "${typeName}${genericParameters}"
     var fields = ""
     var fieldCount = 0i64
 
@@ -124,7 +123,7 @@ private func generateStructSchema(input: Tokens, declaration: StructDecl): Token
     }
 
     let generated = """
-extend ${typeName} <: PostcardSchema<${typeName}> {
+extend${genericParameters} ${concreteType} <: PostcardSchema<${concreteType}>${genericConstraints} {
     public static func schema(): NamedType {
         return structSchema("${typeName}", [
 ${fields}
@@ -136,14 +135,12 @@ ${fields}
 }
 
 private func generateEnumSchema(input: Tokens, declaration: EnumDecl): Tokens {
+    var genericParameters = ""
+    var genericConstraints = ""
     if (declaration.isGenericDecl) {
-        diagReport(
-            DiagReportLevel.ERROR,
-            input,
-            "@PostcardSchema generic enums are not supported yet",
-            "Implement PostcardSchema manually until generic macro bounds are available."
-        )
-        return input
+        let names = genericParameterNames(declaration)
+        genericParameters = "<${names}>"
+        genericConstraints = mergedGenericConstraintClause(declaration, GenericBoundKind.Schema)
     }
     if (declaration.ellipsis.value == "...") {
         diagReport(
@@ -156,6 +153,7 @@ private func generateEnumSchema(input: Tokens, declaration: EnumDecl): Tokens {
     }
 
     let typeName = declaration.identifier.value
+    let concreteType = "${typeName}${genericParameters}"
     var variants = ""
     var variantIndex = 0i64
 
@@ -185,7 +183,7 @@ private func generateEnumSchema(input: Tokens, declaration: EnumDecl): Tokens {
     }
 
     let generated = """
-extend ${typeName} <: PostcardSchema<${typeName}> {
+extend${genericParameters} ${concreteType} <: PostcardSchema<${concreteType}>${genericConstraints} {
     public static func schema(): NamedType {
         return enumSchema("${typeName}", [
 ${variants}

@@ -81,16 +81,15 @@ private func ngMaxDiscriminantBytes(variantCount: Int64): Int64 {
 }
 
 private func generateNgMaxStruct(input: Tokens, declaration: StructDecl): Tokens {
+    var genericParameters = ""
+    var genericConstraints = ""
     if (declaration.isGenericDecl) {
-        diagReport(
-            DiagReportLevel.ERROR,
-            input,
-            "@PostcardMaxSizeNg generic structs are not supported yet",
-            "Implement PostcardMaxSize manually."
-        )
-        return input
+        let names = ngGenericParameterNames(declaration)
+        genericParameters = "<${names}>"
+        genericConstraints = ngMergedGenericConstraintClause(declaration, NgGenericBoundKind.MaxSize)
     }
     let typeName = declaration.identifier.value
+    let concreteType = "${typeName}${genericParameters}"
     var expression = "0i64"
     for (member in declaration.body.decls) {
         let variable = match (member as VarDecl) {
@@ -103,7 +102,7 @@ private func generateNgMaxStruct(input: Tokens, declaration: StructDecl): Tokens
         expression += " + ${ngMaxExpression(variable.declType)}"
     }
     let generated = """
-extend ${typeName} <: PostcardMaxSize {
+extend${genericParameters} ${concreteType} <: PostcardMaxSize${genericConstraints} {
     public static func postcardMaxSize(): Int64 {
         return ${expression}
     }
@@ -113,16 +112,24 @@ extend ${typeName} <: PostcardMaxSize {
 }
 
 private func generateNgMaxEnum(input: Tokens, declaration: EnumDecl): Tokens {
-    if (declaration.isGenericDecl || declaration.ellipsis.value == "...") {
+    var genericParameters = ""
+    var genericConstraints = ""
+    if (declaration.isGenericDecl) {
+        let names = ngGenericParameterNames(declaration)
+        genericParameters = "<${names}>"
+        genericConstraints = ngMergedGenericConstraintClause(declaration, NgGenericBoundKind.MaxSize)
+    }
+    if (declaration.ellipsis.value == "...") {
         diagReport(
             DiagReportLevel.ERROR,
             input,
-            "@PostcardMaxSizeNg requires a non-generic exhaustive enum",
-            "Implement PostcardMaxSize manually."
+            "@PostcardMaxSizeNg cannot bound a non-exhaustive enum",
+            "Remove the ellipsis constructor or implement PostcardMaxSize manually."
         )
         return input
     }
     let typeName = declaration.identifier.value
+    let concreteType = "${typeName}${genericParameters}"
     let discriminant = ngMaxDiscriminantBytes(declaration.constructors.size)
     var body = "        var maximumPayload = 0i64\n"
     var index = 0i64
@@ -136,7 +143,7 @@ private func generateNgMaxEnum(input: Tokens, declaration: EnumDecl): Tokens {
         index++
     }
     let generated = """
-extend ${typeName} <: PostcardMaxSize {
+extend${genericParameters} ${concreteType} <: PostcardMaxSize${genericConstraints} {
     public static func postcardMaxSize(): Int64 {
 ${body}        return ${discriminant}i64 + maximumPayload
     }

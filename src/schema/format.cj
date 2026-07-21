@@ -31,7 +31,11 @@ public func isPrimitiveSchema(value: DataModelType): Bool {
         case DataModelType.Tuple(_) => false
         case DataModelType.TupleStruct(elements) => allPrimitive(elements)
         case DataModelType.Map(key, val) =>
-            isPrimitiveSchema(key.ty) && isPrimitiveSchema(val.ty)
+            if (!isPrimitiveSchema(key.ty)) {
+                false
+            } else {
+                isPrimitiveSchema(val.ty)
+            }
         case DataModelType.Struct(_) => false
         case DataModelType.Enum(_) => false
         case DataModelType.Schema => true

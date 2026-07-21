@@ -41,16 +41,44 @@ public class SerializeFlavorTest {
     public func cobsFlavorMatchesPostcardVector(): Unit {
         let flavor = CobsSerializeFlavor(ArraySerializeFlavor())
         flavor.tryExtend([0x04u8, 0x01u8, 0x00u8, 0x20u8, 0x30u8])
-        @Assert(
-            flavor.finalize(),
-            [0x03u8, 0x04u8, 0x01u8, 0x03u8, 0x20u8, 0x30u8, 0x00u8]
-        )
+        let expected: Array<UInt8> = [0x03u8, 0x04u8, 0x01u8, 0x03u8, 0x20u8, 0x30u8, 0x00u8]
+        @Assert(flavor.snapshot(), expected)
+        @Assert(flavor.finalize(), expected)
+    }
+
+    @TestCase
+    public func cobsFlavorHandlesFullLengthBlockIncrementally(): Unit {
+        let payload = Array<UInt8>(254, repeat: 0x7fu8)
+        let flavor = CobsSerializeFlavor(ArraySerializeFlavor())
+        flavor.tryExtend(payload)
+        @Assert(flavor.position(), 254)
+        let encoded = flavor.finalize()
+        @Assert(encoded.size, 257)
+        @Assert(encoded[0], 0xffu8)
+        @Assert(encoded[1..255], payload)
+        @Assert(encoded[255], 0x01u8)
+        @Assert(encoded[256], 0x00u8)
     }
 
     @TestCase
     public func crcFlavorMatchesPostcardVector(): Unit {
         let flavor = Crc32SerializeFlavor(ArraySerializeFlavor())
         flavor.tryExtend([0x04u8, 0x01u8, 0x00u8, 0x20u8, 0x30u8])
+        let expected: Array<UInt8> = [
+            0x04u8, 0x01u8, 0x00u8, 0x20u8, 0x30u8,
+            0x8eu8, 0xc8u8, 0x1au8, 0x37u8
+        ]
+        @Assert(flavor.snapshot(), expected)
+        @Assert(flavor.finalize(), expected)
+    }
+
+    @TestCase
+    public func crcFlavorUpdatesAcrossSeparateWrites(): Unit {
+        let flavor = Crc32SerializeFlavor(ArraySerializeFlavor())
+        flavor.tryPush(0x04u8)
+        flavor.tryExtend([0x01u8, 0x00u8])
+        flavor.tryExtend([0x20u8, 0x30u8])
+        @Assert(flavor.position(), 5)
         @Assert(
             flavor.finalize(),
             [

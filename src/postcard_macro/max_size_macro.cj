@@ -101,20 +101,19 @@ private func maxSizeDiscriminantBytes(variantCount: Int64): Int64 {
 }
 
 private func generateStructMaxSize(input: Tokens, declaration: StructDecl): Tokens {
+    var genericParameters = ""
+    var genericConstraints = ""
     if (declaration.isGenericDecl) {
-        diagReport(
-            DiagReportLevel.ERROR,
-            input,
-            "@PostcardMaxSize generic structs are not supported yet",
-            "Implement PostcardMaxSize manually until generic macro bounds are available."
-        )
-        return input
+        let names = genericParameterNames(declaration)
+        genericParameters = "<${names}>"
+        genericConstraints = mergedGenericConstraintClause(declaration, GenericBoundKind.MaxSize)
     }
 
     let typeName = declaration.identifier.value
+    let concreteType = "${typeName}${genericParameters}"
     let expression = maxSizeStructExpression(declaration)
     let generated = """
-extend ${typeName} <: PostcardMaxSize {
+extend${genericParameters} ${concreteType} <: PostcardMaxSize${genericConstraints} {
     public static func postcardMaxSize(): Int64 {
         return ${expression}
     }
@@ -124,14 +123,12 @@ extend ${typeName} <: PostcardMaxSize {
 }
 
 private func generateEnumMaxSize(input: Tokens, declaration: EnumDecl): Tokens {
+    var genericParameters = ""
+    var genericConstraints = ""
     if (declaration.isGenericDecl) {
-        diagReport(
-            DiagReportLevel.ERROR,
-            input,
-            "@PostcardMaxSize generic enums are not supported yet",
-            "Implement PostcardMaxSize manually until generic macro bounds are available."
-        )
-        return input
+        let names = genericParameterNames(declaration)
+        genericParameters = "<${names}>"
+        genericConstraints = mergedGenericConstraintClause(declaration, GenericBoundKind.MaxSize)
     }
     if (declaration.ellipsis.value == "...") {
         diagReport(
@@ -144,6 +141,7 @@ private func generateEnumMaxSize(input: Tokens, declaration: EnumDecl): Tokens {
     }
 
     let typeName = declaration.identifier.value
+    let concreteType = "${typeName}${genericParameters}"
     let variantCount = declaration.constructors.size
     let discriminantBytes = maxSizeDiscriminantBytes(variantCount)
     var payloadBody = "        var maximumPayload = 0i64\n"
@@ -160,7 +158,7 @@ private func generateEnumMaxSize(input: Tokens, declaration: EnumDecl): Tokens {
     }
 
     let generated = """
-extend ${typeName} <: PostcardMaxSize {
+extend${genericParameters} ${concreteType} <: PostcardMaxSize${genericConstraints} {
     public static func postcardMaxSize(): Int64 {
 ${payloadBody}        return ${discriminantBytes}i64 + maximumPayload
     }
