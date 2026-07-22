@@ -7,10 +7,12 @@
 postcard4cj = "0.1.0"
 ```
 
-The package is in release preparation. The source supports:
+The package is a release candidate. The source supports:
 
 - Cangjie LTS 1.0.5
 - Cangjie STS 1.1.3
+
+The repository is bundle-ready. Installation from the center repository depends on completion of the external publishing operation.
 
 ## 2. Core interfaces
 
@@ -69,6 +71,8 @@ let result = takeFromBytesCobs<MyType>(stream)
 
 The take-style function decodes the first zero-delimited frame and returns all following bytes.
 
+COBS output is built incrementally with a fixed maximum 254-byte pending segment.
+
 ## 6. CRC32C/iSCSI framing
 
 ```cangjie
@@ -77,7 +81,7 @@ let value = fromBytesCrc32Iscsi<MyType>(message)
 let result = takeFromBytesCrc32Iscsi<MyType>(stream)
 ```
 
-The decoder validates the appended checksum before returning a value.
+The decoder validates the appended checksum before returning a value. Serialization updates CRC32C incrementally instead of copying a second complete message during finalization.
 
 ## 7. Flavors
 
@@ -99,6 +103,8 @@ Deserialization Flavors support:
 - CRC32C-validated messages
 
 Use convenience functions for common byte-array workflows and Flavors for explicit storage or framing composition.
+
+`Flavor.snapshot()` remains non-mutating, and middleware finalization preserves declared composition order.
 
 ## 8. Fixed-width integers
 
@@ -192,7 +198,11 @@ public enum ResultValue<T, U> {
 }
 ```
 
-The macro generates codec constraints for every type parameter.
+The macro generates the required codec, Schema, or MaxSize constraints for every type parameter.
+
+### Existing `where` bounds
+
+Generic declarations may already contain a `where` clause. The macros read existing upper bounds through the AST and merge them with generated Postcard constraints without redeclaring generic parameters.
 
 ### Schema and maximum size
 
@@ -208,12 +218,23 @@ public struct BoundedMessage { /* bounded fields and init */ }
 
 NG entry points are `@PostcardSchemaNg` and `@PostcardMaxSizeNg`.
 
-All five macro entry points support non-generic and generic structs and exhaustive enums. Generic declarations may contain one or more parameters but must not already declare a `where` clause.
+All five codec/Schema/MaxSize entry points support non-generic and generic structs and exhaustive enums with one or more type parameters.
 
-Current macro exclusions:
+### Schema rename metadata
 
-- merging an existing `where` clause with generated constraints
-- rename and related attributes
+Named Schema macros provide Cangjie-native type, field, and enum-variant names:
+
+```cangjie
+@PostcardSchemaNamed["wire_record", "id=wire_id"]
+public struct Record {
+    public let id: UInt32
+}
+```
+
+The NG equivalent is `@PostcardSchemaNgNamed[...]`. Rename metadata changes Schema names only and does not change wire bytes.
+
+### Explicit exclusions
+
 - non-exhaustive enum generation
 - unbounded String/Array fields in MaxSize generation
 
@@ -254,12 +275,26 @@ Catch the relevant exception when decoding untrusted external data.
 - Validate framing before acting on decoded values.
 - Do not suppress malformed-input failures silently.
 
+Sequence and map decoding avoid direct large preallocation from malicious declared wire lengths.
+
 ## 17. Verification and references
 
-The same source passes 178 tests on Cangjie 1.0.5 and 1.1.3.
+The same source passes **189 tests** on both Cangjie 1.0.5 and 1.1.3.
+
+The STS quality job also validates:
+
+- HTML/XML/JSON coverage report generation
+- 66.30% line coverage across all instrumented `src`
+- 71.75% runtime-library coverage excluding tests, benchmarks, and compile-time macro packages
+- 6/6 native benchmark cases
+- `cjpm bundle --skip-lint`
 
 Further documentation:
 
+- `README.zh-CN.md`
+- `doc/quickstart.zh-CN.md`
+- `doc/feature_api.zh-CN.md`
+- `doc/migration.zh-CN.md`
 - `doc/design.md`
 - `doc/cjcov/README.md`
 - `MIGRATION.md`
