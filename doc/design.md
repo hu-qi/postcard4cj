@@ -87,11 +87,11 @@ One runtime-owned Schema graph replaces separate static-reference and owned tree
 
 Deserialization Flavors provide slice, stream, decoded COBS and validated CRC sources. Remainder-aware functions retain bytes not consumed by the current message.
 
-Current COBS and CRC middleware may buffer temporary data. Incremental lower-allocation processing is a performance target and must not change wire behavior.
+COBS output is constructed incrementally with at most a 254-byte pending segment. CRC32C is updated while bytes flow through the Flavor. Finalization avoids a second complete-message copy, `snapshot()` remains non-mutating, and nested middleware order is preserved.
 
 ## 7. Macro design
 
-All five macro entry points parse declarations and generate interface extensions:
+The five codec/Schema/MaxSize macro entry points parse declarations and generate interface extensions:
 
 - `@Postcard`
 - `@PostcardSchema`
@@ -105,16 +105,21 @@ Supported declaration boundary:
 - exhaustive non-generic enums
 - generic structs with one or more type parameters
 - exhaustive generic enums with one or more type parameters
-- no pre-existing `where` clause
+- declarations with or without pre-existing `where` upper bounds
 - primitive, nested, `Option<T>` and `Array<T>` codec/Schema fields
 - bounded MaxSize payload types
 
-Generated generic parameter lists and constraints are rebuilt only from identifier tokens. Punctuation and whitespace are never treated as type names.
+Generated generic parameter lists and constraints are rebuilt from identifier tokens. Existing upper bounds are read through the AST and merged with generated codec, Schema, or MaxSize requirements without redeclaring type parameters.
 
-Not yet supported:
+Named Schema entry points provide type, field, and enum-variant rename metadata:
 
-- merging an existing generic `where` clause with generated constraints
-- rename and related attributes
+- `@PostcardSchemaNamed[...]`
+- `@PostcardSchemaNgNamed[...]`
+
+Rename metadata changes Schema names only and does not change wire bytes.
+
+Explicitly unsupported:
+
 - non-exhaustive enum generation
 - unbounded String/Array MaxSize fields
 
@@ -145,6 +150,8 @@ Compatibility is validated entirely in Cangjie. The suite covers:
 - Schema, Dynamic and JSON-compatible behavior
 - generated structs and enums
 - single- and multi-parameter generic structs and enums
+- existing `where` bound merging
+- Schema rename metadata
 - malicious collection lengths
 
 CI runs:
@@ -156,7 +163,9 @@ cjpm test -V
 
 under both Cangjie 1.0.5 and 1.1.3.
 
-Latest result on both versions: **178 passed, 0 failed, 0 skipped, 0 errors**.
+Latest result on both versions: **189 passed, 0 failed, 0 skipped, 0 errors**.
+
+The STS quality job also generates coverage reports, runs native benchmarks, checks lint errors, and validates the release bundle.
 
 ## 10. Release model
 
@@ -176,6 +185,7 @@ A behavioral change is complete only when:
 2. LTS and STS build and test, or divergence is isolated and documented.
 3. Positive and relevant negative tests exist.
 4. Wire changes include a Golden Vector.
-5. Public API changes update `doc/feature_api.md` and `API_COMPATIBILITY.md`.
+5. Public API changes update `doc/feature_api.md`, `doc/feature_api.zh-CN.md`, and `API_COMPATIBILITY.md`.
 6. User-visible changes update `CHANGELOG.md`.
 7. New ownership, capacity or IO substitutions are documented.
+8. Chinese entry documentation remains consistent with the English source-of-truth documents.
