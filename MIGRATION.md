@@ -4,6 +4,8 @@ Upstream behavior baseline: `jamesmunns/postcard@de182557cff45f2ca9b2b67a6b93be5
 
 postcard4cj is an independent pure Cangjie implementation. The upstream repository is a protocol and behavior reference only.
 
+Chinese migration guidance: [`doc/migration.zh-CN.md`](doc/migration.zh-CN.md).
+
 ## Pure Cangjie invariant
 
 The repository and every release branch must contain:
@@ -20,10 +22,10 @@ CI checks this invariant before compiling.
 
 | Release line | Compiler | Status |
 |---|---|---|
-| LTS | Cangjie 1.0.5 | Build and 178 tests passed |
-| STS | Cangjie 1.1.3 | Build and 178 tests passed |
+| LTS | Cangjie 1.0.5 | Build and 189 tests passed |
+| STS | Cangjie 1.1.3 | Build and 189 tests passed |
 
-The same source tree currently works on both versions. Version-specific release branches are retained for package publication and maintenance, not because the source has diverged.
+The same source tree works on both versions. Version-specific release branches are retained for package publication and maintenance, not because the source has diverged.
 
 ## Workspace mapping
 
@@ -31,8 +33,8 @@ The same source tree currently works on both versions. Version-specific release 
 |---|---|---|
 | `postcard-core` | `postcard4cj.core` | Implemented |
 | `postcard` | `postcard4cj` plus flavors, IO, accumulator, fixint and MaxSize packages | Implemented |
-| `postcard-derive` | `postcard4cj.postcard_macro` | Codec, Schema and MaxSize generation implemented within the declared boundary |
-| `postcard-derive-ng` | `postcard4cj.derive_ng` | NG Schema and MaxSize generation implemented within the declared boundary |
+| `postcard-derive` | `postcard4cj.postcard_macro` | Codec, Schema and MaxSize generation implemented |
+| `postcard-derive-ng` | `postcard4cj.derive_ng` | NG Schema and MaxSize generation implemented |
 | `postcard-schema` | `postcard4cj.schema` | Implemented |
 | `postcard-schema-ng` | `postcard4cj.schema_ng` | Implemented |
 | `postcard-dyn` | `postcard4cj.dynamic` | Implemented |
@@ -77,7 +79,9 @@ Implemented deserialization sources:
 - COBS frames
 - CRC32C-validated messages
 
-Runtime-capacity fixed vectors replace const-generic storage. COBS and CRC middleware may currently buffer temporary bytes; incremental lower-allocation processing is a later optimization.
+Runtime-capacity fixed vectors replace const-generic storage.
+
+COBS output is built incrementally with at most a 254-byte pending segment. CRC32C is updated while bytes flow through the Flavor, avoiding a second complete-message copy during finalization. `snapshot()` remains non-mutating and nested middleware order is preserved.
 
 ## Other modules
 
@@ -107,20 +111,22 @@ Implemented:
 
 ## Macro coverage
 
-| Macro | Struct | Enum | Generic struct | Generic enum |
-|---|---:|---:|---:|---:|
-| `@Postcard` | Yes | Yes | Yes | Yes |
-| `@PostcardSchema` | Yes | Yes | Yes | Yes |
-| `@PostcardMaxSize` | Yes | Yes | Yes | Yes |
-| `@PostcardSchemaNg` | Yes | Yes | Yes | Yes |
-| `@PostcardMaxSizeNg` | Yes | Yes | Yes | Yes |
+| Macro | Struct | Enum | Generic struct | Generic enum | Existing `where` merge |
+|---|---:|---:|---:|---:|---:|
+| `@Postcard` | Yes | Yes | Yes | Yes | Yes |
+| `@PostcardSchema` | Yes | Yes | Yes | Yes | Yes |
+| `@PostcardMaxSize` | Yes | Yes | Yes | Yes | Yes |
+| `@PostcardSchemaNg` | Yes | Yes | Yes | Yes | Yes |
+| `@PostcardMaxSizeNg` | Yes | Yes | Yes | Yes | Yes |
 
-Generic support accepts one or more type parameters when the declaration has no existing `where` clause. Generated extensions add the required codec, Schema, or MaxSize constraint for every type parameter.
+Generic support accepts one or more type parameters. Existing upper bounds are read through the AST and merged with generated codec, Schema, or MaxSize constraints without redeclaring generic parameters.
 
-Still pending:
+Named Schema entry points are also implemented:
 
-- safely merging pre-existing generic constraints
-- rename and related macro attributes
+- `@PostcardSchemaNamed[...]`
+- `@PostcardSchemaNgNamed[...]`
+
+They support Cangjie-native type, field, and enum-variant names without changing wire bytes.
 
 Non-exhaustive enums are rejected because their stable variant set cannot be derived. Unbounded String and Array fields are rejected by MaxSize generation.
 
@@ -142,25 +148,33 @@ Pure Cangjie tests cover:
 - enum declaration order
 - COBS and CRC32C framing and remainder behavior
 - invalid Bool, Option, UTF-8, Rune, Varint, COBS and CRC input
-- truncated data
+- truncated and trailing data
 - malicious sequence/map lengths without direct wire-count allocation
 - fixed, growable, Extend and stream paths
 - legacy and NG generated structs and enums
 - single- and multi-parameter generic structs and enums
+- existing `where` bound merging
+- Schema type, field, and enum-variant rename metadata
 
-Latest result on both Cangjie 1.0.5 and 1.1.3: **178 passed, 0 failed, 0 skipped, 0 errors**.
+Latest result on both Cangjie 1.0.5 and 1.1.3: **189 passed, 0 failed, 0 skipped, 0 errors**.
 
-## Remaining work before release-ready status
+The STS quality job additionally validates:
 
-1. Finish the line-by-line public API and alias audit.
-2. Merge existing generic `where` constraints safely.
-3. Implement rename and related macro attributes.
-4. Expand malformed-input and edge-case parity tests.
-5. Provide Cangjie-native optional ecosystem adapters or explicit exclusions.
-6. Generate and retain a numerical `cjcov` report.
-7. Benchmark memory, CPU and output size.
-8. Optimize buffered COBS/CRC middleware.
-9. Complete center-repository publication and release artifacts.
+- `cjcov` HTML/XML/JSON generation
+- 66.30% line coverage across all instrumented `src`
+- 71.75% runtime-library coverage excluding tests, benchmarks, and compile-time macro packages
+- 6/6 native benchmark cases
+- `cjpm bundle --skip-lint`
+- `postcard4cj-0.1.0.cjp` artifact generation
+
+## Release-candidate status
+
+The repository implementation and package bundle are release-candidate complete. Remaining operations require external credentials or ecosystem decisions rather than additional hidden runtime implementation:
+
+1. publish to the Cangjie center repository with a maintainer token;
+2. mirror to AtomGit with valid external credentials;
+3. add Cangjie-native adapters for optional ecosystem types when demanded, or keep their exclusions explicit;
+4. continue reducing non-blocking `cjlint` warning debt.
 
 ## Acceptance criteria
 
@@ -169,8 +183,8 @@ Latest result on both Cangjie 1.0.5 and 1.1.3: **178 passed, 0 failed, 0 skipped
 3. Golden Vectors pass in pure Cangjie tests.
 4. Invalid inputs return the intended error category.
 5. Fixed, growable, Extend, stream, COBS, CRC32C, accumulator and remainder APIs pass.
-6. Codec, Schema and MaxSize macros pass for the declared generic boundary.
+6. Codec, Schema and MaxSize macros pass for structs, exhaustive enums, generics, and existing-bound merging.
 7. Dynamic and JSON-compatible round trips pass.
 8. LTS and STS build and test successfully.
 9. CI proves no Rust source/toolchain artifacts are present.
-10. Required design, API, coverage, changelog and open-source documents are present.
+10. Design, API, Chinese usage, coverage, benchmark, changelog and open-source documents are present.

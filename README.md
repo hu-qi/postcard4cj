@@ -1,5 +1,7 @@
 # postcard4cj
 
+English | [简体中文](README.zh-CN.md)
+
 A pure Cangjie implementation of the complete [`jamesmunns/postcard`](https://github.com/jamesmunns/postcard) workspace behavior.
 
 > **Status: release candidate.** All 11 upstream workspace crates have documented Cangjie counterparts, the repository contains no Rust implementation, and the same source tree passes the complete LTS/STS quality matrix.
@@ -113,6 +115,15 @@ The latest complete CI run validates both compiler lines and the STS quality gat
 The test suite covers Golden Vectors, malformed and truncated input, malicious lengths, COBS/CRC framing, remainder semantics, Flavor composition, Schema/Dynamic behavior, generic constraints, and rename metadata.
 
 ## Documentation
+
+### Chinese
+
+- [中文 README](README.zh-CN.md)
+- [快速上手](doc/quickstart.zh-CN.md)
+- [功能与 API 指南](doc/feature_api.zh-CN.md)
+- [从 Rust Postcard 迁移](doc/migration.zh-CN.md)
+
+### English
 
 - [Design](doc/design.md)
 - [Feature and API guide](doc/feature_api.md)

@@ -4,14 +4,16 @@ Behavior baseline: `jamesmunns/postcard@de182557cff45f2ca9b2b67a6b93be5917612a44
 
 postcard4cj is implemented entirely in Cangjie. The upstream project defines protocol behavior and API concepts only; it is not compiled, executed, or distributed by this repository.
 
+Chinese migration guidance: [`doc/migration.zh-CN.md`](doc/migration.zh-CN.md).
+
 ## Compatibility status
 
 | Upstream workspace crate | Cangjie package | Status |
 |---|---|---|
 | `postcard-core` | `postcard4cj.core` | Implemented |
 | `postcard` | `postcard4cj` and utility packages | Implemented |
-| `postcard-derive` | `postcard4cj.postcard_macro` | Implemented within the documented macro boundary |
-| `postcard-derive-ng` | `postcard4cj.derive_ng` | Implemented within the documented macro boundary |
+| `postcard-derive` | `postcard4cj.postcard_macro` | Implemented |
+| `postcard-derive-ng` | `postcard4cj.derive_ng` | Implemented |
 | `postcard-schema` | `postcard4cj.schema` | Implemented |
 | `postcard-schema-ng` | `postcard4cj.schema_ng` | Implemented |
 | `postcard-dyn` | `postcard4cj.dynamic` | Implemented |
@@ -31,7 +33,7 @@ postcard4cj is implemented entirely in Cangjie. The upstream project defines pro
 | Bool, floats, char/Rune | corresponding encoder/decoder methods | Implemented |
 | String and bytes | owned Cangjie values | Implemented |
 | Option and discriminants | Option/enum helpers | Implemented |
-| sequence and map lengths | length-prefixed helpers | Implemented |
+| sequence and map lengths | length-prefixed helpers with untrusted-length allocation protection | Implemented |
 | exact decode | `fromBytes` / `fromByteArray` | Implemented |
 | take with remainder | `takeFromByteArray` and related helpers | Implemented |
 
@@ -43,8 +45,8 @@ postcard4cj is implemented entirely in Cangjie. The upstream project defines pro
 | owned vector output | `toBytes` / `toByteArray` / `toVecV2` | Implemented |
 | Extend output | `ExtendSerializeFlavor` / `toExtendV2` | Implemented |
 | IO/EIO output | `postcard4cj.io.toIo` / `toEioV2` | Implemented |
-| COBS output | `toBytesCobs`, `encodeToCobs`, COBS Flavor | Implemented |
-| CRC32C output | `toBytesCrc32Iscsi`, `encodeToCrc32Iscsi`, CRC Flavor | Implemented |
+| COBS output | `toBytesCobs`, `encodeToCobs`, COBS Flavor | Implemented incrementally |
+| CRC32C output | `toBytesCrc32Iscsi`, `encodeToCrc32Iscsi`, CRC Flavor | Implemented incrementally |
 | serialized-size calculation | `serializedSize` / `serializedSizeV2` | Implemented |
 
 ## Top-level deserialization
@@ -72,7 +74,7 @@ postcard4cj is implemented entirely in Cangjie. The upstream project defines pro
 | COBS modifier/source | COBS serialize/deserialize Flavors | Implemented |
 | CRC modifier/source | CRC32C serialize/deserialize Flavors | Implemented |
 
-COBS and CRC middleware currently may use temporary buffers. Incremental lower-allocation operation is a performance follow-up, not a wire-compatibility gap.
+COBS construction keeps at most a 254-byte pending segment. CRC32C is updated as bytes are written. Finalization does not require a second complete-message copy, `snapshot()` remains non-mutating, and nested Flavor order is preserved.
 
 ## Additional modules
 
@@ -91,19 +93,21 @@ COBS and CRC middleware currently may use temporary buffers. Incremental lower-a
 
 | Capability | Cangjie entry point | Status |
 |---|---|---|
-| codec generation | `@Postcard` | Implemented for structs and exhaustive enums |
-| legacy Schema generation | `@PostcardSchema` | Implemented for structs and exhaustive enums |
-| legacy MaxSize generation | `@PostcardMaxSize` | Implemented for bounded structs and exhaustive enums |
-| NG Schema generation | `@PostcardSchemaNg` | Implemented for structs and exhaustive enums |
-| NG MaxSize generation | `@PostcardMaxSizeNg` | Implemented for bounded structs and exhaustive enums |
-| one or more generic type parameters | all five entry points | Implemented when no pre-existing `where` clause is present |
+| codec generation | `@Postcard` | Structs and exhaustive enums implemented |
+| legacy Schema generation | `@PostcardSchema` | Structs and exhaustive enums implemented |
+| legacy MaxSize generation | `@PostcardMaxSize` | Bounded structs and exhaustive enums implemented |
+| NG Schema generation | `@PostcardSchemaNg` | Structs and exhaustive enums implemented |
+| NG MaxSize generation | `@PostcardMaxSizeNg` | Bounded structs and exhaustive enums implemented |
+| one or more generic type parameters | all five entry points | Implemented |
+| merge existing generic constraints | all five entry points | Implemented through AST bound merging |
+| named Schema metadata | `@PostcardSchemaNamed[...]`, `@PostcardSchemaNgNamed[...]` | Type, field, and variant names implemented |
 | declaration-order field/variant semantics | all relevant macros | Implemented |
-| merge existing generic constraints | all five entry points | Pending |
-| rename and related attributes | codec/Schema macros | Pending |
 | non-exhaustive enum generation | enum macros | Explicitly rejected |
 | unbounded String/Array MaxSize | MaxSize macros | Explicitly rejected |
 
-Generated parameter lists and bounds are rebuilt only from identifier tokens, preventing punctuation or whitespace from becoming malformed generic constraints.
+Generated parameter lists and bounds are rebuilt from identifier tokens. Existing `where` upper bounds are preserved and merged without redeclaring type parameters.
+
+Named Schema metadata changes Schema names only and does not change wire bytes.
 
 ## Language-level substitutions
 
@@ -116,7 +120,7 @@ Generated parameter lists and bounds are rebuilt only from identifier tokens, pr
 
 These substitutions preserve wire bytes and observable error/capacity behavior where an upstream equivalent exists.
 
-## Optional ecosystem integrations under audit
+## Optional ecosystem integrations
 
 The following upstream integrations require Cangjie-native types or explicit exclusions:
 
@@ -128,7 +132,7 @@ The following upstream integrations require Cangjie-native types or explicit exc
 - large fixed-array helpers
 - historical bounded-vector and embedded-IO aliases
 
-No integration is implemented by embedding Rust code.
+No integration is implemented by embedding Rust code. See `doc/optional_integrations.md` for the recorded decisions.
 
 ## Verification
 
@@ -141,6 +145,15 @@ Latest result on both release lines:
 
 - pure-source gate: passed
 - build: passed
-- tests: **178 passed, 0 failed, 0 skipped, 0 errors**
+- tests: **189 passed, 0 failed, 0 skipped, 0 errors**
 
-See `doc/design.md`, `doc/feature_api.md`, and `MIGRATION.md` for architecture, usage, and detailed language substitutions.
+The STS quality job also validates:
+
+- `cjcov` HTML/XML/JSON report generation
+- 66.30% line coverage across all instrumented `src`
+- 71.75% runtime-library coverage excluding tests, benchmarks, and compile-time macro packages
+- 6/6 native benchmark cases
+- `cjpm bundle --skip-lint`
+- `postcard4cj-0.1.0.cjp` artifact generation
+
+See `README.zh-CN.md`, `doc/quickstart.zh-CN.md`, `doc/feature_api.zh-CN.md`, `doc/design.md`, `doc/feature_api.md`, and `MIGRATION.md` for usage, architecture, and detailed substitutions.
