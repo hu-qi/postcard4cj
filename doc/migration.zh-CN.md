@@ -264,7 +264,7 @@ postcard4cj 已避免 sequence/map 的恶意声明长度直接触发对应规模
 ## 15. 相关文档
 
 - [中文快速上手](quickstart.zh-CN.md)
-- [中文功能与 API 指南](feature_api.zh-CN.md)
+- [中文功能与 API 指南](feature_api.md)
 - [完整英文迁移矩阵](../MIGRATION.md)
 - [公共 API 兼容性审计](../API_COMPATIBILITY.md)
 - [可选生态集成决策](optional_integrations.md)

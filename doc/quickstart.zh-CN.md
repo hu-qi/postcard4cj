@@ -1,6 +1,6 @@
 # postcard4cj 中文快速上手
 
-本文面向第一次在仓颉项目中使用 postcard4cj 的开发者。完整能力和边界请参阅[功能与 API 指南](feature_api.zh-CN.md)。
+本文面向第一次在仓颉项目中使用 postcard4cj 的开发者。完整能力和边界请参阅[功能与 API 指南](feature_api.md)。
 
 ## 1. 环境要求
 
@@ -239,8 +239,8 @@ postcard4cj 已避免直接使用恶意声明长度进行大容量预分配，�
 
 ## 15. 下一步
 
-- [功能与 API 指南](feature_api.zh-CN.md)
+- [功能与 API 指南](feature_api.md)
 - [从 Rust Postcard 迁移](migration.zh-CN.md)
-- [英文架构设计](design.md)
+- [架构设计](design.md)
 - [覆盖率报告](cjcov/README.md)
 - [Benchmark](benchmark.md)

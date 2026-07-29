@@ -1,22 +1,24 @@
-# postcard4cj Feature and API Guide
+# postcard4cj 功能与 API 指南
 
-## 1. Package and compiler support
+简体中文 | [English](feature_api.en.md)
+
+## 1. 包与编译器支持
 
 ```toml
 [dependencies]
 postcard4cj = "0.1.0"
 ```
 
-The package is a release candidate. The source supports:
+当前源码支持：
 
 - Cangjie LTS 1.0.5
 - Cangjie STS 1.1.3
 
-The repository is bundle-ready. Installation from the center repository depends on completion of the external publishing operation.
+项目已达到 release candidate 状态并通过 bundle 验证。中心仓安装是否可用取决于维护者是否已经完成正式发布。
 
-## 2. Core interfaces
+## 2. 核心接口
 
-User-defined values participate in the codec through:
+用户自定义类型通过以下接口接入 codec：
 
 ```cangjie
 public interface PostcardEncode {
@@ -28,18 +30,18 @@ public interface PostcardDecode<T> {
 }
 ```
 
-Manual implementations must write and read fields in the same order.
+手动实现时，编码和解码必须使用相同的字段顺序与数据类型。
 
-## 3. Basic serialization
+## 3. 基础序列化
 
 ```cangjie
 let bytes = toBytes<MyType>(value)
 let decoded = fromBytes<MyType>(bytes)
 ```
 
-Exact decode rejects trailing input.
+严格解码会拒绝尾随字节。
 
-To process a stream and retain unused bytes:
+处理连续消息并保留未消费数据：
 
 ```cangjie
 let result = takeFromByteArray<MyType>(input)
@@ -47,19 +49,19 @@ let value = result[0]
 let remainder = result[1]
 ```
 
-## 4. Supported values
+## 4. 支持的数据类型
 
 - Bool
-- signed and unsigned 8/16/32/64/128-bit integers
-- Float32 and Float64
-- Rune and Unit
-- UTF-8 String and byte arrays
+- 有符号和无符号 8/16/32/64/128 位整数
+- Float32、Float64
+- Rune、Unit
+- UTF-8 String、字节数组
 - Option
-- sequences and maps
-- tuples and structs
-- unit, newtype, tuple and struct enum variants
+- sequence、map
+- tuple、struct
+- unit、newtype、tuple、struct enum variant
 
-Postcard variable-length and ZigZag encoding is used unless a fixed-width wrapper is selected.
+除非显式使用定宽包装，否则整数遵循 Postcard Varint 和 ZigZag 编码。
 
 ## 5. COBS framing
 
@@ -69,9 +71,9 @@ let value = fromBytesCobs<MyType>(frame)
 let result = takeFromBytesCobs<MyType>(stream)
 ```
 
-The take-style function decodes the first zero-delimited frame and returns all following bytes.
+Take-style 接口会解码第一个以零字节分隔的完整帧，并返回后续全部字节。
 
-COBS output is built incrementally with a fixed maximum 254-byte pending segment.
+序列化端使用增量 COBS block 构造，最多缓存 254 字节 pending segment。
 
 ## 6. CRC32C/iSCSI framing
 
@@ -81,54 +83,54 @@ let value = fromBytesCrc32Iscsi<MyType>(message)
 let result = takeFromBytesCrc32Iscsi<MyType>(stream)
 ```
 
-The decoder validates the appended checksum before returning a value. Serialization updates CRC32C incrementally instead of copying a second complete message during finalization.
+解码器在返回值前验证附加的 CRC32C 校验值。序列化过程边写边更新 checksum，不在 finalize 阶段复制第二份完整消息。
 
 ## 7. Flavors
 
-Serialization Flavors support:
+序列化 Flavor 支持：
 
-- fixed caller-provided buffers
-- growable arrays
-- Extend sinks
-- stream writers
-- serialized-size counters
+- 调用方提供的固定缓冲区
+- 可增长数组
+- Extend sink
+- stream writer
+- 序列化尺寸计数器
 - COBS middleware
 - CRC32C middleware
 
-Deserialization Flavors support:
+反序列化 Flavor 支持：
 
-- slices with remainder
-- stream readers with scratch storage
-- decoded COBS frames
-- CRC32C-validated messages
+- 带 remainder 的 slice
+- 使用 scratch storage 的 stream reader
+- 已解码的 COBS frame
+- 通过 CRC32C 验证的消息
 
-Use convenience functions for common byte-array workflows and Flavors for explicit storage or framing composition.
+普通字节数组场景优先使用便捷函数；需要显式控制存储、容量或 framing 组合时使用 Flavor。
 
-`Flavor.snapshot()` remains non-mutating, and middleware finalization preserves declared composition order.
+`Flavor.snapshot()` 保持非破坏语义，COBS 与 CRC middleware 可按声明顺序组合。
 
-## 8. Fixed-width integers
+## 8. 定宽整数
 
-`postcard4cj.fixint` provides little-endian and big-endian codecs for 16/32/64/128-bit integer fields.
+`postcard4cj.fixint` 为 16/32/64/128 位整数提供 little-endian 与 big-endian codec。
 
-Use fixed-width helpers only when the surrounding data format requires an exact width rather than default Postcard Varint encoding.
+只有当外围协议要求固定字段宽度时才使用定宽 helper；普通 Postcard 数据应继续使用默认 Varint 编码。
 
-## 9. IO and accumulator
+## 9. IO 与 Accumulator
 
-`postcard4cj.io` and `postcard4cj.v2_eio` use Cangjie-native `ByteReader` and `ByteWriter` interfaces.
+`postcard4cj.io` 和 `postcard4cj.v2_eio` 使用仓颉原生 `ByteReader` 与 `ByteWriter` 接口。
 
-`CobsAccumulator` accepts arbitrary stream chunks and yields complete COBS frames. Its runtime capacity is enforced deterministically.
+`CobsAccumulator` 可持续接收任意大小的数据块，并在获得完整 COBS frame 时输出结果。其运行时容量会被确定性地执行。
 
 ## 10. Schema
 
-`postcard4cj.schema` provides:
+`postcard4cj.schema` 提供：
 
-- primitive, sequence, tuple, map, struct and enum nodes
-- schema formatting
-- recursive used-type discovery
-- stable type/path keys
-- Postcard serialization of schema values
+- primitive、sequence、tuple、map、struct、enum Schema node
+- Schema 格式化
+- 递归 used-type discovery
+- 稳定 type/path key
+- Schema 本身的 Postcard 序列化
 
-Types implement:
+类型通过以下接口提供 Schema：
 
 ```cangjie
 public interface PostcardSchema<T> {
@@ -136,17 +138,25 @@ public interface PostcardSchema<T> {
 }
 ```
 
-The NG namespace uses `PostcardSchemaNg<T>` and `schemaNg()`.
+NG 命名空间对应 `PostcardSchemaNg<T>` 与 `schemaNg()`。
 
-## 11. Dynamic values
+## 11. Dynamic Value
 
-`postcard4cj.dynamic` provides lossless schema-directed runtime values for primitives, collections, structs, enum variants, arbitrary-key maps, Schema values, and explicit `None` versus `Some(Unit)`.
+`postcard4cj.dynamic` 提供由 Schema 驱动的无损运行时值，覆盖：
 
-JSON-compatible conversion is available where JSON can preserve the represented data. Use the lossless Dynamic model when JSON would erase a type distinction.
+- primitive
+- collection
+- struct
+- enum variant
+- 任意 key 的 map
+- Schema value
+- 明确区分的 `None` 与 `Some(Unit)`
 
-## 12. Macros
+当 JSON 能保持数据语义时，可使用 JSON 兼容转换；当 JSON 会抹去类型差异时，应使用无损 Dynamic 模型。
 
-### Codec struct
+## 12. 宏
+
+### 12.1 Codec struct
 
 ```cangjie
 @Postcard
@@ -161,7 +171,7 @@ public struct Message {
 }
 ```
 
-### Codec enum
+### 12.2 Codec enum
 
 ```cangjie
 @Postcard
@@ -172,7 +182,7 @@ public enum Command {
 }
 ```
 
-### Generic struct
+### 12.3 泛型 struct
 
 ```cangjie
 @Postcard
@@ -187,7 +197,7 @@ public struct Pair<T, U> {
 }
 ```
 
-### Generic enum
+### 12.4 泛型 enum
 
 ```cangjie
 @Postcard
@@ -198,15 +208,13 @@ public enum ResultValue<T, U> {
 }
 ```
 
-The macro generates the required codec, Schema, or MaxSize constraints for every type parameter.
+宏会为每个类型参数生成所需的 codec、Schema 或 MaxSize 上界。
 
-### Existing `where` bounds
+### 12.5 已有 where 上界
 
-Generic declarations may already contain a `where` clause. The macros read existing upper bounds through the AST and merge them with generated Postcard constraints without redeclaring generic parameters.
+泛型声明可以已有 `where` 约束。宏使用 AST 读取现有约束，并与自动生成的 Postcard 上界合并，不重复声明泛型参数。
 
-### Schema and maximum size
-
-Use the corresponding annotations:
+### 12.6 Schema 与最大尺寸
 
 ```cangjie
 @PostcardSchema
@@ -216,13 +224,22 @@ public struct SchemaMessage { /* fields and init */ }
 public struct BoundedMessage { /* bounded fields and init */ }
 ```
 
-NG entry points are `@PostcardSchemaNg` and `@PostcardMaxSizeNg`.
+NG 入口：
 
-All five codec/Schema/MaxSize entry points support non-generic and generic structs and exhaustive enums with one or more type parameters.
+- `@PostcardSchemaNg`
+- `@PostcardMaxSizeNg`
 
-### Schema rename metadata
+五个 codec/Schema/MaxSize 入口均支持：
 
-Named Schema macros provide Cangjie-native type, field, and enum-variant names:
+- 非泛型 struct
+- 非泛型 exhaustive enum
+- 单参数和多参数泛型 struct
+- 单参数和多参数泛型 exhaustive enum
+- 已有 `where` 上界合并
+
+### 12.7 Schema rename
+
+命名 Schema 宏提供仓颉原生的类型、字段与枚举变体 rename：
 
 ```cangjie
 @PostcardSchemaNamed["wire_record", "id=wire_id"]
@@ -231,73 +248,104 @@ public struct Record {
 }
 ```
 
-The NG equivalent is `@PostcardSchemaNgNamed[...]`. Rename metadata changes Schema names only and does not change wire bytes.
+NG 对应入口为 `@PostcardSchemaNgNamed[...]`。
 
-### Explicit exclusions
+Rename 只改变 Schema 元数据，不改变编码后的 wire bytes。
 
-- non-exhaustive enum generation
-- unbounded String/Array fields in MaxSize generation
+### 12.8 明确限制
 
-Unsupported declarations produce compile-time diagnostics.
+- 非 exhaustive enum：拒绝生成，因为无法推导稳定变体集合；
+- MaxSize 中无界 String/Array：拒绝生成，因为无法静态计算最大尺寸；
+- 不支持的声明会给出编译期诊断。
 
-## 13. Size APIs
+## 13. 尺寸 API
 
-- `serializedSize` calculates the encoded size of a concrete value.
-- `PostcardMaxSize` describes the maximum unflavored size of a bounded type.
-- MaxSize macros reject unbounded fields unless the user supplies a bounded wrapper or manual implementation.
+- `serializedSize`：计算某个具体值的编码尺寸；
+- `PostcardMaxSize`：描述有界类型的最大未加 Flavor 尺寸；
+- 对无界字段，应提供有界包装或手动实现。
 
-## 14. Postcard2-style API
+## 14. Postcard2 风格 API
 
-`postcard4cj.v2` provides fixed, growable and Extend output, serialized-size calculation, exact decode, remainder decode, and dedicated error categories.
+`postcard4cj.v2` 提供：
 
-`postcard4cj.v2_eio` and `postcard4cj.v2_fixed` provide IO and runtime-capacity fixed-vector adapters.
+- fixed output
+- growable output
+- Extend output
+- serialized-size calculation
+- strict decode
+- remainder decode
+- 独立错误类别
 
-## 15. Error handling
+`postcard4cj.v2_eio` 与 `postcard4cj.v2_fixed` 分别提供 IO 和运行时容量 fixed-vector 适配。
 
-Failures are exposed as Cangjie exceptions with explicit categories, including:
+## 15. 错误处理
 
-- unexpected end or trailing bytes
-- invalid Bool, Option, UTF-8, Rune or Varint
-- unknown enum variant
-- output capacity exhaustion
+错误通过仓颉异常暴露，并保留明确类别，包括：
+
+- 输入意外结束
+- 尾随字节
+- 非法 Bool、Option、UTF-8、Rune、Varint
+- 未知 enum variant
+- 输出容量不足
 - malformed COBS
 - CRC mismatch
-- unsupported operations
+- unsupported operation
 
-Catch the relevant exception when decoding untrusted external data.
+处理不可信外部数据时，应捕获与业务相关的异常，并在校验失败后停止处理消息。
 
-## 16. Security guidance
+## 16. 安全指导
 
-- Treat incoming lengths as untrusted.
-- Apply application-level collection limits where needed.
-- Use exact decode for one-message buffers.
-- Use take-style decode only for intentional message streams.
-- Validate framing before acting on decoded values.
-- Do not suppress malformed-input failures silently.
+- 将所有输入长度视为不可信；
+- 根据业务需要增加集合数量和消息总大小限制；
+- 单消息缓冲区使用严格解码；
+- 只有明确处理消息流时才使用 take-style API；
+- 在执行业务逻辑前完成 framing 验证；
+- 不要静默忽略 malformed-input 错误。
 
-Sequence and map decoding avoid direct large preallocation from malicious declared wire lengths.
+postcard4cj 对 sequence/map 的恶意声明长度实施分配保护，不会直接按 wire count 进行大容量预分配。
 
-## 17. Verification and references
+## 17. 模块选择
 
-The same source passes **189 tests** on both Cangjie 1.0.5 and 1.1.3.
+| 模块 | 用途 |
+|---|---|
+| `postcard4cj` | 主要便捷 API 与核心 codec |
+| `postcard4cj.core` | 底层 wire encoder/decoder |
+| `postcard4cj.flavors` | 存储与 framing 组合 |
+| `postcard4cj.accumulator` | 增量 COBS 数据流 |
+| `postcard4cj.fixint` | 定宽整数 |
+| `postcard4cj.io` | 仓颉原生流式 IO |
+| `postcard4cj.max_size` | 最大尺寸模型 |
+| `postcard4cj.schema` | legacy Schema |
+| `postcard4cj.schema_ng` | NG Schema |
+| `postcard4cj.dynamic` | legacy Dynamic |
+| `postcard4cj.dynamic_ng` | NG Dynamic |
+| `postcard4cj.v2` | Postcard2 风格 facade |
+| `postcard4cj.v2_eio` | Postcard2 IO 适配 |
+| `postcard4cj.v2_fixed` | 运行时 fixed-capacity 适配 |
 
-The STS quality job also validates:
+## 18. 验证状态
 
-- HTML/XML/JSON coverage report generation
-- 66.28% line coverage across all instrumented `src`
-- 71.75% runtime-library coverage excluding tests, benchmarks, and compile-time macro packages
-- 6/6 native benchmark cases
-- `cjpm bundle --skip-lint`
+同一套源码在 Cangjie 1.0.5 与 1.1.3 上均通过：
 
-Further documentation:
+- build：通过
+- tests：**189 passed, 0 failed, 0 skipped, 0 errors**
 
-- `README.md`
-- `doc/quickstart.zh-CN.md`
-- `doc/feature_api.zh-CN.md`
-- `doc/migration.zh-CN.md`
-- `doc/design.md`
-- `doc/cjcov/README.md`
-- `MIGRATION.md`
-- `API_COMPATIBILITY.md`
-- `CHANGELOG.md`
-- `README.OpenSource`
+STS 质量任务还验证：
+
+- `cjcov` HTML/XML/JSON 生成
+- 全部 instrumented `src` 行覆盖率 66.28%
+- 运行时代码覆盖率 71.75%
+- benchmark 6/6 通过
+- `cjpm bundle --skip-lint` 通过
+
+## 19. 延伸阅读
+
+- [中文快速上手](quickstart.zh-CN.md)
+- [从 Rust Postcard 迁移](migration.zh-CN.md)
+- [架构设计](design.md)
+- [覆盖率报告](cjcov/README.md)
+- [Benchmark](benchmark.md)
+- [可选生态集成决策](optional_integrations.md)
+- [完整迁移矩阵](../MIGRATION.md)
+- [公共 API 兼容性](../API_COMPATIBILITY.md)
+- [Changelog](../CHANGELOG.md)

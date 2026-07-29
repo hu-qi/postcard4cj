@@ -120,18 +120,18 @@ The test suite covers Golden Vectors, malformed and truncated input, malicious l
 
 - [中文 README](README.md)
 - [快速上手](doc/quickstart.zh-CN.md)
-- [功能与 API 指南](doc/feature_api.zh-CN.md)
+- [功能与 API 指南](doc/feature_api.md)
 - [从 Rust Postcard 迁移](doc/migration.zh-CN.md)
 
 ### English
 
-- [Design](doc/design.md)
-- [Feature and API guide](doc/feature_api.md)
+- [Design](doc/design.en.md)
+- [Feature and API guide](doc/feature_api.en.md)
 - [Coverage report](doc/cjcov/README.md)
 - [Complete LLT report (Chinese)](doc/LLT.md)
 - [Cangjie 1.1.3 LLT report (Chinese)](doc/LLT-1.1.3.md)
 - [Benchmarks](doc/benchmark.md)
-- [Optional integration decisions](doc/optional_integrations.md)
+- [Optional integration decisions](doc/optional_integrations.en.md)
 - [Migration matrix](MIGRATION.md)
 - [Public API compatibility](API_COMPATIBILITY.md)
 - [Changelog](CHANGELOG.md)

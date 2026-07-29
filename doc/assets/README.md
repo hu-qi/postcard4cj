@@ -1,12 +1,14 @@
-# Documentation Assets
+# 文档资源目录
 
-Place diagrams, screenshots, generated figures, and other documentation-only assets in this directory.
+简体中文 | [English](README.en.md)
 
-Current design and API documentation uses text and Mermaid-compatible descriptions, so no binary assets are required for the initial release.
+本目录用于保存图表、截图、生成图形及其他仅供文档使用的资源。
 
-Rules:
+当前设计和 API 文档使用文本以及兼容 Mermaid 的描述，因此首个版本不需要二进制资源。
 
-- Do not store build artifacts or test binaries here.
-- Prefer source-editable diagrams where practical.
-- Include attribution and license information for third-party assets.
-- Keep generated coverage reports under `doc/cjcov/`, not this directory.
+规则：
+
+- 不在这里保存构建制品或测试二进制文件。
+- 在可行时优先使用可编辑的图表源文件。
+- 第三方资源必须包含归属和许可证信息。
+- 生成的覆盖率报告保存在 `doc/cjcov/`，不放入本目录。
