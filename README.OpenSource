@@ -2,7 +2,7 @@ Project: postcard4cj
 
 Upstream project: postcard
 Upstream repository: https://github.com/jamesmunns/postcard
-Upstream baseline commit: de182557cff45f2ca9b2b67a6b93be5917612a44
+Upstream baseline commit: 118d274cf46ee8097e7a4aae0c12a801c7aea8cc
 Upstream copyright: Copyright (c) 2019 Anthony James Munns and contributors
 Upstream license: MIT OR Apache-2.0
 
@@ -14,8 +14,8 @@ Adaptation license: MIT OR Apache-2.0
 
 Supported compiler lines:
 
-- Cangjie LTS 1.0.5: branch `postcard4cj_lt_1.0.5`
-- Cangjie STS 1.1.3: branch `postcard4cj_st_1.1.3`
+- Cangjie LTS 1.0.5: branch `main`
+- Cangjie STS 1.1.3: branch `feat/postcard4cj-1.1.3`
 
 Modification statement:
 
@@ -30,4 +30,4 @@ Included license and attribution files:
 
 Verification:
 
-Compatibility is validated through pure Cangjie Golden Vectors, malformed-input tests, security regressions, and a dual-version matrix. Both Cangjie 1.0.5 and 1.1.3 pass the build and all 178 tests.
+Compatibility is validated through pure Cangjie Golden Vectors, malformed-input tests, security regressions, and a dual-version matrix. Both Cangjie 1.0.5 and 1.1.3 pass the build and all 197 tests.

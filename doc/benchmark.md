@@ -16,12 +16,12 @@
 
 | 用例 | 中位数 | 平均值 | 误差 |
 |---|---:|---:|---:|
-| Plain encode | 7.037 µs | 7.292 µs | ±3.6% |
-| Plain decode | 1.710 µs | 1.735 µs | ±2.7% |
-| COBS encode | 7.662 µs | 7.719 µs | ±3.0% |
-| COBS decode | 2.057 µs | 2.078 µs | ±1.2% |
-| CRC32C encode | 8.457 µs | 8.702 µs | ±3.3% |
-| CRC32C decode | 2.755 µs | 2.755 µs | ±0.7% |
+| Plain encode | 6.676 µs | 6.709 µs | ±0.6% |
+| Plain decode | 1.627 µs | 1.638 µs | ±0.5% |
+| COBS encode | 7.140 µs | 7.093 µs | ±0.5% |
+| COBS decode | 2.011 µs | 1.993 µs | ±0.4% |
+| CRC32C encode | 8.097 µs | 8.117 µs | ±0.8% |
+| CRC32C decode | 2.677 µs | 2.685 µs | ±0.4% |
 
 benchmark payload 使用代表性的复合 Postcard 值。COBS 使用增量 254 字节分段实现；CRC32C 在转发 payload 字节时同步更新校验值。
 

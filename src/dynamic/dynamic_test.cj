@@ -219,4 +219,20 @@ public class DynamicErrorTest {
             fromByteArrayDynamic(boolSchema(), [0x01u8, 0x00u8])
         )
     }
+
+    @TestCase
+    public func untrustedCollectionLengthsDoNotPreallocateWireCount(): Unit {
+        let maliciousLength: Array<UInt8> = [
+            0xffu8, 0xffu8, 0xffu8, 0xffu8, 0x0fu8
+        ]
+        @AssertThrows[DynamicException](
+            fromByteArrayDynamic(sequenceSchema(uint8Schema()), maliciousLength)
+        )
+        @AssertThrows[DynamicException](
+            fromByteArrayDynamic(
+                mapSchema(uint8Schema(), uint8Schema()),
+                maliciousLength
+            )
+        )
+    }
 }

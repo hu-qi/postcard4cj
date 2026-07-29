@@ -25,6 +25,7 @@ Adapters preserve the Postcard wire representation of the logical value. They ar
 | fixed-point numbers | Encode the underlying signed/unsigned integer according to the selected scale contract. | Supported through public adapter interfaces; no built-in dependency |
 | defmt diagnostics | Diagnostic formatting is not part of the wire format. Cangjie exceptions and ordinary formatting are used. | Explicitly excluded as a Rust-only diagnostics integration |
 | serde-big-array | Cangjie `Array<T>` and explicit fixed-capacity wrappers use the normal sequence/fixed APIs and do not need a serde workaround. | Native core API; separate integration unnecessary |
+| enum-map 3.x | Use `enumMapSchema(valueSchema, enumCardinality)` and `enumMapMaxSize<V>(enumCardinality)` for the enum key's fixed backing value array; no length prefix is encoded, matching upstream. | Implemented Cangjie-native equivalent |
 | heapless 0.7/0.8/0.9 aliases | `FixedByteVec` and `FixedVecFlavor` provide runtime-capacity equivalents without importing versioned Rust containers. | Implemented Cangjie substitution |
 | embedded-io 0.4/0.6 aliases | `ByteReader` and `ByteWriter` provide a stable Cangjie IO contract without versioned Rust traits. | Implemented Cangjie substitution |
 

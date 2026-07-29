@@ -167,11 +167,11 @@ public struct Record {
 
 当前完整 CI 结果：
 
-- Cangjie 1.0.5：build 通过，**189 tests passed**
-- Cangjie 1.1.3：build 通过，**189 tests passed**
+- Cangjie 1.0.5：build 通过，**197 tests passed**
+- Cangjie 1.1.3：build 通过，**197 tests passed**
 - `cjcov` HTML/XML/JSON：生成成功
-- 全部 instrumented `src` 行覆盖率：**66.28%**
-- 排除测试、benchmark 和编译期宏包后的运行时代码覆盖率：**71.75%**
+- 全部 instrumented `src` 行覆盖率：**66.76%**
+- 排除测试、benchmark 和编译期宏包后的运行时代码覆盖率：**71.98%**
 - 原生 benchmark：**6/6 passed**
 - `cjpm bundle --skip-lint`：通过
 - 制品：`postcard4cj-0.1.0.cjp`

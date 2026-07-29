@@ -276,12 +276,12 @@ pre
           </tr>
           <tr>
             <td class="headerName">Date:</td>
-            <td class="headerValue">2026-07-29 13:27:18</td>
+            <td class="headerValue">2026-07-29 14:00:26</td>
             <td></td>
             <td class="headerName">Lines:</td>
-            <td class="headerTableEntry">203</td>
-            <td class="headerTableEntry">217</td>
-            <td class="headerTableEntry" style="background-color:LightGreen">93.5 %</td>
+            <td class="headerTableEntry">199</td>
+            <td class="headerTableEntry">212</td>
+            <td class="headerTableEntry" style="background-color:LightGreen">93.9 %</td>
           </tr>
           <tr>
             <td class="headerName">Legend:</td>
@@ -1299,386 +1299,386 @@ pre
 <tr>
 <td align="right" class="lineno"><pre>165</pre></td>
 <td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>private let CRC32C_REFLECTED_POLYNOMIAL: UInt32 = 0x82f63b78u32</pre></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>private func stripAndVerifyCrc32(input: Array&lt;UInt8&gt;, digest: Crc32Digest): Array&lt;UInt8&gt; {</pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>166</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre></pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>167</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>private func updateCrc32c(crc: UInt32, byte: UInt8): UInt32 {</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>168</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>    var updated = crc ^ UInt32(byte)</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>169</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>    var bit = 0i64</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>170</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>    while (bit &lt; 8) {</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>171</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>        if ((updated &amp; 1u32) != 0u32) {</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>172</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>            updated = (updated &gt;&gt; 1) ^ CRC32C_REFLECTED_POLYNOMIAL</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>173</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>        } else {</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>174</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>            updated &gt;&gt;= 1</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>175</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>        }</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>176</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>        bit++</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>177</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>    }</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>178</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>    return updated</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>179</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>}</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>180</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre></pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>181</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>private func crc32c(input: Array&lt;UInt8&gt;): UInt32 {</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>182</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>    var crc = 0xffff_ffffu32</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>183</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>    for (byte in input) {</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>184</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>        crc = updateCrc32c(crc, byte)</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>185</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>    }</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>186</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>    return crc ^ 0xffff_ffffu32</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>187</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>}</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>188</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre></pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>189</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>private func stripAndVerifyCrc32c(input: Array&lt;UInt8&gt;): Array&lt;UInt8&gt; {</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>190</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>    if (input.size &lt; 4) {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>191</pre></td>
+<td align="right" class="lineno"><pre>167</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount uncoveredLine"><pre>N</pre></td>
 <td align="left" class="src uncoveredLine"><pre>        throw postcardException(PostcardErrorKind.DeserializeBadCrc)</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>192</pre></td>
+<td align="right" class="lineno"><pre>168</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>193</pre></td>
+<td align="right" class="lineno"><pre>169</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>    let payloadEnd = input.size - 4</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>194</pre></td>
+<td align="right" class="lineno"><pre>170</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>    let payload = input[..payloadEnd]</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>195</pre></td>
+<td align="right" class="lineno"><pre>171</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>    let expected = crc32c(payload)</pre></td>
+<td align="left" class="src coveredLine"><pre>    for (byte in payload) {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>196</pre></td>
+<td align="right" class="lineno"><pre>172</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>        digest.updateByte(byte)</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>173</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre>    }</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>174</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>    let expected = digest.checksum()</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>175</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>    let actual = UInt32(input[payloadEnd]) |</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>197</pre></td>
+<td align="right" class="lineno"><pre>176</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        (UInt32(input[payloadEnd + 1]) &lt;&lt; 8) |</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>198</pre></td>
+<td align="right" class="lineno"><pre>177</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        (UInt32(input[payloadEnd + 2]) &lt;&lt; 16) |</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>199</pre></td>
+<td align="right" class="lineno"><pre>178</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        (UInt32(input[payloadEnd + 3]) &lt;&lt; 24)</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>200</pre></td>
+<td align="right" class="lineno"><pre>179</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>    if (actual != expected) {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>201</pre></td>
+<td align="right" class="lineno"><pre>180</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        throw postcardException(PostcardErrorKind.DeserializeBadCrc)</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>202</pre></td>
+<td align="right" class="lineno"><pre>181</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>203</pre></td>
+<td align="right" class="lineno"><pre>182</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>    return payload</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>204</pre></td>
+<td align="right" class="lineno"><pre>183</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>}</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>205</pre></td>
+<td align="right" class="lineno"><pre>184</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre></pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>206</pre></td>
+<td align="right" class="lineno"><pre>185</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>/**</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>207</pre></td>
+<td align="right" class="lineno"><pre>186</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre> * Incremental COBS middleware.</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>208</pre></td>
+<td align="right" class="lineno"><pre>187</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre> *</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>209</pre></td>
+<td align="right" class="lineno"><pre>188</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre> * The previous implementation retained the complete raw payload and allocated</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>210</pre></td>
+<td align="right" class="lineno"><pre>189</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre> * another complete encoded payload during finalization. This implementation</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>211</pre></td>
+<td align="right" class="lineno"><pre>190</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre> * stores already encoded blocks and a fixed 254-byte pending segment, so</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>212</pre></td>
+<td align="right" class="lineno"><pre>191</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre> * finalization writes directly into the inner flavor without a second complete</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>213</pre></td>
+<td align="right" class="lineno"><pre>192</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre> * message allocation. `snapshot()` remains non-mutating and composable.</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>214</pre></td>
+<td align="right" class="lineno"><pre>193</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre> */</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>215</pre></td>
+<td align="right" class="lineno"><pre>194</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>public class CobsSerializeFlavor &lt;: SerializeFlavor {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>216</pre></td>
+<td align="right" class="lineno"><pre>195</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    private let inner: SerializeFlavor</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>217</pre></td>
+<td align="right" class="lineno"><pre>196</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    private let encoded: ArrayList&lt;UInt8&gt;</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>218</pre></td>
+<td align="right" class="lineno"><pre>197</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    private let segment: Array&lt;UInt8&gt;</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>219</pre></td>
+<td align="right" class="lineno"><pre>198</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    private var segmentLength: Int64</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>220</pre></td>
+<td align="right" class="lineno"><pre>199</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    private var rawPosition: Int64</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>221</pre></td>
+<td align="right" class="lineno"><pre>200</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre></pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>222</pre></td>
+<td align="right" class="lineno"><pre>201</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>    public init(inner: SerializeFlavor) {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>223</pre></td>
+<td align="right" class="lineno"><pre>202</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        this.inner = inner</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>224</pre></td>
+<td align="right" class="lineno"><pre>203</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        encoded = ArrayList&lt;UInt8&gt;()</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>225</pre></td>
+<td align="right" class="lineno"><pre>204</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        segment = Array&lt;UInt8&gt;(254, repeat: 0u8)</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>226</pre></td>
+<td align="right" class="lineno"><pre>205</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        segmentLength = 0</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>227</pre></td>
+<td align="right" class="lineno"><pre>206</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        rawPosition = 0</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>228</pre></td>
+<td align="right" class="lineno"><pre>207</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    }</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>208</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre></pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>209</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>    private func appendPendingBlock(output: ArrayList&lt;UInt8&gt;): Unit {</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>210</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>        output.add(UInt8(segmentLength + 1))</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>211</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>        var index = 0i64</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>212</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>        while (index &lt; segmentLength) {</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>213</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>            output.add(segment[index])</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>214</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>            index++</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>215</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre>        }</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>216</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre>    }</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>217</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre></pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>218</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>    private func flushPendingBlock(): Unit {</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>219</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>        appendPendingBlock(encoded)</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>220</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>        segmentLength = 0</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>221</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre>    }</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>222</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre></pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>223</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>    public func tryPush(data: UInt8): Unit {</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>224</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>        rawPosition++</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>225</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>        if (data == 0u8) {</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>226</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>            flushPendingBlock()</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>227</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>            return</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>228</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre>        }</pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>229</pre></td>
@@ -1690,487 +1690,487 @@ pre
 <td align="right" class="lineno"><pre>230</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>    private func appendPendingBlock(output: ArrayList&lt;UInt8&gt;): Unit {</pre></td>
+<td align="left" class="src coveredLine"><pre>        segment[segmentLength] = data</pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>231</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>        output.add(UInt8(segmentLength + 1))</pre></td>
+<td align="left" class="src coveredLine"><pre>        segmentLength++</pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>232</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>        var index = 0i64</pre></td>
+<td align="left" class="src coveredLine"><pre>        if (segmentLength == 254) {</pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>233</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>        while (index &lt; segmentLength) {</pre></td>
+<td align="left" class="src coveredLine"><pre>            encoded.add(0xffu8)</pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>234</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>            output.add(segment[index])</pre></td>
+<td align="left" class="src coveredLine"><pre>            var index = 0i64</pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>235</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>            index++</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>236</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>        }</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>237</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>    }</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>238</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre></pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>239</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>    private func flushPendingBlock(): Unit {</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>240</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>        appendPendingBlock(encoded)</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>241</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>        segmentLength = 0</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>242</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>    }</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>243</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre></pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>244</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>    public func tryPush(data: UInt8): Unit {</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>245</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>        rawPosition++</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>246</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>        if (data == 0u8) {</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>247</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>            flushPendingBlock()</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>248</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>            return</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>249</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>        }</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>250</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre></pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>251</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>        segment[segmentLength] = data</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>252</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>        segmentLength++</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>253</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>        if (segmentLength == 254) {</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>254</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>            encoded.add(0xffu8)</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>255</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>            var index = 0i64</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>256</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>            while (index &lt; 254) {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>257</pre></td>
+<td align="right" class="lineno"><pre>236</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>                encoded.add(segment[index])</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>258</pre></td>
+<td align="right" class="lineno"><pre>237</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>                index++</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>259</pre></td>
+<td align="right" class="lineno"><pre>238</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>            }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>260</pre></td>
+<td align="right" class="lineno"><pre>239</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>            segmentLength = 0</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>261</pre></td>
+<td align="right" class="lineno"><pre>240</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>        }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>262</pre></td>
+<td align="right" class="lineno"><pre>241</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>263</pre></td>
+<td align="right" class="lineno"><pre>242</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre></pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>264</pre></td>
+<td align="right" class="lineno"><pre>243</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>    public func tryExtend(data: Array&lt;UInt8&gt;): Unit {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>265</pre></td>
+<td align="right" class="lineno"><pre>244</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        for (byte in data) {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>266</pre></td>
+<td align="right" class="lineno"><pre>245</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>            tryPush(byte)</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>267</pre></td>
+<td align="right" class="lineno"><pre>246</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>        }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>268</pre></td>
+<td align="right" class="lineno"><pre>247</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>269</pre></td>
+<td align="right" class="lineno"><pre>248</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre></pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>270</pre></td>
+<td align="right" class="lineno"><pre>249</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>    public func position(): Int64 {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>271</pre></td>
+<td align="right" class="lineno"><pre>250</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        return rawPosition</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>272</pre></td>
+<td align="right" class="lineno"><pre>251</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>273</pre></td>
+<td align="right" class="lineno"><pre>252</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre></pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>274</pre></td>
+<td align="right" class="lineno"><pre>253</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>    public func snapshot(): Array&lt;UInt8&gt; {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>275</pre></td>
+<td align="right" class="lineno"><pre>254</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        let output = ArrayList&lt;UInt8&gt;(encoded.size + segmentLength + 2)</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>276</pre></td>
+<td align="right" class="lineno"><pre>255</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        for (byte in encoded) {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>277</pre></td>
+<td align="right" class="lineno"><pre>256</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>            output.add(byte)</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>278</pre></td>
+<td align="right" class="lineno"><pre>257</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>        }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>279</pre></td>
+<td align="right" class="lineno"><pre>258</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        appendPendingBlock(output)</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>280</pre></td>
+<td align="right" class="lineno"><pre>259</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        output.add(0u8)</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>281</pre></td>
+<td align="right" class="lineno"><pre>260</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        return output.toArray()</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>282</pre></td>
+<td align="right" class="lineno"><pre>261</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>283</pre></td>
+<td align="right" class="lineno"><pre>262</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre></pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>284</pre></td>
+<td align="right" class="lineno"><pre>263</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>    public func finalize(): Array&lt;UInt8&gt; {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>285</pre></td>
+<td align="right" class="lineno"><pre>264</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        flushPendingBlock()</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>286</pre></td>
+<td align="right" class="lineno"><pre>265</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        encoded.add(0u8)</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>287</pre></td>
+<td align="right" class="lineno"><pre>266</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        for (byte in encoded) {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>288</pre></td>
+<td align="right" class="lineno"><pre>267</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>            inner.tryPush(byte)</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>289</pre></td>
+<td align="right" class="lineno"><pre>268</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>        }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>290</pre></td>
+<td align="right" class="lineno"><pre>269</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        return inner.finalize()</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>291</pre></td>
+<td align="right" class="lineno"><pre>270</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>292</pre></td>
+<td align="right" class="lineno"><pre>271</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>}</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>293</pre></td>
+<td align="right" class="lineno"><pre>272</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre></pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>294</pre></td>
+<td align="right" class="lineno"><pre>273</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>/**</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>295</pre></td>
+<td align="right" class="lineno"><pre>274</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre> * Incremental CRC-32/ISCSI middleware.</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>296</pre></td>
+<td align="right" class="lineno"><pre>275</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre> *</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>297</pre></td>
+<td align="right" class="lineno"><pre>276</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre> * The checksum is updated as bytes arrive. Raw bytes are retained only to</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>298</pre></td>
+<td align="right" class="lineno"><pre>277</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre> * preserve arbitrary Flavor composition and non-mutating snapshot semantics;</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>299</pre></td>
+<td align="right" class="lineno"><pre>278</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre> * finalization forwards them directly and does not allocate a second complete</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>300</pre></td>
+<td align="right" class="lineno"><pre>279</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre> * payload-plus-checksum array.</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>301</pre></td>
+<td align="right" class="lineno"><pre>280</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre> */</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>302</pre></td>
+<td align="right" class="lineno"><pre>281</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>public class Crc32SerializeFlavor &lt;: SerializeFlavor {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>303</pre></td>
+<td align="right" class="lineno"><pre>282</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    private let inner: SerializeFlavor</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>304</pre></td>
+<td align="right" class="lineno"><pre>283</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    private let raw: ArrayList&lt;UInt8&gt;</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>305</pre></td>
+<td align="right" class="lineno"><pre>284</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>    private var crc: UInt32</pre></td>
+<td align="left" class="src "><pre>    private let digest: Crc32Digest</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>306</pre></td>
+<td align="right" class="lineno"><pre>285</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre></pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>307</pre></td>
+<td align="right" class="lineno"><pre>286</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>    public init(inner: SerializeFlavor) {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>308</pre></td>
+<td align="right" class="lineno"><pre>287</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        this.inner = inner</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>309</pre></td>
+<td align="right" class="lineno"><pre>288</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>        digest = crc32IscsiDigest()</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>289</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        raw = ArrayList&lt;UInt8&gt;()</pre></td>
 </tr>
 <tr>
+<td align="right" class="lineno"><pre>290</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre>    }</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>291</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre></pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>292</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>    public init(inner: SerializeFlavor, digest: Crc32Digest) {</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>293</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>        this.inner = inner</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>294</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>        this.digest = digest</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>295</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>        raw = ArrayList&lt;UInt8&gt;()</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>296</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre>    }</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>297</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre></pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>298</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>    public func tryPush(data: UInt8): Unit {</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>299</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>        raw.add(data)</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>300</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>        digest.updateByte(data)</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>301</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre>    }</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>302</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre></pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>303</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>    public func tryExtend(data: Array&lt;UInt8&gt;): Unit {</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>304</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>        for (byte in data) {</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>305</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>            tryPush(byte)</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>306</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre>        }</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>307</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre>    }</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>308</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre></pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>309</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>    public func position(): Int64 {</pre></td>
+</tr>
+<tr>
 <td align="right" class="lineno"><pre>310</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>        crc = 0xffff_ffffu32</pre></td>
+<td align="left" class="src coveredLine"><pre>        return raw.size</pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>311</pre></td>
@@ -2188,589 +2188,589 @@ pre
 <td align="right" class="lineno"><pre>313</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>    public func tryPush(data: UInt8): Unit {</pre></td>
+<td align="left" class="src coveredLine"><pre>    private func checksum(): UInt32 {</pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>314</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>        raw.add(data)</pre></td>
+<td align="left" class="src coveredLine"><pre>        return digest.checksum()</pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>315</pre></td>
 <td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>        crc = updateCrc32c(crc, data)</pre></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre>    }</pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>316</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>    }</pre></td>
+<td align="left" class="src "><pre></pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>317</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre></pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>318</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>    public func tryExtend(data: Array&lt;UInt8&gt;): Unit {</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>319</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>        for (byte in data) {</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>320</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>            tryPush(byte)</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>321</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>        }</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>322</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>    }</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>323</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre></pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>324</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>    public func position(): Int64 {</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>325</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>        return raw.size</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>326</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>    }</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>327</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre></pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>328</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>    private func checksum(): UInt32 {</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>329</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>        return crc ^ 0xffff_ffffu32</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>330</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>    }</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>331</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre></pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>332</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>    private func appendChecksum(output: ArrayList&lt;UInt8&gt;): Unit {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>333</pre></td>
+<td align="right" class="lineno"><pre>318</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        let value = checksum()</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>334</pre></td>
+<td align="right" class="lineno"><pre>319</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        output.add(UInt8(value &amp; 0xffu32))</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>335</pre></td>
+<td align="right" class="lineno"><pre>320</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        output.add(UInt8((value &gt;&gt; 8) &amp; 0xffu32))</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>336</pre></td>
+<td align="right" class="lineno"><pre>321</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        output.add(UInt8((value &gt;&gt; 16) &amp; 0xffu32))</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>337</pre></td>
+<td align="right" class="lineno"><pre>322</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        output.add(UInt8((value &gt;&gt; 24) &amp; 0xffu32))</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>338</pre></td>
+<td align="right" class="lineno"><pre>323</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>339</pre></td>
+<td align="right" class="lineno"><pre>324</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre></pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>340</pre></td>
+<td align="right" class="lineno"><pre>325</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>    public func snapshot(): Array&lt;UInt8&gt; {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>341</pre></td>
+<td align="right" class="lineno"><pre>326</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        let output = ArrayList&lt;UInt8&gt;(raw.size + 4)</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>342</pre></td>
+<td align="right" class="lineno"><pre>327</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        for (byte in raw) {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>343</pre></td>
+<td align="right" class="lineno"><pre>328</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>            output.add(byte)</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>344</pre></td>
+<td align="right" class="lineno"><pre>329</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>        }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>345</pre></td>
+<td align="right" class="lineno"><pre>330</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        appendChecksum(output)</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>346</pre></td>
+<td align="right" class="lineno"><pre>331</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        return output.toArray()</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>347</pre></td>
+<td align="right" class="lineno"><pre>332</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>348</pre></td>
+<td align="right" class="lineno"><pre>333</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre></pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>349</pre></td>
+<td align="right" class="lineno"><pre>334</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>    public func finalize(): Array&lt;UInt8&gt; {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>350</pre></td>
+<td align="right" class="lineno"><pre>335</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        for (byte in raw) {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>351</pre></td>
+<td align="right" class="lineno"><pre>336</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>            inner.tryPush(byte)</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>352</pre></td>
+<td align="right" class="lineno"><pre>337</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>        }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>353</pre></td>
+<td align="right" class="lineno"><pre>338</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        let value = checksum()</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>354</pre></td>
+<td align="right" class="lineno"><pre>339</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        inner.tryPush(UInt8(value &amp; 0xffu32))</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>355</pre></td>
+<td align="right" class="lineno"><pre>340</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        inner.tryPush(UInt8((value &gt;&gt; 8) &amp; 0xffu32))</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>356</pre></td>
+<td align="right" class="lineno"><pre>341</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        inner.tryPush(UInt8((value &gt;&gt; 16) &amp; 0xffu32))</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>357</pre></td>
+<td align="right" class="lineno"><pre>342</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        inner.tryPush(UInt8((value &gt;&gt; 24) &amp; 0xffu32))</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>358</pre></td>
+<td align="right" class="lineno"><pre>343</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        return inner.finalize()</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>359</pre></td>
+<td align="right" class="lineno"><pre>344</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>360</pre></td>
+<td align="right" class="lineno"><pre>345</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>}</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>361</pre></td>
+<td align="right" class="lineno"><pre>346</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre></pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>362</pre></td>
+<td align="right" class="lineno"><pre>347</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>/** Source abstraction corresponding to Postcard deserialization Flavors. */</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>363</pre></td>
+<td align="right" class="lineno"><pre>348</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>public interface DeserializeFlavor {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>364</pre></td>
+<td align="right" class="lineno"><pre>349</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    func pop(): UInt8</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>365</pre></td>
+<td align="right" class="lineno"><pre>350</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    func tryTake(count: Int64): Array&lt;UInt8&gt;</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>366</pre></td>
+<td align="right" class="lineno"><pre>351</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    func sizeHint(): Option&lt;Int64&gt;</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>367</pre></td>
+<td align="right" class="lineno"><pre>352</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    func position(): Int64</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>368</pre></td>
+<td align="right" class="lineno"><pre>353</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    func finalize(): Array&lt;UInt8&gt;</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>369</pre></td>
+<td align="right" class="lineno"><pre>354</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>}</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>370</pre></td>
+<td align="right" class="lineno"><pre>355</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre></pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>371</pre></td>
+<td align="right" class="lineno"><pre>356</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>/** Borrowing-equivalent slice source. Arrays are reference-backed in this Cangjie port. */</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>372</pre></td>
+<td align="right" class="lineno"><pre>357</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>public class SliceDeserializeFlavor &lt;: DeserializeFlavor {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>373</pre></td>
+<td align="right" class="lineno"><pre>358</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    private let input: Array&lt;UInt8&gt;</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>374</pre></td>
+<td align="right" class="lineno"><pre>359</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    private var cursor: Int64</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>375</pre></td>
+<td align="right" class="lineno"><pre>360</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre></pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>376</pre></td>
+<td align="right" class="lineno"><pre>361</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>    public init(input: Array&lt;UInt8&gt;) {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>377</pre></td>
+<td align="right" class="lineno"><pre>362</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        this.input = input</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>378</pre></td>
+<td align="right" class="lineno"><pre>363</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        cursor = 0</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>379</pre></td>
+<td align="right" class="lineno"><pre>364</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>380</pre></td>
+<td align="right" class="lineno"><pre>365</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre></pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>381</pre></td>
+<td align="right" class="lineno"><pre>366</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>    public func pop(): UInt8 {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>382</pre></td>
+<td align="right" class="lineno"><pre>367</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        if (cursor &gt;= input.size) {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>383</pre></td>
+<td align="right" class="lineno"><pre>368</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>            throw postcardException(PostcardErrorKind.DeserializeUnexpectedEnd)</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>384</pre></td>
+<td align="right" class="lineno"><pre>369</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>        }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>385</pre></td>
+<td align="right" class="lineno"><pre>370</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        let value = input[cursor]</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>386</pre></td>
+<td align="right" class="lineno"><pre>371</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        cursor++</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>387</pre></td>
+<td align="right" class="lineno"><pre>372</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        return value</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>388</pre></td>
+<td align="right" class="lineno"><pre>373</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>389</pre></td>
+<td align="right" class="lineno"><pre>374</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre></pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>390</pre></td>
+<td align="right" class="lineno"><pre>375</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>    public func tryTake(count: Int64): Array&lt;UInt8&gt; {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>391</pre></td>
+<td align="right" class="lineno"><pre>376</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        if (count &lt; 0 || count &gt; input.size - cursor) {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>392</pre></td>
+<td align="right" class="lineno"><pre>377</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>            throw postcardException(PostcardErrorKind.DeserializeUnexpectedEnd)</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>393</pre></td>
+<td align="right" class="lineno"><pre>378</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>        }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>394</pre></td>
+<td align="right" class="lineno"><pre>379</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        let end = cursor + count</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>395</pre></td>
+<td align="right" class="lineno"><pre>380</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        let output = input[cursor..end]</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>396</pre></td>
+<td align="right" class="lineno"><pre>381</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        cursor = end</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>397</pre></td>
+<td align="right" class="lineno"><pre>382</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        return output</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>398</pre></td>
+<td align="right" class="lineno"><pre>383</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>399</pre></td>
+<td align="right" class="lineno"><pre>384</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre></pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>400</pre></td>
+<td align="right" class="lineno"><pre>385</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>    public func sizeHint(): Option&lt;Int64&gt; {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>401</pre></td>
+<td align="right" class="lineno"><pre>386</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        return Some(input.size - cursor)</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>402</pre></td>
+<td align="right" class="lineno"><pre>387</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>403</pre></td>
+<td align="right" class="lineno"><pre>388</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre></pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>404</pre></td>
+<td align="right" class="lineno"><pre>389</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>    public func position(): Int64 {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>405</pre></td>
+<td align="right" class="lineno"><pre>390</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        return cursor</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>406</pre></td>
+<td align="right" class="lineno"><pre>391</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>407</pre></td>
+<td align="right" class="lineno"><pre>392</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre></pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>408</pre></td>
+<td align="right" class="lineno"><pre>393</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>    public func finalize(): Array&lt;UInt8&gt; {</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>409</pre></td>
+<td align="right" class="lineno"><pre>394</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>        return input[cursor..input.size]</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>410</pre></td>
+<td align="right" class="lineno"><pre>395</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    }</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>396</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre>}</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>397</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre></pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>398</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre>/** Decodes one complete zero-terminated COBS frame into a slice source. */</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>399</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre>public class CobsDeserializeFlavor &lt;: DeserializeFlavor {</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>400</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre>    private let source: SliceDeserializeFlavor</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>401</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre></pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>402</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>    public init(frame: Array&lt;UInt8&gt;) {</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>403</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>        source = SliceDeserializeFlavor(decodeCobs(frame))</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>404</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre>    }</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>405</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre></pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>406</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>    public func pop(): UInt8 { return source.pop() }</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>407</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>    public func tryTake(count: Int64): Array&lt;UInt8&gt; { return source.tryTake(count) }</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>408</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>    public func sizeHint(): Option&lt;Int64&gt; { return source.sizeHint() }</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>409</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount uncoveredLine"><pre>N</pre></td>
+<td align="left" class="src uncoveredLine"><pre>    public func position(): Int64 { return source.position() }</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>410</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>    public func finalize(): Array&lt;UInt8&gt; { return source.finalize() }</pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>411</pre></td>
@@ -2788,13 +2788,13 @@ pre
 <td align="right" class="lineno"><pre>413</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>/** Decodes one complete zero-terminated COBS frame into a slice source. */</pre></td>
+<td align="left" class="src "><pre>/** Validates one CRC-32/ISCSI message and exposes the payload as a slice source. */</pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>414</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>public class CobsDeserializeFlavor &lt;: DeserializeFlavor {</pre></td>
+<td align="left" class="src "><pre>public class Crc32DeserializeFlavor &lt;: DeserializeFlavor {</pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>415</pre></td>
@@ -2812,148 +2812,94 @@ pre
 <td align="right" class="lineno"><pre>417</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>    public init(frame: Array&lt;UInt8&gt;) {</pre></td>
+<td align="left" class="src coveredLine"><pre>    public init(message: Array&lt;UInt8&gt;) {</pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>418</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>        source = SliceDeserializeFlavor(decodeCobs(frame))</pre></td>
+<td align="left" class="src coveredLine"><pre>        source = SliceDeserializeFlavor(</pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>419</pre></td>
 <td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>    }</pre></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>            stripAndVerifyCrc32(message, crc32IscsiDigest())</pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>420</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre></pre></td>
+<td align="left" class="src "><pre>        )</pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>421</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>    public func pop(): UInt8 { return source.pop() }</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>422</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>    public func tryTake(count: Int64): Array&lt;UInt8&gt; { return source.tryTake(count) }</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>423</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount uncoveredLine"><pre>N</pre></td>
-<td align="left" class="src uncoveredLine"><pre>    public func sizeHint(): Option&lt;Int64&gt; { return source.sizeHint() }</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>424</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount uncoveredLine"><pre>N</pre></td>
-<td align="left" class="src uncoveredLine"><pre>    public func position(): Int64 { return source.position() }</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>425</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>    public func finalize(): Array&lt;UInt8&gt; { return source.finalize() }</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>426</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>}</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>427</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre></pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>428</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>/** Validates one CRC-32/ISCSI message and exposes the payload as a slice source. */</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>429</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>public class Crc32DeserializeFlavor &lt;: DeserializeFlavor {</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>430</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>    private let source: SliceDeserializeFlavor</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>431</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre></pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>432</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>    public init(message: Array&lt;UInt8&gt;) {</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>433</pre></td>
-<td align="right" class="linebranch"></td>
-<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>        source = SliceDeserializeFlavor(stripAndVerifyCrc32c(message))</pre></td>
-</tr>
-<tr>
-<td align="right" class="lineno"><pre>434</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>435</pre></td>
+<td align="right" class="lineno"><pre>422</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre></pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>436</pre></td>
+<td align="right" class="lineno"><pre>423</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>    public init(message: Array&lt;UInt8&gt;, digest: Crc32Digest) {</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>424</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>        source = SliceDeserializeFlavor(stripAndVerifyCrc32(message, digest))</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>425</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre>    }</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>426</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre></pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>427</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount uncoveredLine"><pre>N</pre></td>
 <td align="left" class="src uncoveredLine"><pre>    public func pop(): UInt8 { return source.pop() }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>437</pre></td>
+<td align="right" class="lineno"><pre>428</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>    public func tryTake(count: Int64): Array&lt;UInt8&gt; { return source.tryTake(count) }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>438</pre></td>
+<td align="right" class="lineno"><pre>429</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>    public func sizeHint(): Option&lt;Int64&gt; { return source.sizeHint() }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>439</pre></td>
+<td align="right" class="lineno"><pre>430</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount uncoveredLine"><pre>N</pre></td>
 <td align="left" class="src uncoveredLine"><pre>    public func position(): Int64 { return source.position() }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>440</pre></td>
+<td align="right" class="lineno"><pre>431</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount uncoveredLine"><pre>N</pre></td>
 <td align="left" class="src uncoveredLine"><pre>    public func finalize(): Array&lt;UInt8&gt; { return source.finalize() }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>441</pre></td>
+<td align="right" class="lineno"><pre>432</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>}</pre></td>

@@ -162,37 +162,16 @@ private func decodeCobs(frame: Array<UInt8>): Array<UInt8> {
     return output.toArray()
 }
 
-private let CRC32C_REFLECTED_POLYNOMIAL: UInt32 = 0x82f63b78u32
-
-private func updateCrc32c(crc: UInt32, byte: UInt8): UInt32 {
-    var updated = crc ^ UInt32(byte)
-    var bit = 0i64
-    while (bit < 8) {
-        if ((updated & 1u32) != 0u32) {
-            updated = (updated >> 1) ^ CRC32C_REFLECTED_POLYNOMIAL
-        } else {
-            updated >>= 1
-        }
-        bit++
-    }
-    return updated
-}
-
-private func crc32c(input: Array<UInt8>): UInt32 {
-    var crc = 0xffff_ffffu32
-    for (byte in input) {
-        crc = updateCrc32c(crc, byte)
-    }
-    return crc ^ 0xffff_ffffu32
-}
-
-private func stripAndVerifyCrc32c(input: Array<UInt8>): Array<UInt8> {
+private func stripAndVerifyCrc32(input: Array<UInt8>, digest: Crc32Digest): Array<UInt8> {
     if (input.size < 4) {
         throw postcardException(PostcardErrorKind.DeserializeBadCrc)
     }
     let payloadEnd = input.size - 4
     let payload = input[..payloadEnd]
-    let expected = crc32c(payload)
+    for (byte in payload) {
+        digest.updateByte(byte)
+    }
+    let expected = digest.checksum()
     let actual = UInt32(input[payloadEnd]) |
         (UInt32(input[payloadEnd + 1]) << 8) |
         (UInt32(input[payloadEnd + 2]) << 16) |
@@ -302,17 +281,23 @@ public class CobsSerializeFlavor <: SerializeFlavor {
 public class Crc32SerializeFlavor <: SerializeFlavor {
     private let inner: SerializeFlavor
     private let raw: ArrayList<UInt8>
-    private var crc: UInt32
+    private let digest: Crc32Digest
 
     public init(inner: SerializeFlavor) {
         this.inner = inner
+        digest = crc32IscsiDigest()
         raw = ArrayList<UInt8>()
-        crc = 0xffff_ffffu32
+    }
+
+    public init(inner: SerializeFlavor, digest: Crc32Digest) {
+        this.inner = inner
+        this.digest = digest
+        raw = ArrayList<UInt8>()
     }
 
     public func tryPush(data: UInt8): Unit {
         raw.add(data)
-        crc = updateCrc32c(crc, data)
+        digest.updateByte(data)
     }
 
     public func tryExtend(data: Array<UInt8>): Unit {
@@ -326,7 +311,7 @@ public class Crc32SerializeFlavor <: SerializeFlavor {
     }
 
     private func checksum(): UInt32 {
-        return crc ^ 0xffff_ffffu32
+        return digest.checksum()
     }
 
     private func appendChecksum(output: ArrayList<UInt8>): Unit {
@@ -430,7 +415,13 @@ public class Crc32DeserializeFlavor <: DeserializeFlavor {
     private let source: SliceDeserializeFlavor
 
     public init(message: Array<UInt8>) {
-        source = SliceDeserializeFlavor(stripAndVerifyCrc32c(message))
+        source = SliceDeserializeFlavor(
+            stripAndVerifyCrc32(message, crc32IscsiDigest())
+        )
+    }
+
+    public init(message: Array<UInt8>, digest: Crc32Digest) {
+        source = SliceDeserializeFlavor(stripAndVerifyCrc32(message, digest))
     }
 
     public func pop(): UInt8 { return source.pop() }

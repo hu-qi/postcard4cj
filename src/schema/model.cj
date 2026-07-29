@@ -116,6 +116,24 @@ public func tupleSchema(elements: Array<NamedType>): NamedType {
     return NamedType("Tuple", DataModelType.Tuple(elements))
 }
 
+/** Fixed arrays are tuples on the Postcard wire and carry no length prefix. */
+public func fixedArraySchema(inner: NamedType, length: Int64): NamedType {
+    if (length < 0) {
+        throw IllegalArgumentException("Array length cannot be negative")
+    }
+    return tupleSchema(Array<NamedType>(length, {_ => inner}))
+}
+
+/**
+ * Cangjie-native equivalent of enum-map v3's Schema implementation.
+ *
+ * Upstream delegates to the enum key's backing `[V; N]`; callers provide the
+ * enum cardinality because Cangjie has no enum-map `Enum.Array` associated type.
+ */
+public func enumMapSchema(value: NamedType, enumCardinality: Int64): NamedType {
+    return fixedArraySchema(value, enumCardinality)
+}
+
 public func tupleStructSchema(name: String, elements: Array<NamedType>): NamedType {
     return NamedType(name, DataModelType.TupleStruct(elements))
 }

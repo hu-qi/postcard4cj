@@ -75,15 +75,17 @@ The take-style function decodes the first zero-delimited frame and returns all f
 
 COBS output is built incrementally with a fixed maximum 254-byte pending segment.
 
-## 6. CRC32C/iSCSI framing
+## 6. Configurable CRC32 and CRC32C/iSCSI framing
 
 ```cangjie
 let message = toBytesCrc32Iscsi<MyType>(value)
 let value = fromBytesCrc32Iscsi<MyType>(message)
 let result = takeFromBytesCrc32Iscsi<MyType>(stream)
+
+let message2 = toBytesCrc32<MyType>(value, crc32IsoHdlcDigest())
 ```
 
-The decoder validates the appended checksum before returning a value. Serialization updates CRC32C incrementally instead of copying a second complete message during finalization.
+Generic APIs accept a `Crc32Digest`; built-ins cover iSCSI (Castagnoli) and ISO-HDLC. Parameterless Flavors and `*Crc32Iscsi` helpers preserve the iSCSI default. Decoding validates the appended checksum and serialization updates it incrementally.
 
 ## 7. Flavors
 
@@ -281,13 +283,13 @@ Sequence and map decoding avoid direct large preallocation from malicious declar
 
 ## 17. Verification and references
 
-The same source passes **189 tests** on both Cangjie 1.0.5 and 1.1.3.
+The same source passes **197 tests** on both Cangjie 1.0.5 and 1.1.3.
 
 The STS quality job also validates:
 
 - HTML/XML/JSON coverage report generation
-- 66.28% line coverage across all instrumented `src`
-- 71.75% runtime-library coverage excluding tests, benchmarks, and compile-time macro packages
+- 66.76% line coverage across all instrumented `src`
+- 71.98% runtime-library coverage excluding tests, benchmarks, and compile-time macro packages
 - 6/6 native benchmark cases
 - `cjpm bundle --skip-lint`
 

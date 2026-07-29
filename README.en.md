@@ -19,7 +19,7 @@ Cangjie 1.1.3 adaptation is maintained on:
 ## Upstream baseline
 
 ```text
-jamesmunns/postcard@de182557cff45f2ca9b2b67a6b93be5917612a44
+jamesmunns/postcard@118d274cf46ee8097e7a4aae0c12a801c7aea8cc
 ```
 
 The upstream repository defines the protocol and observable behavior. It is not a runtime, build, or test dependency of postcard4cj.
@@ -102,12 +102,12 @@ The latest complete CI run validates both compiler lines and the STS quality gat
 
 - pure-source policy: passed
 - Cangjie 1.0.5 build: passed
-- Cangjie 1.0.5 tests: **189 passed, 0 failed, 0 skipped, 0 errors**
+- Cangjie 1.0.5 tests: **197 passed, 0 failed, 0 skipped, 0 errors**
 - Cangjie 1.1.3 build: passed
-- Cangjie 1.1.3 tests: **189 passed, 0 failed, 0 skipped, 0 errors**
+- Cangjie 1.1.3 tests: **197 passed, 0 failed, 0 skipped, 0 errors**
 - `cjcov` HTML/XML/JSON reports: generated
-- source-line coverage across all instrumented `src`: **66.28%**
-- runtime-library coverage excluding test, benchmark, and compile-time macro packages: **71.75%**
+- source-line coverage across all instrumented `src`: **66.76%**
+- runtime-library coverage excluding test, benchmark, and compile-time macro packages: **71.98%**
 - native benchmark cases: **6 passed**
 - `cjpm bundle`: passed
 - package artifact: `postcard4cj-0.1.0.cjp`

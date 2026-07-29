@@ -184,4 +184,23 @@ public class DeserializerModelTest {
         let deserializer = Deserializer(SliceDeserializeFlavor([1u8, 0xffu8]))
         @AssertThrows[PostcardException](deserializer.deserializeString())
     }
+
+    @TestCase
+    public func untrustedCollectionLengthsDoNotPreallocateWireCount(): Unit {
+        let maliciousLength: Array<UInt8> = [
+            0xffu8, 0xffu8, 0xffu8, 0xffu8, 0x0fu8
+        ]
+        let sequence = Deserializer(SliceDeserializeFlavor(maliciousLength))
+        @AssertThrows[PostcardException](
+            sequence.deserializeSequence<UInt8>({=> sequence.deserializeUInt8()})
+        )
+
+        let map = Deserializer(SliceDeserializeFlavor(maliciousLength))
+        @AssertThrows[PostcardException](
+            map.deserializeMapEntries<UInt8, UInt8>(
+                {=> map.deserializeUInt8()},
+                {=> map.deserializeUInt8()}
+            )
+        )
+    }
 }

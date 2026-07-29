@@ -276,12 +276,12 @@ pre
           </tr>
           <tr>
             <td class="headerName">Date:</td>
-            <td class="headerValue">2026-07-29 13:27:18</td>
+            <td class="headerValue">2026-07-29 14:00:26</td>
             <td></td>
             <td class="headerName">Lines:</td>
-            <td class="headerTableEntry">36</td>
-            <td class="headerTableEntry">39</td>
-            <td class="headerTableEntry" style="background-color:LightGreen">92.3 %</td>
+            <td class="headerTableEntry">40</td>
+            <td class="headerTableEntry">43</td>
+            <td class="headerTableEntry" style="background-color:LightGreen">93.0 %</td>
           </tr>
           <tr>
             <td class="headerName">Legend:</td>
@@ -676,25 +676,25 @@ pre
 <td align="right" class="lineno"><pre>61</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>    public func enumUsesLargestPayloadAndLargestIndex(): Unit {</pre></td>
+<td align="left" class="src coveredLine"><pre>    public func enumMapUsesEnumBackingFixedArrayMaximum(): Unit {</pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>62</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>        @Assert(enumMaxSize(2u32, 10), 11)</pre></td>
+<td align="left" class="src coveredLine"><pre>        @Assert(enumMapMaxSize&lt;MaxWord&gt;(3), 15)</pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>63</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>        @Assert(enumMaxSize(128u32, 10), 12)</pre></td>
+<td align="left" class="src coveredLine"><pre>        @AssertThrows[IllegalArgumentException](enumMapMaxSize&lt;MaxWord&gt;(-1))</pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>64</pre></td>
 <td align="right" class="linebranch"></td>
-<td align="center" class="linecount "><pre></pre></td>
-<td align="left" class="src "><pre>    }</pre></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>    }</pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>65</pre></td>
@@ -712,22 +712,58 @@ pre
 <td align="right" class="lineno"><pre>67</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>    public func userTypeExposesStaticMaximum(): Unit {</pre></td>
+<td align="left" class="src coveredLine"><pre>    public func enumUsesLargestPayloadAndLargestIndex(): Unit {</pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>68</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
-<td align="left" class="src coveredLine"><pre>        @Assert(maxSizeOf&lt;MaxRecord&gt;(), 17)</pre></td>
+<td align="left" class="src coveredLine"><pre>        @Assert(enumMaxSize(2u32, 10), 11)</pre></td>
 </tr>
 <tr>
 <td align="right" class="lineno"><pre>69</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>        @Assert(enumMaxSize(128u32, 10), 12)</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>70</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount "><pre></pre></td>
 <td align="left" class="src "><pre>    }</pre></td>
 </tr>
 <tr>
-<td align="right" class="lineno"><pre>70</pre></td>
+<td align="right" class="lineno"><pre>71</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre></pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>72</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre>    @TestCase</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>73</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>    public func userTypeExposesStaticMaximum(): Unit {</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>74</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount coveredLine"><pre>Y</pre></td>
+<td align="left" class="src coveredLine"><pre>        @Assert(maxSizeOf&lt;MaxRecord&gt;(), 17)</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>75</pre></td>
+<td align="right" class="linebranch"></td>
+<td align="center" class="linecount "><pre></pre></td>
+<td align="left" class="src "><pre>    }</pre></td>
+</tr>
+<tr>
+<td align="right" class="lineno"><pre>76</pre></td>
 <td align="right" class="linebranch"></td>
 <td align="center" class="linecount coveredLine"><pre>Y</pre></td>
 <td align="left" class="src coveredLine"><pre>}</pre></td>

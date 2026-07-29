@@ -239,6 +239,11 @@ public class Deserializer {
         return input.position()
     }
 
+    /** Remaining source bytes when known, used to bound untrusted allocations. */
+    public func sizeHint(): Option<Int64> {
+        return input.sizeHint()
+    }
+
     public func finalize(): Array<UInt8> {
         return input.finalize()
     }
@@ -411,7 +416,7 @@ public class Deserializer {
 
     public func deserializeSequence<T>(readValue: () -> T): Array<T> {
         let length = beginSequence()
-        let output = ArrayList<T>(length)
+        let output = ArrayList<T>(boundedInitialCapacity(length))
         var index = 0i64
         while (index < length) {
             output.add(readValue())
@@ -425,13 +430,26 @@ public class Deserializer {
         readValue: () -> V
     ): Array<(K, V)> {
         let length = beginMap()
-        let output = ArrayList<(K, V)>(length)
+        let output = ArrayList<(K, V)>(boundedInitialCapacity(length))
         var index = 0i64
         while (index < length) {
             output.add((readKey(), readValue()))
             index++
         }
         return output.toArray()
+    }
+
+    /**
+     * A wire count is not a trustworthy allocation size. When the Flavor can
+     * report its remaining bytes, no non-zero-sized element can require less
+     * than one byte and ordinary values cannot exceed this bound. Zero-sized
+     * values may still grow the list normally as they are decoded.
+     */
+    private func boundedInitialCapacity(length: Int64): Int64 {
+        return match (input.sizeHint()) {
+            case Some(remaining) => if (length > remaining) { remaining } else { length }
+            case None => 0
+        }
     }
 
     private func takeVarint64(maxBytes: Int64, maxLastByte: UInt8): UInt64 {

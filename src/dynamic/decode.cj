@@ -77,7 +77,11 @@ private func decodeValue(deserializer: Deserializer, schema: NamedType): Dynamic
             decodeValue(deserializer, innerSchema)
         case DataModelType.Seq(innerSchema) =>
             let length = deserializer.beginSequence()
-            let output = ArrayList<DynamicValue>(length)
+            let initialCapacity = match (deserializer.sizeHint()) {
+                case Some(remaining) => if (length > remaining) { remaining } else { length }
+                case None => 0
+            }
+            let output = ArrayList<DynamicValue>(initialCapacity)
             var index = 0i64
             while (index < length) {
                 output.add(decodeValue(deserializer, innerSchema))
@@ -92,7 +96,11 @@ private func decodeValue(deserializer: Deserializer, schema: NamedType): Dynamic
             DynamicValue.TupleValue(decodeFixedTuple(deserializer, elementSchemas))
         case DataModelType.Map(keySchema, valueSchema) =>
             let length = deserializer.beginMap()
-            let output = ArrayList<DynamicEntry>(length)
+            let initialCapacity = match (deserializer.sizeHint()) {
+                case Some(remaining) => if (length > remaining) { remaining } else { length }
+                case None => 0
+            }
+            let output = ArrayList<DynamicEntry>(initialCapacity)
             var index = 0i64
             while (index < length) {
                 output.add(DynamicEntry(
