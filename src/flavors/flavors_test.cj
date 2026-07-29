@@ -89,6 +89,25 @@ public class SerializeFlavorTest {
     }
 
     @TestCase
+    public func crcFlavorAcceptsCallerSelectedDigest(): Unit {
+        let flavor = Crc32SerializeFlavor(
+            ArraySerializeFlavor(),
+            crc32IsoHdlcDigest()
+        )
+        flavor.tryExtend([
+            0x31u8, 0x32u8, 0x33u8, 0x34u8, 0x35u8,
+            0x36u8, 0x37u8, 0x38u8, 0x39u8
+        ])
+        let message = flavor.finalize()
+        @Assert(
+            message[message.size - 4..message.size],
+            [0x26u8, 0x39u8, 0xf4u8, 0xcbu8]
+        )
+        let source = Crc32DeserializeFlavor(message, crc32IsoHdlcDigest())
+        @Assert(source.tryTake(9), message[..9])
+    }
+
+    @TestCase
     public func flavorsComposeInDeclaredOrder(): Unit {
         let flavor = CobsSerializeFlavor(
             Crc32SerializeFlavor(ArraySerializeFlavor())

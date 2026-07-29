@@ -58,6 +58,12 @@ public class MaximumSizeTest {
     }
 
     @TestCase
+    public func enumMapUsesEnumBackingFixedArrayMaximum(): Unit {
+        @Assert(enumMapMaxSize<MaxWord>(3), 15)
+        @AssertThrows[IllegalArgumentException](enumMapMaxSize<MaxWord>(-1))
+    }
+
+    @TestCase
     public func enumUsesLargestPayloadAndLargestIndex(): Unit {
         @Assert(enumMaxSize(2u32, 10), 11)
         @Assert(enumMaxSize(128u32, 10), 12)

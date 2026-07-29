@@ -66,6 +66,17 @@ public func fixedArrayMaxSize<T>(length: Int64): Int64 where T <: PostcardMaxSiz
     return length * T.postcardMaxSize()
 }
 
+/**
+ * Cangjie-native equivalent of enum-map v3's MaxSize implementation.
+ *
+ * An enum map is serialized as the enum key's fixed backing value array, so it
+ * has no collection length prefix.
+ */
+public func enumMapMaxSize<V>(enumCardinality: Int64): Int64
+    where V <: PostcardMaxSize {
+    return fixedArrayMaxSize<V>(enumCardinality)
+}
+
 /** Bounded dynamic sequences include the maximum length prefix. */
 public func sequenceMaxSize<T>(capacity: Int64): Int64 where T <: PostcardMaxSize {
     if (capacity < 0) {

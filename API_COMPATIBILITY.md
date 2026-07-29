@@ -1,6 +1,6 @@
 # Public API compatibility audit
 
-Behavior baseline: `jamesmunns/postcard@de182557cff45f2ca9b2b67a6b93be5917612a44`.
+Behavior baseline: `jamesmunns/postcard@118d274cf46ee8097e7a4aae0c12a801c7aea8cc`.
 
 postcard4cj is implemented entirely in Cangjie. The upstream project defines protocol behavior and API concepts only; it is not compiled, executed, or distributed by this repository.
 
@@ -46,19 +46,21 @@ Chinese migration guidance: [`doc/migration.zh-CN.md`](doc/migration.zh-CN.md).
 | Extend output | `ExtendSerializeFlavor` / `toExtendV2` | Implemented |
 | IO/EIO output | `postcard4cj.io.toIo` / `toEioV2` | Implemented |
 | COBS output | `toBytesCobs`, `encodeToCobs`, COBS Flavor | Implemented incrementally |
-| CRC32C output | `toBytesCrc32Iscsi`, `encodeToCrc32Iscsi`, CRC Flavor | Implemented incrementally |
+| caller-selected CRC32 output | `toBytesCrc32`, `encodeToCrc32`, configurable CRC Flavor | Implemented |
+| CRC32C/iSCSI convenience output | `toBytesCrc32Iscsi`, `encodeToCrc32Iscsi` | Implemented incrementally |
 | serialized-size calculation | `serializedSize` / `serializedSizeV2` | Implemented |
 
 ## Top-level deserialization
 
 | Upstream API family | Cangjie mapping | Status |
 |---|---|---|
-| exact bytes decode | `fromBytes`, `fromByteArray`, `fromBytesV2` | Implemented |
+| exact bytes decode | `fromBytes`, `fromByteArray` | Implemented |
+| Postcard2 prefix decode | `fromBytesV2` | Implemented; trailing bytes are intentionally ignored like upstream |
 | bytes decode with remainder | `takeFromByteArray`, `takeFromBytesV2` | Implemented |
 | COBS exact decode | `fromBytesCobs` | Implemented |
 | COBS remainder decode | `takeFromBytesCobs` | Implemented |
-| CRC32C exact decode | `fromBytesCrc32Iscsi` | Implemented |
-| CRC32C remainder decode | `takeFromBytesCrc32Iscsi` | Implemented |
+| caller-selected CRC32 decode | `fromBytesCrc32`, `takeFromBytesCrc32` | Implemented |
+| CRC32C/iSCSI convenience decode | `fromBytesCrc32Iscsi`, `takeFromBytesCrc32Iscsi` | Implemented |
 | IO/EIO input | `postcard4cj.io.fromIo` / `fromEioV2` | Implemented |
 
 ## Flavors and storage
@@ -72,7 +74,7 @@ Chinese migration guidance: [`doc/migration.zh-CN.md`](doc/migration.zh-CN.md).
 | stream writer/reader | Cangjie `ByteWriter` / `ByteReader` | Implemented |
 | size counter | `SizeSerializeFlavor` | Implemented |
 | COBS modifier/source | COBS serialize/deserialize Flavors | Implemented |
-| CRC modifier/source | CRC32C serialize/deserialize Flavors | Implemented |
+| CRC modifier/source | caller-selected `Crc32Digest`; CRC32C/iSCSI default | Implemented |
 
 COBS construction keeps at most a 254-byte pending segment. CRC32C is updated as bytes are written. Finalization does not require a second complete-message copy, `snapshot()` remains non-mutating, and nested Flavor order is preserved.
 
@@ -83,6 +85,7 @@ COBS construction keeps at most a 254-byte pending segment. CRC32C is updated as
 | COBS accumulator | `CobsAccumulator` | Implemented |
 | fixed-width integers | `postcard4cj.fixint` | Implemented for LE/BE 16/32/64/128-bit values |
 | maximum serialized size | `PostcardMaxSize` | Implemented |
+| enum-map v3 Schema / MaxSize | `enumMapSchema`, `enumMapMaxSize` with explicit enum cardinality | Cangjie-native fixed-array equivalent |
 | Schema graph and formatting | `postcard4cj.schema` | Implemented |
 | stable Schema keys | `keyForPath`, `keyForSchemaPath` | Implemented with upstream-compatible FNV markers |
 | dynamic lossless values | `postcard4cj.dynamic` | Implemented |
@@ -145,13 +148,13 @@ Latest result on both release lines:
 
 - pure-source gate: passed
 - build: passed
-- tests: **189 passed, 0 failed, 0 skipped, 0 errors**
+- tests: **197 passed, 0 failed, 0 skipped, 0 errors**
 
 The STS quality job also validates:
 
 - `cjcov` HTML/XML/JSON report generation
-- 66.28% line coverage across all instrumented `src`
-- 71.75% runtime-library coverage excluding tests, benchmarks, and compile-time macro packages
+- 66.76% line coverage across all instrumented `src`
+- 71.98% runtime-library coverage excluding tests, benchmarks, and compile-time macro packages
 - 6/6 native benchmark cases
 - `cjpm bundle --skip-lint`
 - `postcard4cj-0.1.0.cjp` artifact generation

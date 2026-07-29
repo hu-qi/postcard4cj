@@ -1,6 +1,6 @@
 # Full repository migration matrix
 
-Upstream behavior baseline: `jamesmunns/postcard@de182557cff45f2ca9b2b67a6b93be5917612a44`.
+Upstream behavior baseline: `jamesmunns/postcard@118d274cf46ee8097e7a4aae0c12a801c7aea8cc`.
 
 postcard4cj is an independent pure Cangjie implementation. The upstream repository is a protocol and behavior reference only.
 
@@ -22,8 +22,8 @@ CI checks this invariant before compiling.
 
 | Release line | Compiler | Status |
 |---|---|---|
-| LTS | Cangjie 1.0.5 | Build and 189 tests passed |
-| STS | Cangjie 1.1.3 | Build and 189 tests passed |
+| LTS | Cangjie 1.0.5 | Build and 197 tests passed |
+| STS | Cangjie 1.1.3 | Build and 197 tests passed |
 
 The same source tree works on both versions. Version-specific release branches are retained for package publication and maintenance, not because the source has diverged.
 
@@ -156,13 +156,13 @@ Pure Cangjie tests cover:
 - existing `where` bound merging
 - Schema type, field, and enum-variant rename metadata
 
-Latest result on both Cangjie 1.0.5 and 1.1.3: **189 passed, 0 failed, 0 skipped, 0 errors**.
+Latest result on both Cangjie 1.0.5 and 1.1.3: **197 passed, 0 failed, 0 skipped, 0 errors**.
 
 The STS quality job additionally validates:
 
 - `cjcov` HTML/XML/JSON generation
-- 66.28% line coverage across all instrumented `src`
-- 71.75% runtime-library coverage excluding tests, benchmarks, and compile-time macro packages
+- 66.76% line coverage across all instrumented `src`
+- 71.98% runtime-library coverage excluding tests, benchmarks, and compile-time macro packages
 - 6/6 native benchmark cases
 - `cjpm bundle --skip-lint`
 - `postcard4cj-0.1.0.cjp` artifact generation

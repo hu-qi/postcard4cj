@@ -18,7 +18,7 @@ postcard4cj 是 Postcard 二进制线格式及其上游 workspace 可观察行�
 上游行为基线：
 
 ```text
-jamesmunns/postcard@de182557cff45f2ca9b2b67a6b93be5917612a44
+jamesmunns/postcard@118d274cf46ee8097e7a4aae0c12a801c7aea8cc
 ```
 
 ## 2. 非目标
@@ -163,7 +163,7 @@ cjpm build -V
 cjpm test -V
 ```
 
-两个版本的最新结果均为：**189 通过，0 失败，0 跳过，0 错误**。
+两个版本的最新结果均为：**197 通过，0 失败，0 跳过，0 错误**。
 
 STS 质量任务还会生成覆盖率报告、运行原生 benchmark、检查 lint 错误并验证发布 bundle。
 

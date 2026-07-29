@@ -25,6 +25,7 @@
 | 定点数 | 根据选定的 scale 约定编码底层有符号/无符号整数。 | 公共适配器接口支持；无内置依赖 |
 | defmt diagnostics | 诊断格式不属于线格式，使用仓颉异常和普通格式化。 | 明确排除的 Rust 专属诊断集成 |
 | serde-big-array | 仓颉 `Array<T>` 和显式固定容量包装使用普通 sequence/fixed API，不需要 serde workaround。 | 原生核心 API；无需独立集成 |
+| enum-map 3.x | 使用 `enumMapSchema(valueSchema, enumCardinality)` 和 `enumMapMaxSize<V>(enumCardinality)` 表达枚举键对应的固定值数组；与上游一样不编码长度前缀。 | 已实现仓颉原生等价能力 |
 | heapless 0.7/0.8/0.9 alias | `FixedByteVec` 和 `FixedVecFlavor` 提供运行时容量替代，不导入带版本的 Rust 容器。 | 已实现的仓颉替代 |
 | embedded-io 0.4/0.6 alias | `ByteReader` 和 `ByteWriter` 提供稳定仓颉 IO 约定，不依赖带版本的 Rust trait。 | 已实现的仓颉替代 |
 

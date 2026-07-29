@@ -75,15 +75,18 @@ Take-style 接口会解码第一个以零字节分隔的完整帧，并返回后
 
 序列化端使用增量 COBS block 构造，最多缓存 254 字节 pending segment。
 
-## 6. CRC32C/iSCSI framing
+## 6. 可配置 CRC32 与 CRC32C/iSCSI framing
 
 ```cangjie
 let message = toBytesCrc32Iscsi<MyType>(value)
 let value = fromBytesCrc32Iscsi<MyType>(message)
 let result = takeFromBytesCrc32Iscsi<MyType>(stream)
+
+// 也可以传入调用方选择的 CRC32 digest
+let message2 = toBytesCrc32<MyType>(value, crc32IsoHdlcDigest())
 ```
 
-解码器在返回值前验证附加的 CRC32C 校验值。序列化过程边写边更新 checksum，不在 finalize 阶段复制第二份完整消息。
+通用 API 接受 `Crc32Digest`；内置 iSCSI（Castagnoli）和 ISO-HDLC digest。无参数 Flavor 与 `*Crc32Iscsi` helper 保持 iSCSI 默认行为。解码器在返回值前验证附加校验值，序列化过程边写边更新 checksum。
 
 ## 7. Flavors
 
@@ -328,13 +331,13 @@ postcard4cj 对 sequence/map 的恶意声明长度实施分配保护，不会直
 同一套源码在 Cangjie 1.0.5 与 1.1.3 上均通过：
 
 - build：通过
-- tests：**189 passed, 0 failed, 0 skipped, 0 errors**
+- tests：**197 passed, 0 failed, 0 skipped, 0 errors**
 
 STS 质量任务还验证：
 
 - `cjcov` HTML/XML/JSON 生成
-- 全部 instrumented `src` 行覆盖率 66.28%
-- 运行时代码覆盖率 71.75%
+- 全部 instrumented `src` 行覆盖率 66.76%
+- 运行时代码覆盖率 71.98%
 - benchmark 6/6 通过
 - `cjpm bundle --skip-lint` 通过
 

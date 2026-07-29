@@ -118,6 +118,21 @@ public class SchemaFormattingTest {
     }
 
     @TestCase
+    public func enumMapUsesEnumBackingFixedArraySchema(): Unit {
+        let schema = enumMapSchema(uint16Schema(), 3)
+        @Assert(formatSchema(schema), "[u16; 3]")
+        match (schema.ty) {
+            case DataModelType.Tuple(elements) =>
+                @Assert(elements.size, 3)
+                @Assert(elements[0].name, "u16")
+            case _ => throw IllegalStateException("Expected fixed-array tuple schema")
+        }
+        @AssertThrows[IllegalArgumentException](
+            enumMapSchema(uint16Schema(), -1)
+        )
+    }
+
+    @TestCase
     public func recursiveDiscoveryDeduplicatesTypes(): Unit {
         let used = allUsedTypes(recordSchema())
         @Assert(used.size, 5)

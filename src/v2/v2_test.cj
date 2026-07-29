@@ -83,6 +83,20 @@ public struct V2UInt32 <: PostcardDeserialize<V2UInt32> {
     }
 }
 
+public struct V2ByteSequence <: PostcardDeserialize<V2ByteSequence> {
+    public let values: Array<UInt8>
+
+    public init(values: Array<UInt8>) {
+        this.values = values
+    }
+
+    public static func deserialize(deserializer: Deserializer): V2ByteSequence {
+        return V2ByteSequence(
+            deserializer.deserializeSequence<UInt8>({=> deserializer.deserializeUInt8()})
+        )
+    }
+}
+
 @Test
 public class PostcardV2ApiTest {
     private let value = V2Record(42u32, -1i32, true, "Hi")
@@ -188,6 +202,21 @@ public class PostcardV2ErrorTest {
             match (error.kind) {
                 case DeserializerErrorKind.PopError => ()
                 case _ => throw IllegalStateException("Wrong pop error")
+            }
+        }
+    }
+
+    @TestCase
+    public func untrustedSequenceLengthMapsToPopErrorWithoutEagerAllocation(): Unit {
+        try {
+            fromBytesV2<V2ByteSequence>([
+                0xffu8, 0xffu8, 0xffu8, 0xffu8, 0x0fu8
+            ])
+            throw IllegalStateException("Expected DeserializerException")
+        } catch (error: DeserializerException) {
+            match (error.kind) {
+                case DeserializerErrorKind.PopError => ()
+                case _ => throw IllegalStateException("Wrong sequence error")
             }
         }
     }

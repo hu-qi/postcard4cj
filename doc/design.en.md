@@ -18,7 +18,7 @@ Design goals:
 Upstream behavior baseline:
 
 ```text
-jamesmunns/postcard@de182557cff45f2ca9b2b67a6b93be5917612a44
+jamesmunns/postcard@118d274cf46ee8097e7a4aae0c12a801c7aea8cc
 ```
 
 ## 2. Non-goals
@@ -165,7 +165,7 @@ cjpm test -V
 
 under both Cangjie 1.0.5 and 1.1.3.
 
-Latest result on both versions: **189 passed, 0 failed, 0 skipped, 0 errors**.
+Latest result on both versions: **197 passed, 0 failed, 0 skipped, 0 errors**.
 
 The STS quality job also generates coverage reports, runs native benchmarks, checks lint errors, and validates the release bundle.
 

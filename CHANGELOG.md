@@ -11,6 +11,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Pure Cangjie implementations corresponding to all 11 upstream Postcard workspace crates.
 - Postcard primitive, compound, Schema, dynamic-value, framing, IO, and fixed-capacity APIs.
 - COBS and CRC32C serialization/deserialization with remainder helpers.
+- Caller-selected CRC32 digests with CRC32C/iSCSI compatibility helpers.
+- enum-map v3 compatible fixed-array Schema and MaxSize adapters.
 - Codec, Schema, NG Schema, MaxSize, and NG MaxSize macro generation.
 - Generic struct and exhaustive generic enum support for one or more type parameters.
 - AST-based merging of pre-existing generic `where` upper bounds with generated Postcard constraints.
@@ -39,12 +41,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Verified
 
-- Cangjie 1.0.5: build passed; 189 tests passed.
-- Cangjie 1.1.3: build passed; 189 tests passed.
+- Cangjie 1.0.5: build passed; 197 tests passed.
+- Cangjie 1.1.3: build passed; 197 tests passed.
 - Pure-source policy: passed on both matrix jobs.
 - `cjcov` HTML/XML/JSON reports generated.
-- All instrumented `src` line coverage: 66.28%.
-- Runtime-library line coverage: 71.75%.
+- All instrumented `src` line coverage: 66.76%.
+- Runtime-library line coverage: 71.98%.
 - Native benchmarks: 6/6 passed.
 - `cjpm bundle --skip-lint`: passed.
 - Package artifact: `postcard4cj-0.1.0.cjp`.

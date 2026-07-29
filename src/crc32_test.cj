@@ -1,5 +1,8 @@
 package postcard4cj
 
+import postcard4cj.core.*
+
+import postcard4cj.flavors.*
 import std.unittest.*
 import std.unittest.testmacro.*
 
@@ -45,6 +48,21 @@ public class PostcardCrc32Test {
     }
 
     @TestCase
+    public func callerSelectedIsoHdlcDigestUsesStandardVector(): Unit {
+        let input: Array<UInt8> = [
+            0x31u8, 0x32u8, 0x33u8, 0x34u8, 0x35u8,
+            0x36u8, 0x37u8, 0x38u8, 0x39u8
+        ]
+        @Assert(crc32(input, crc32IsoHdlcDigest()), 0xcbf4_3926u32)
+        let framed = appendCrc32(input, crc32IsoHdlcDigest())
+        @Assert(
+            framed[framed.size - 4..framed.size],
+            [0x26u8, 0x39u8, 0xf4u8, 0xcbu8]
+        )
+        @Assert(verifyAndStripCrc32(framed, crc32IsoHdlcDigest()), input)
+    }
+
+    @TestCase
     public func typedTelemetryCrcMatchesRustPostcard(): Unit {
         let expected = telemetryCrcMessage()
         @Assert(toBytesCrc32Iscsi<Telemetry>(telemetryValueForCrc()), expected)
@@ -54,6 +72,15 @@ public class PostcardCrc32Test {
         @Assert(decoded.temperature, 12.5f32)
         @Assert(decoded.note, Some("ok"))
         @Assert(decoded.samples, [-1i16, 0i16, 1i16, 128i16])
+    }
+
+    @TestCase
+    public func typedApiAcceptsCallerSelectedDigest(): Unit {
+        let value = telemetryValueForCrc()
+        let message = toBytesCrc32<Telemetry>(value, crc32IsoHdlcDigest())
+        let decoded = fromBytesCrc32<Telemetry>(message, crc32IsoHdlcDigest())
+        @Assert(decoded.id, value.id)
+        @Assert(decoded.samples, value.samples)
     }
 
     @TestCase

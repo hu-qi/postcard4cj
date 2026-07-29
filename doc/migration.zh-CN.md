@@ -5,7 +5,7 @@
 行为基线：
 
 ```text
-jamesmunns/postcard@de182557cff45f2ca9b2b67a6b93be5917612a44
+jamesmunns/postcard@118d274cf46ee8097e7a4aae0c12a801c7aea8cc
 ```
 
 postcard4cj 是独立的纯仓颉实现。上游仓库仅用于定义协议行为与可观察语义，不参与 postcard4cj 的编译、测试或运行。
@@ -256,8 +256,8 @@ postcard4cj 已避免 sequence/map 的恶意声明长度直接触发对应规模
 
 同一套 postcard4cj 源码已在以下编译器上通过：
 
-- Cangjie 1.0.5：189 tests passed
-- Cangjie 1.1.3：189 tests passed
+- Cangjie 1.0.5：197 tests passed
+- Cangjie 1.1.3：197 tests passed
 
 测试覆盖 primitive、compound、128 位整数、enum 顺序、COBS、CRC32C、remainder、malformed input、恶意长度、Flavor、宏、泛型、where 合并与 Schema rename。
 
