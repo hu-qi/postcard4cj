@@ -10,7 +10,7 @@ include = [
   "src",
   "doc",
   "README.md",
-  "README.zh-CN.md",
+  "README.en.md",
   "README.OpenSource",
   "CHANGELOG.md",
   "MIGRATION.md",

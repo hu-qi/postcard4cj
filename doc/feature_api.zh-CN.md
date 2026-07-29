@@ -331,7 +331,7 @@ postcard4cj 对 sequence/map 的恶意声明长度实施分配保护，不会直
 STS 质量任务还验证：
 
 - `cjcov` HTML/XML/JSON 生成
-- 全部 instrumented `src` 行覆盖率 66.30%
+- 全部 instrumented `src` 行覆盖率 66.28%
 - 运行时代码覆盖率 71.75%
 - benchmark 6/6 通过
 - `cjpm bundle --skip-lint` 通过
