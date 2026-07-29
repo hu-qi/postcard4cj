@@ -1,33 +1,35 @@
-# Optional integration decisions
+# 可选生态集成决策
 
-The upstream Postcard workspace exposes optional integrations for Rust ecosystem types. postcard4cj is a pure Cangjie library and does not embed Rust crates merely to reproduce feature names. This document records the release decision for every upstream integration category.
+简体中文 | [English](optional_integrations.en.md)
 
-## General adapter contract
+上游 Postcard workspace 提供若干 Rust 生态类型的可选集成。postcard4cj 是纯仓颉库，不会为了复刻 feature 名称而嵌入 Rust crate。本文记录每类上游集成的发布决策。
 
-A Cangjie application type can participate in Postcard by implementing:
+## 通用适配器约定
+
+仓颉应用类型可以通过实现以下接口参与 Postcard 编解码：
 
 - `PostcardEncode`
 - `PostcardDecode<T>`
-- optionally `PostcardSchema<T>` or `PostcardSchemaNg<T>`
-- optionally `PostcardMaxSize` when the type has a finite encoded maximum
+- 可选的 `PostcardSchema<T>` 或 `PostcardSchemaNg<T>`
+- 类型存在有限编码上界时，可选实现 `PostcardMaxSize`
 
-Adapters preserve the Postcard wire representation of the logical value. They are maintained in the package that owns or selects the Cangjie-native type, avoiding a dependency from postcard4cj to unrelated ecosystem libraries.
+适配器必须保持逻辑值的 Postcard 线格式表示。适配器由拥有或选择相应仓颉原生类型的包维护，从而避免 postcard4cj 依赖无关生态库。
 
-## Decisions
+## 决策
 
-| Upstream integration | Cangjie decision | Status |
+| 上游集成 | 仓颉决策 | 状态 |
 |---|---|---|
-| UUID | Encode the canonical 16-byte value through an application adapter. postcard4cj does not select a third-party UUID package. | Supported through public adapter interfaces; no built-in dependency |
-| chrono/date-time | Encode an explicitly selected numeric or structured time representation. Time zones and calendar semantics remain owned by the application type. | Supported through public adapter interfaces; no built-in dependency |
-| nalgebra matrices/vectors | Encode dimensions and scalar elements using sequence/tuple APIs. postcard4cj does not select a matrix package. | Supported through public adapter interfaces; no built-in dependency |
-| fixed-point numbers | Encode the underlying signed/unsigned integer according to the selected scale contract. | Supported through public adapter interfaces; no built-in dependency |
-| defmt diagnostics | Diagnostic formatting is not part of the wire format. Cangjie exceptions and ordinary formatting are used. | Explicitly excluded as a Rust-only diagnostics integration |
-| serde-big-array | Cangjie `Array<T>` and explicit fixed-capacity wrappers use the normal sequence/fixed APIs and do not need a serde workaround. | Native core API; separate integration unnecessary |
-| heapless 0.7/0.8/0.9 aliases | `FixedByteVec` and `FixedVecFlavor` provide runtime-capacity equivalents without importing versioned Rust containers. | Implemented Cangjie substitution |
-| embedded-io 0.4/0.6 aliases | `ByteReader` and `ByteWriter` provide a stable Cangjie IO contract without versioned Rust traits. | Implemented Cangjie substitution |
+| UUID | 通过应用适配器编码规范的 16 字节值；postcard4cj 不指定某个第三方 UUID 包。 | 公共适配器接口支持；无内置依赖 |
+| chrono/date-time | 编码明确选定的数值或结构化时间表示；时区和日历语义由应用类型负责。 | 公共适配器接口支持；无内置依赖 |
+| nalgebra matrix/vector | 通过 sequence/tuple API 编码维度和标量元素；postcard4cj 不指定矩阵包。 | 公共适配器接口支持；无内置依赖 |
+| 定点数 | 根据选定的 scale 约定编码底层有符号/无符号整数。 | 公共适配器接口支持；无内置依赖 |
+| defmt diagnostics | 诊断格式不属于线格式，使用仓颉异常和普通格式化。 | 明确排除的 Rust 专属诊断集成 |
+| serde-big-array | 仓颉 `Array<T>` 和显式固定容量包装使用普通 sequence/fixed API，不需要 serde workaround。 | 原生核心 API；无需独立集成 |
+| heapless 0.7/0.8/0.9 alias | `FixedByteVec` 和 `FixedVecFlavor` 提供运行时容量替代，不导入带版本的 Rust 容器。 | 已实现的仓颉替代 |
+| embedded-io 0.4/0.6 alias | `ByteReader` 和 `ByteWriter` 提供稳定仓颉 IO 约定，不依赖带版本的 Rust trait。 | 已实现的仓颉替代 |
 
-## Compatibility boundary
+## 兼容性边界
 
-These decisions claim wire-level capability, not source-level compatibility with Rust type names. A native adapter must document its chosen logical representation and include Golden Vector tests when interoperability with another implementation is required.
+这些决策声明的是线格式能力，不是与 Rust 类型名的源码级兼容。原生适配器必须记录所选逻辑表示；需要与其他实现互操作时，还必须包含 Golden Vector 测试。
 
-No optional integration may add `.rs`, Cargo, a Rust toolchain, or a Rust runtime dependency to postcard4cj.
+任何可选集成都不能向 postcard4cj 添加 `.rs`、Cargo、Rust 工具链或 Rust 运行时依赖。

@@ -179,7 +179,9 @@ public struct Record {
 ## 中文文档
 
 - [快速上手](doc/quickstart.zh-CN.md)
-- [功能与 API 指南](doc/feature_api.zh-CN.md)
+- [功能与 API 指南](doc/feature_api.md)
+- [架构设计](doc/design.md)
+- [可选生态集成决策](doc/optional_integrations.md)
 - [从 Rust Postcard 迁移](doc/migration.zh-CN.md)
 - [LLT 完整测试报告](doc/LLT.md)
 - [覆盖率报告](doc/cjcov/README.md)
@@ -187,9 +189,9 @@ public struct Record {
 
 ## 英文文档
 
-- [Design](doc/design.md)
-- [Feature and API guide](doc/feature_api.md)
-- [Optional integration decisions](doc/optional_integrations.md)
+- [Design](doc/design.en.md)
+- [Feature and API guide](doc/feature_api.en.md)
+- [Optional integration decisions](doc/optional_integrations.en.md)
 - [Migration matrix](MIGRATION.md)
 - [Public API compatibility](API_COMPATIBILITY.md)
 - [Changelog](CHANGELOG.md)

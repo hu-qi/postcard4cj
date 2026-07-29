@@ -156,4 +156,4 @@ The STS quality job also validates:
 - `cjpm bundle --skip-lint`
 - `postcard4cj-0.1.0.cjp` artifact generation
 
-See `README.md`, `README.en.md`, `doc/quickstart.zh-CN.md`, `doc/feature_api.zh-CN.md`, `doc/design.md`, `doc/feature_api.md`, and `MIGRATION.md` for usage, architecture, and detailed substitutions.
+See `README.md`, `README.en.md`, `doc/quickstart.zh-CN.md`, `doc/feature_api.md`, `doc/feature_api.en.md`, `doc/design.md`, `doc/design.en.md`, and `MIGRATION.md` for usage, architecture, and detailed substitutions.
