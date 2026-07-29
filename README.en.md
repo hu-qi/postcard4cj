@@ -129,6 +129,7 @@ The test suite covers Golden Vectors, malformed and truncated input, malicious l
 - [Feature and API guide](doc/feature_api.md)
 - [Coverage report](doc/cjcov/README.md)
 - [Complete LLT report (Chinese)](doc/LLT.md)
+- [Cangjie 1.1.3 LLT report (Chinese)](doc/LLT-1.1.3.md)
 - [Benchmarks](doc/benchmark.md)
 - [Optional integration decisions](doc/optional_integrations.md)
 - [Migration matrix](MIGRATION.md)

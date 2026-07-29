@@ -182,6 +182,7 @@ public struct Record {
 - [功能与 API 指南](doc/feature_api.zh-CN.md)
 - [从 Rust Postcard 迁移](doc/migration.zh-CN.md)
 - [LLT 完整测试报告](doc/LLT.md)
+- [Cangjie 1.1.3 LLT 测试报告](doc/LLT-1.1.3.md)
 - [覆盖率报告](doc/cjcov/README.md)
 - [基准测试报告](doc/benchmark.md)
 
