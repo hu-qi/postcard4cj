@@ -11,10 +11,10 @@ A pure Cangjie implementation of the complete [`jamesmunns/postcard`](https://gi
 - LTS: Cangjie 1.0.5
 - STS: Cangjie 1.1.3
 
-The package declares 1.0.5 as its minimum compiler version. Version-specific maintenance branches are available:
+The default `main` branch is the Cangjie 1.0.5 adaptation baseline. The
+Cangjie 1.1.3 adaptation is maintained on:
 
-- `postcard4cj_lt_1.0.5`
-- `postcard4cj_st_1.1.3`
+- `feat/postcard4cj-1.1.3`
 
 ## Upstream baseline
 

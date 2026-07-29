@@ -171,9 +171,8 @@ The STS quality job also generates coverage reports, runs native benchmarks, che
 
 The project follows the cj-awesome dual-version model:
 
-- `main` is the shared source baseline.
-- LTS release branches use `postcard4cj_lt_<version>`.
-- STS release branches use `postcard4cj_st_<version>`.
+- `main` is the Cangjie 1.0.5 adaptation baseline.
+- `feat/postcard4cj-1.1.3` carries the Cangjie 1.1.3 adaptation.
 - Published artifacts identify their supported compiler line.
 - Logic remains shared whenever both compilers accept the same source.
 

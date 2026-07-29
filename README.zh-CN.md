@@ -19,10 +19,9 @@ postcard4cj 是 [`jamesmunns/postcard`](https://github.com/jamesmunns/postcard) 
 - LTS：Cangjie 1.0.5
 - STS：Cangjie 1.1.3
 
-包声明的最低编译器版本为 1.0.5。版本维护分支：
+默认 `main` 分支为 Cangjie 1.0.5 适配基线。Cangjie 1.1.3 适配维护在：
 
-- `postcard4cj_lt_1.0.5`
-- `postcard4cj_st_1.1.3`
+- `feat/postcard4cj-1.1.3`
 
 ## 安装
 
