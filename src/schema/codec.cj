@@ -2,7 +2,6 @@ package postcard4cj.schema
 
 import postcard4cj.core.*
 import postcard4cj.serde_model.*
-import std.collection.*
 
 private func writeNamedTypeArray(serializer: Serializer, values: Array<NamedType>): Unit {
     serializer.serializeSequence<NamedType>(
