@@ -150,10 +150,10 @@ Latest result on both release lines:
 The STS quality job also validates:
 
 - `cjcov` HTML/XML/JSON report generation
-- 66.30% line coverage across all instrumented `src`
+- 66.28% line coverage across all instrumented `src`
 - 71.75% runtime-library coverage excluding tests, benchmarks, and compile-time macro packages
 - 6/6 native benchmark cases
 - `cjpm bundle --skip-lint`
 - `postcard4cj-0.1.0.cjp` artifact generation
 
-See `README.zh-CN.md`, `doc/quickstart.zh-CN.md`, `doc/feature_api.zh-CN.md`, `doc/design.md`, `doc/feature_api.md`, and `MIGRATION.md` for usage, architecture, and detailed substitutions.
+See `README.md`, `README.en.md`, `doc/quickstart.zh-CN.md`, `doc/feature_api.zh-CN.md`, `doc/design.md`, `doc/feature_api.md`, and `MIGRATION.md` for usage, architecture, and detailed substitutions.

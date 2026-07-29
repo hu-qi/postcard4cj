@@ -284,14 +284,14 @@ The same source passes **189 tests** on both Cangjie 1.0.5 and 1.1.3.
 The STS quality job also validates:
 
 - HTML/XML/JSON coverage report generation
-- 66.30% line coverage across all instrumented `src`
+- 66.28% line coverage across all instrumented `src`
 - 71.75% runtime-library coverage excluding tests, benchmarks, and compile-time macro packages
 - 6/6 native benchmark cases
 - `cjpm bundle --skip-lint`
 
 Further documentation:
 
-- `README.zh-CN.md`
+- `README.md`
 - `doc/quickstart.zh-CN.md`
 - `doc/feature_api.zh-CN.md`
 - `doc/migration.zh-CN.md`

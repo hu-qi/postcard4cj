@@ -1,42 +1,42 @@
-# Benchmark Report
+# 基准测试报告
 
-## Environment
+## 环境
 
-Latest benchmark run: GitHub Actions run `29810847543` (`postcard4cj pure Cangjie` run #200).
+- 日期：2026-07-29
+- 分支：`main`
+- 仓颉版本：LTS 1.0.5
+- 系统：macOS 26.5.2，Apple Silicon arm64
+- 编译选项：`-O2`
+- 框架：`std.unittest` 原生 `@Bench`
+- 结果：**6 通过，0 失败**
 
-- Cangjie: STS 1.1.3
-- runner: GitHub-hosted Ubuntu 22.04, x86_64
-- package compile option: `-O2`
-- framework: `std.unittest` native `@Bench`
-- result: **6 passed, 0 failed**
+以下结果适合作为同机回归基线，不代表跨机器性能保证。
 
-The values below are useful as a CI baseline for regression detection. They are not cross-machine performance guarantees.
+## 结果
 
-## Results
-
-| Case | Median | Mean | Error |
+| 用例 | 中位数 | 平均值 | 误差 |
 |---|---:|---:|---:|
-| Plain encode | 16.51 µs | 16.65 µs | ±0.5% |
-| Plain decode | 3.432 µs | 3.501 µs | ±1.6% |
-| COBS encode | 16.97 µs | 17.03 µs | ±0.5% |
-| COBS decode | 4.162 µs | 4.186 µs | ±0.8% |
-| CRC32C encode | 18.09 µs | 18.23 µs | ±0.4% |
-| CRC32C decode | 4.855 µs | 4.860 µs | ±0.4% |
+| Plain encode | 7.037 µs | 7.292 µs | ±3.6% |
+| Plain decode | 1.710 µs | 1.735 µs | ±2.7% |
+| COBS encode | 7.662 µs | 7.719 µs | ±3.0% |
+| COBS decode | 2.057 µs | 2.078 µs | ±1.2% |
+| CRC32C encode | 8.457 µs | 8.702 µs | ±3.3% |
+| CRC32C decode | 2.755 µs | 2.755 µs | ±0.7% |
 
-The benchmark payload exercises a representative compound Postcard value. COBS uses the incremental 254-byte segment implementation; CRC32C updates the checksum while forwarding payload bytes.
+benchmark payload 使用代表性的复合 Postcard 值。COBS 使用增量 254 字节分段实现；CRC32C 在转发 payload 字节时同步更新校验值。
 
-## Reproduction
+## 复现
 
 ```bash
-source /path/to/cangjie/envsetup.sh
+source /path/to/cangjie-1.0.5/envsetup.sh
+export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX15.4.sdk
+export MACOSX_DEPLOYMENT_TARGET=12.0
 cjpm bench -V
 ```
 
-The complete console report is retained as `postcard4cj-benchmark.log` in the `postcard4cj-quality-artifacts` workflow artifact.
+## 解读
 
-## Interpretation
-
-- Encode cases include output allocation and final byte materialization.
-- Decode cases include validation and reconstruction of the benchmark value.
-- Framing cases include COBS or CRC32C work in addition to the plain codec.
-- Compare results only on equivalent compiler versions, optimization flags, payloads, and runner classes.
+- Encode 包含输出分配和最终字节数组构造。
+- Decode 包含输入校验和 benchmark 值重建。
+- Framing 在普通 codec 之外包含 COBS 或 CRC32C 工作。
+- 只有编译器版本、优化参数、payload 和执行机器一致时才应直接比较结果。

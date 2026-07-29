@@ -43,7 +43,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Cangjie 1.1.3: build passed; 189 tests passed.
 - Pure-source policy: passed on both matrix jobs.
 - `cjcov` HTML/XML/JSON reports generated.
-- All instrumented `src` line coverage: 66.30%.
+- All instrumented `src` line coverage: 66.28%.
 - Runtime-library line coverage: 71.75%.
 - Native benchmarks: 6/6 passed.
 - `cjpm bundle --skip-lint`: passed.
